@@ -1,10 +1,10 @@
 {
-  "name": "[internal-mod-name]",
-  "version": "0.0.0",
-  "title": "[MOD DISPLAY NAME]",
-  "author": "[YOUR MODS.FACTORIO.COM USERNAME]",
-  "homepage": "[HOMEPAGE/REPO URL]",
-  "description": "[SHORT DESCRIPTION]",
+  "name": "bronze-age",
+  "version": "0.0.1",
+  "title": "Bronze Age",
+  "author": "jurgy",
+  "homepage": "https://github.com/jurgyy/Factorio-Bronze-Age",
+  "description": "wip",
   "factorio_version": "1.1",
   "dependencies": [
     "base"
