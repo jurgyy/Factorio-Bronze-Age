@@ -78,21 +78,21 @@ local function update_sticker(entity)
     util.print("can't find construction")
 end
 
-ba_construction.new = function(ghost_entity)
-    -- TODO remove:
-    if not global.destruction_ids then global.destruction_ids = {} end
-    -- TODO this currently requires the item and recipe to have the same name
-    -- Also doesn't work with items with multiple recipes
-    local ingredients = game.recipe_prototypes[ghost_entity.ghost_name].ingredients
+---Register a new Construction object and add the sticker
+---@param ghost_entity LuaEntity The ghost entity to be built
+---@param recipe LuaRecipePrototype Name of the recipe that produces item that can place the ghost
+---@param count integer Mutliplier on the cost. Is used for entities such as curved rails.
+ba_construction.new = function(ghost_entity, recipe, count)
+    local ingredients = recipe.ingredients
     if not ingredients then
-        util.print("Item recipe has no ingredients")
+        util.print("Recipe has no ingredients")
         return
     end
-    create_new_sticker(ghost_entity, ingredients)
     local uid = script.register_on_entity_destroyed(ghost_entity)
     global.destruction_ids[uid] = ghost_entity.unit_number
 
     for _, ingredient in ipairs(ingredients) do
+        ingredient.amount = ingredient.amount * count
         local worker_capacity = get_worker_capacity(ingredient.name)
         if ingredient.amount <= worker_capacity  then
             ba_requests.add_request(ba_requests.request_building_item(ghost_entity, table.deepcopy(ingredient)))
@@ -107,6 +107,8 @@ ba_construction.new = function(ghost_entity)
             end
         end
     end
+
+    create_new_sticker(ghost_entity, ingredients)
 end
 
 ---Is the given construction completed

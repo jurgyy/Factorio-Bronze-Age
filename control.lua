@@ -7,6 +7,26 @@ local ba_request_handler = require("requestHandler")
 local ba_requests = require("requests")
 local ba_construction = require("construction")
 
+local item_recipe_cache = {}
+
+---Returns the recipe that produces a given item
+---@param item_name string Name of an item
+---@return LuaRecipePrototype|nil recipe The recipe for the item
+local function get_item_recipe(item_name)
+    if item_recipe_cache[item_name] then
+        return game.recipe_prototypes[item_recipe_cache[item_name]]
+    end
+
+    for _, recipe in pairs(game.recipe_prototypes) do
+        for _, product in pairs(recipe.products) do
+            if product.name == item_name then
+                item_recipe_cache[item_name] = recipe.name
+                return recipe
+            end
+        end
+    end
+    return nil
+end
 
 script.on_init(function()
     global.request_queue = Queue.new()
@@ -65,7 +85,55 @@ end
 ---comment
 ---@param event EventData.on_built_entity
 local function set_ghost_requests(event)
-    ba_construction.new(event.created_entity)
+    local count = 1
+    local ghost_entity
+    local item
+    if event.created_entity.name == "entity-ghost" and event.created_entity.type == "entity-ghost" then
+        ghost_entity = event.created_entity
+        if event.created_entity.ghost_prototype.items_to_place_this then
+            item = event.created_entity.ghost_prototype.items_to_place_this[1]
+        end
+    else
+        local surface = event.created_entity.surface
+        local ghost_data = {
+            name = "entity-ghost",
+            ghost_name = event.created_entity.name,
+            position = event.created_entity.position,
+            direction = event.created_entity.direction,
+            force = event.created_entity.force,
+            create_build_effect_smoke = false
+        }
+        item = event.item
+
+        if not event.created_entity.destroy() then
+            error("Unable to destroy original entity")
+        end
+        
+        ghost_entity = surface.create_entity(ghost_data)
+        if not ghost_entity then
+            util.print("Unable to create ghost entity " .. game.table_to_json(event.created_entity.position))
+        end
+
+        local inventory = game.players[event.player_index].get_inventory(defines.inventory.character_main)
+        count = event.stack.count
+        if inventory then
+            inventory.insert( {name=event.item.name, count=count})
+        end
+    end
+
+    if not ghost_entity then
+        error("Unable to create ghost entity")
+    end
+
+    if not item then
+        error("No item could place the entity " .. ghost_entity.ghost_name)
+    end
+
+    local recipe = get_item_recipe(item.name)
+    if not recipe then
+        error("No recipe found for item " .. item.name)
+    end
+    ba_construction.new(ghost_entity, recipe, count)
 end
 
 ---comments
@@ -104,10 +172,7 @@ commands.add_command("ba-test", nil, foo)
 commands.add_command("ba-set-request", nil, test_add_pickup_request)
 commands.add_command("ba-request-item", nil, request_item_console_command)
 
-script.on_event(defines.events.on_built_entity, set_ghost_requests, {
-    {filter = "name", name = "entity-ghost"},
-    {filter = "type", type = "entity-ghost", mode = "and"}
-})
+script.on_event(defines.events.on_built_entity, set_ghost_requests)
 
 script.on_event(defines.events.on_entity_destroyed, entity_destroyed_event)
 
