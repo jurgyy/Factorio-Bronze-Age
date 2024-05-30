@@ -87,7 +87,11 @@ end
 ---comments
 ---@param request BuildItemRequest
 handler.handle_build_item_request = function(request)
-    local result = find_chest(request.surface_index, request.ingredient.name, request.ingredient.amount)
+    if not request.ghost.valid then
+        return
+    end
+    
+    local result = find_chest(request.ghost.surface_index, request.ingredient.name, request.ingredient.amount)
     if not result then
         util.print("Couldn't find chest with item " .. request.ingredient.name .. ". Adding it back to the queue")
         ba_requests.add_request(request)
@@ -102,9 +106,9 @@ handler.handle_build_item_request = function(request)
         ba_requests.add_request(remaining)
     end
 
-    local surface = game.surfaces[request.surface_index]
+    local surface = request.ghost.surface
     local spawn_position = util.get_position(source_chest)
-    local goal_position = util.get_path_near(surface, request.dropoff_area)
+    local goal_position = util.get_path_near(surface, request.ghost.bounding_box)
     local worker = ba_worker.spawn_unlimited(surface, spawn_position, game.players[1].force, request) -- TODO force
 
     util.highlight_position(surface, source_chest.position)

@@ -120,8 +120,8 @@ function commands.dropoff_build_command(build_item_request)
         ticks_to_wait = dropoff_duration,
         item = build_item_request.ingredient.name,
         amount = build_item_request.ingredient.amount,
-        ghost_id = build_item_request.ghost_id,
-        ghost_pos = build_item_request.ghost_pos
+        ghost_id = build_item_request.ghost.unit_number,
+        ghost_pos = build_item_request.ghost.position
     }
 end
 

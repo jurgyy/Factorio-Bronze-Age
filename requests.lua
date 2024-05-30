@@ -8,10 +8,7 @@ requests = {}
 
 --- @class BuildItemRequest : Request
 --- @field ingredient Ingredient Ingredient that this request handles
---- @field surface_index integer Surface index of the request
---- @field dropoff_area BoundingBox.0|BoundingBox.1 Area where the items can be delivered to
---- @field ghost_id integer unit_number for the ghost
---- @field ghost_pos MapPosition.0|MapPosition.1 position of the ghost entity
+--- @field ghost LuaEntity
 
 ---comment
 ---@param ghost_entity LuaEntity
@@ -21,10 +18,7 @@ requests.request_building_item = function(ghost_entity, ingredient)
     return {
         type = "build-item",
         ingredient = ingredient,
-        surface_index = ghost_entity.surface_index,
-        dropoff_area = ghost_entity.bounding_box,
-        ghost_id = ghost_entity.unit_number,
-        ghost_pos = ghost_entity.position
+        ghost = ghost_entity
     }
 end
 
