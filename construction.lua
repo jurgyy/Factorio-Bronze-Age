@@ -166,6 +166,7 @@ end
 ---@param surface LuaSurface Surface of the construction
 ---@param position MapPosition.0|MapPosition.1 Position of the ghost entity
 ---@param item_stack SimpleItemStack Item stack of the delivered items
+---@return boolean delivered
 ba_construction.deliver_item = function(ghost_id, surface, position, item_stack)
     local construction = global.constructions[ghost_id]
     if not construction then
