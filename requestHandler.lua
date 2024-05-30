@@ -60,7 +60,7 @@ handler.handle_request_item_request = function(request)
 
     local surface = game.surfaces[request.surface_index]
     local spawn_position = util.get_position(chest)
-    local worker = ba_worker.spawn_unlimited(surface, spawn_position, game.players[1].force)
+    local worker = ba_worker.spawn_unlimited(surface, spawn_position, game.players[1].force, request)
 
     util.highlight_position(surface, chest.position)
     util.highlight_position(surface, request.dropoff)
@@ -84,14 +84,6 @@ handler.handle_request_item_request = function(request)
     return worker
 end
 
---- @class BuildItemRequest
---- @field type string Request type, equal to "build-item".
---- @field ingredient Ingredient Ingredient that this request handles
---- @field surface_index integer Surface index of the request
---- @field dropoff_area BoundingBox.0|BoundingBox.1 Area where the items can be delivered to
---- @field ghost_id integer unit_number for the ghost
---- @field ghost_pos MapPosition.0|MapPosition.1 position of the ghost entity
-
 ---comments
 ---@param request BuildItemRequest
 handler.handle_build_item_request = function(request)
@@ -113,7 +105,7 @@ handler.handle_build_item_request = function(request)
     local surface = game.surfaces[request.surface_index]
     local spawn_position = util.get_position(source_chest)
     local goal_position = util.get_path_near(surface, request.dropoff_area)
-    local worker = ba_worker.spawn_unlimited(surface, spawn_position, game.players[1].force) -- TODO force
+    local worker = ba_worker.spawn_unlimited(surface, spawn_position, game.players[1].force, request) -- TODO force
 
     util.highlight_position(surface, source_chest.position)
     util.highlight_position(surface, goal_position)
@@ -138,14 +130,15 @@ handler.handle_build_item_request = function(request)
 end
 
 ---comments
----@param request BuildItemRequest|any
+---@param request Request
 handler.handle_request = function(request)
-    local worker
+    local worker --[[@as UnitData]]
     if request.type == "pickup-drop" then
         worker = handler.handle_pickup_drop_request(request)
     elseif request.type == "request-item" then
         worker = handler.handle_request_item_request(request)
     elseif request.type == "build-item" then
+        --- @cast request BuildItemRequest
         worker = handler.handle_build_item_request(request)
     else
         util.print("Unknown request type: " .. request.type)
@@ -156,7 +149,7 @@ handler.handle_request = function(request)
         --util.print("Retrieved no worker to execute command with")
         return
     end
-    ba_worker.next_step{unit_number = worker.unit_number}
+    ba_worker.next_step{unit_number = worker.entity.unit_number}
 end
 
 
@@ -172,9 +165,9 @@ handler.handle_pickup_drop_request = function(request)
         distraction = defines.distraction.none,
         commands = {
             ba_commands.go_to_command(request.pickup),
-            ba_commands.pickup_command(current_request),
+            ba_commands.pickup_command(request),
             ba_commands.go_to_command(request.dropoff),
-            ba_commands.dropoff_command(current_request),
+            ba_commands.dropoff_command(request),
         }
     }
 end

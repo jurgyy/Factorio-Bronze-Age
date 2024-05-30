@@ -2,10 +2,21 @@ local Queue = require("ba-queue")
 
 requests = {}
 
+--- @class Request
+--- @field type string Request type, equal to "build-item".
+--- @field steps_completed integer|nil Optional completed steps if a worker was able to complete the request partially
+
+--- @class BuildItemRequest : Request
+--- @field ingredient Ingredient Ingredient that this request handles
+--- @field surface_index integer Surface index of the request
+--- @field dropoff_area BoundingBox.0|BoundingBox.1 Area where the items can be delivered to
+--- @field ghost_id integer unit_number for the ghost
+--- @field ghost_pos MapPosition.0|MapPosition.1 position of the ghost entity
+
 ---comment
 ---@param ghost_entity LuaEntity
 ---@param ingredient Ingredient
----@return table A build-item request
+---@return BuildItemRequest request A build-item request
 requests.request_building_item = function(ghost_entity, ingredient)
     return {
         type = "build-item",

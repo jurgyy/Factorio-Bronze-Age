@@ -141,6 +141,26 @@ ba_construction.cancel = function(ghost_id)
     global.constructions[ghost_id] = nil
 end
 
+---Find to find a ghost entity
+---@param ghost_id integer
+---@param surface LuaSurface
+---@param position MapPosition
+---@return LuaEntity|nil
+ba_construction.find_ghost = function(ghost_id, surface, position)
+    local ghosts = surface.find_entities_filtered{
+        name = "entity-ghost",
+        position = position
+    }
+    local ghost
+    for _, g in ipairs(ghosts) do
+        if g.unit_number == ghost_id then
+            ghost = g
+        end
+    end
+
+    return ghost
+end
+
 ---comments
 ---@param ghost_id integer unit_number of the ghost entity
 ---@param surface LuaSurface Surface of the construction
@@ -153,16 +173,7 @@ ba_construction.deliver_item = function(ghost_id, surface, position, item_stack)
         return false
     end
 
-    local ghosts = surface.find_entities_filtered{
-        name = "entity-ghost",
-        position = position
-    }
-    local ghost
-    for _, g in ipairs(ghosts) do
-        if g.unit_number == ghost_id then
-            ghost = g
-        end
-    end
+    local ghost = ba_construction.find_ghost(ghost_id, surface, position)
 
     if not ghost then
         util.print("can't find ghost")
@@ -198,7 +209,6 @@ ba_construction.deliver_item = function(ghost_id, surface, position, item_stack)
         update_sticker(ghost)
     end
     return true
-    
 end
 
 return ba_construction

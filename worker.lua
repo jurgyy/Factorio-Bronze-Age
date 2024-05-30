@@ -1,10 +1,16 @@
 local ba_construction = require("construction")
 local ba_commands = require("commands")
+local ba_requests = require("requests")
 
 local util = require("ba-util")
 
 local entity_name = "ba-worker"
 local worker = {}
+
+--- @class WorkerData
+--- @field n_workers integer Current amount of workers active
+--- @field max_workers integer Maximum number of workers active at any one time
+--- @field workers table<integer, UnitData> Table of all workers' unit_data indexed by their unit_number
 
 --- @class WorkerNextStepArgs
 --- @field unit_data table|nil Optional. The data for the unit.
@@ -16,6 +22,7 @@ local worker = {}
 --- @field inventory LuaInventory The worker's inventory
 --- @field step integer Step index of the worker's commands
 --- @field command Command.defines_command_compound Compound command of all the worker's steps
+--- @field request Request
 
 --- Processes the next step for a worker.
 --- @param args WorkerNextStepArgs The arguments table containing either `unit_data` or `unit_number`.
@@ -39,6 +46,43 @@ worker.next_step = function(args)
         return
     end
     worker.execute_step(unit_data)
+end
+
+---Change the current command with a new command. Does not add the old command back to the request queue.
+---@param unit_data UnitData
+---@param new_command Command.defines_command_compound
+local function change_command(unit_data, new_command)
+    unit_data.command = new_command
+    unit_data.step = 1
+    command = unit_data.command.commands[unit_data.step]
+    worker.execute_step(unit_data)
+end
+
+--- Change the command to return the items in the worker's inventory
+---@param unit_data UnitData The worker's data.
+---@return boolean Set Is true when a new command is set.
+local function return_items(unit_data)
+    if unit_data.inventory.is_empty() then
+        return false
+    end
+
+    local return_chest = util.find_chest_exponential(unit_data.entity.surface, unit_data.entity.position, true, unit_data.inventory[1], nil)
+    if return_chest then
+        local new_command = {
+            type = defines.command.compound,
+            structure_type = defines.compound_command.logical_and,
+            distraction = defines.distraction.none,
+            commands = {
+                ba_commands.wait_command(30),
+                ba_commands.go_to_command(return_chest.position),
+                ba_commands.dropoff_chest_command(return_chest, unit_data.inventory[1]),
+            }
+        } --[[@as Command]]
+        change_command(unit_data, new_command)
+    else
+        return false
+    end
+    return true
 end
 
 worker.execute_step = function(unit_data)
@@ -147,23 +191,20 @@ worker.execute_step = function(unit_data)
             if not delivered then
                 util.print("not delivered")
                 --unit_data.entity.surface.spill_item_stack(unit_data.entity.position, {name=command.item, count=command.amount}, false, "neutral", true)
-                --return_items(unit_data)
-                local return_chest = util.find_chest_exponential(unit_data.entity.surface, unit_data.entity.position, true, unit_data.inventory[1], nil)
-                if return_chest then
-                    local new_command = {
-                        type = defines.command.compound,
-                        structure_type = defines.compound_command.logical_and,
-                        distraction = defines.distraction.none,
-                        commands = {
-                            ba_commands.wait_command(30),
-                            ba_commands.go_to_command(return_chest.position),
-                            ba_commands.dropoff_chest_command(return_chest, unit_data.inventory[1]),
-                        }
-                    } --[[@as Command]]
-                    unit_data.command = new_command
-                    unit_data.step = 1
-                    command = unit_data.command.commands[unit_data.step]
+                local ghost = ba_construction.find_ghost(command.ghost_id, unit_data.entity.surface, command.ghost_pos)
+                if ghost then
+                    ba_requests.add_request(ba_requests.request_building_item(
+                    ghost,
+                    {
+                        name = command.item,
+                        count = command.amount
+                    }))
                 else
+                    util.print("Unable to re-add the request")
+                end
+
+                success = return_items(unit_data)
+                if not success then
                     worker.finalize_command(unit_data)
                     return
                 end
@@ -175,7 +216,7 @@ worker.execute_step = function(unit_data)
                     speed = 10,
                     time_to_live = 20
                 }
-                unit_data.inventory.destroy()
+                
                 worker.finalize_command(unit_data)
                 return
             end
@@ -190,15 +231,18 @@ worker.cancel_commands = function()
 end
 
 worker.finalize_command = function(unit_data)
-    global.worker_data.n_workers = global.worker_data.n_workers - 1
-    
     worker_inventory = global.worker_data.workers[unit_data.unit_number].inventory --[[@as LuaInventory|nil]]
     if worker_inventory and worker_inventory.valid then
-        for item, amount in pairs(worker_inventory.get_contents()) do
-            unit_data.entity.surface.spill_item_stack(unit_data.entity.position, {name=item, count=amount}, false, "neutral", true)
+        if return_items(unit_data) then
+            return
+        else
+            for item, amount in pairs(worker_inventory.get_contents()) do
+                unit_data.entity.surface.spill_item_stack(unit_data.entity.position, {name=item, count=amount}, false, "neutral", true)
+            end
         end
         worker_inventory.destroy()
     end
+    global.worker_data.n_workers = global.worker_data.n_workers - 1
     global.worker_data.workers[unit_data.unit_number] = nil
     
     if unit_data.entity and unit_data.entity.valid then
@@ -242,8 +286,9 @@ end
 ---@param surface LuaSurface
 ---@param position MapPosition
 ---@param force string|integer|LuaForce
+---@param request Request
 ---@return UnitData|nil
-worker.spawn_unlimited = function(surface, position, force)
+worker.spawn_unlimited = function(surface, position, force, request)
     if not surface.can_place_entity {
         name = entity_name,
         position = position,
@@ -263,7 +308,9 @@ worker.spawn_unlimited = function(surface, position, force)
         return
     end
 
-    return worker.new(entity)
+    local unit_data = worker.new(entity)
+    unit_data.request = request
+    return unit_data
 end
 
 ---comment
@@ -276,7 +323,16 @@ worker.on_ai_command_completed = function(event)
     end
 
     util.print("Command not succeeded")
-    worker.finalize_command(global.worker_data.workers[event.unit_number])
+    local unit_data = global.worker_data.workers[event.unit_number]
+    if unit_data then
+        if unit_data.request then
+            unit_data.request.steps_completed = unit_data.step - 1
+            ba_requests.add_request(unit_data.request)
+        end
+        worker.finalize_command(unit_data)
+    else
+        error("Unable to retrieve unit_data")
+    end
 end
 
 return worker

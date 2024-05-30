@@ -37,7 +37,7 @@ local function initialize_globals()
         n_workers = 0,
         max_workers = 2,
         workers = {}
-    }
+    } --[[@as WorkerData]]
 end
 
 script.on_init(function()
