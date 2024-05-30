@@ -4,11 +4,6 @@ local ba_commands = require("commands")
 local util = require("ba-util")
 
 local entity_name = "ba-worker"
-local script_data = {
-    n_workers = 0,
-    max_workers = 2,
-    workers = {}
-}
 local worker = {}
 
 --- @class WorkerNextStepArgs
@@ -26,7 +21,7 @@ local worker = {}
 --- @param args WorkerNextStepArgs The arguments table containing either `unit_data` or `unit_number`.
 worker.next_step = function(args)
     --if true then return end
-    local unit_data = args.unit_data or script_data.workers[args.unit_number]
+    local unit_data = args.unit_data or global.worker_data.workers[args.unit_number]
     if not unit_data then
         util.print("Cannot find worker " .. args.unit_number)
         return
@@ -195,16 +190,16 @@ worker.cancel_commands = function()
 end
 
 worker.finalize_command = function(unit_data)
-    script_data.n_workers = script_data.n_workers - 1
+    global.worker_data.n_workers = global.worker_data.n_workers - 1
     
-    worker_inventory = script_data.workers[unit_data.unit_number].inventory --[[@as LuaInventory|nil]]
+    worker_inventory = global.worker_data.workers[unit_data.unit_number].inventory --[[@as LuaInventory|nil]]
     if worker_inventory and worker_inventory.valid then
         for item, amount in pairs(worker_inventory.get_contents()) do
             unit_data.entity.surface.spill_item_stack(unit_data.entity.position, {name=item, count=amount}, false, "neutral", true)
         end
         worker_inventory.destroy()
     end
-    script_data.workers[unit_data.unit_number] = nil
+    global.worker_data.workers[unit_data.unit_number] = nil
     
     if unit_data.entity and unit_data.entity.valid then
         unit_data.entity.destroy()
@@ -216,7 +211,7 @@ worker.finalize_command = function(unit_data)
 end
 
 worker.can_spawn = function()
-    if script_data.n_workers >= script_data.max_workers then
+    if global.worker_data.n_workers >= global.worker_data.max_workers then
         util.print("Maximum number of workers reached")
         return false
     end
@@ -238,8 +233,8 @@ worker.new = function(entity)
     }
     entity.ai_settings.path_resolution_modifier = 0
   
-    script_data.n_workers = script_data.n_workers + 1
-    script_data.workers[entity.unit_number] = unit_data
+    global.worker_data.n_workers = global.worker_data.n_workers + 1
+    global.worker_data.workers[entity.unit_number] = unit_data
     return unit_data
 end
 
@@ -273,7 +268,7 @@ end
 
 ---comment
 ---@param event EventData.on_ai_command_completed
-local function on_ai_command_completed(event)
+worker.on_ai_command_completed = function(event)
     if event.result == defines.behavior_result.success then
         util.print("Command completed: " .. event.unit_number)
         worker.next_step{unit_number = event.unit_number}
@@ -281,28 +276,7 @@ local function on_ai_command_completed(event)
     end
 
     util.print("Command not succeeded")
-    worker.finalize_command(script_data.workers[event.unit_number])
-end
-
-worker.events = {
-  [defines.events.on_ai_command_completed] = on_ai_command_completed,
-}
-
-worker.foo = function()
-    global.worker = script_data
-    script_data = global.worker
-end
-
-worker.on_load = function()
-    script_data = global.worker or script_data
-    -- for unit_number, drone in pairs (script_data.drones) do
-    --     setmetatable(drone, mining_drone.metatable)
-    -- end
-end
-  
-worker.on_init = function()
-    global.worker = global.worker or script_data
-    --game.map_settings.path_finder.use_path_cache = false
+    worker.finalize_command(global.worker_data.workers[event.unit_number])
 end
 
 return worker

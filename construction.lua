@@ -40,7 +40,7 @@ end
 ---@param ingredients Ingredient[] The entity's ingredients
 local function create_new_sticker(ghost_entity, ingredients)
     -- todo can be removed:
-    if not global.constructions then global.constructions = {} end
+    --if not global.constructions then global.constructions = {} end
 
     local offset_per_line = 0.4
     local offset = -(offset_per_line * #ingredients / 2) - offset_per_line
@@ -89,6 +89,9 @@ ba_construction.new = function(ghost_entity, recipe, count)
         return
     end
     local uid = script.register_on_entity_destroyed(ghost_entity)
+    if not global.destruction_ids then
+        global.destruction_ids = {}
+    end
     global.destruction_ids[uid] = ghost_entity.unit_number
 
     for _, ingredient in ipairs(ingredients) do

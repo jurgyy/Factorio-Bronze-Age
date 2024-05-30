@@ -28,10 +28,25 @@ local function get_item_recipe(item_name)
     return nil
 end
 
+local function initialize_globals()
+    game.print("Initializing")
+    global.request_queue = global.request_queue or Queue.new()
+    global.constructions = global.constructions or {} --[[@as table<integer, Construction>]]
+    global.destruction_ids = global.destruction_ids or {}
+    global.worker_data = global.worker_data or {
+        n_workers = 0,
+        max_workers = 2,
+        workers = {}
+    }
+end
+
 script.on_init(function()
-    global.request_queue = Queue.new()
-    global.constructions = {} --[[@as table<integer, Construction>]]
-    global.destruction_ids = {}
+    initialize_globals()
+end)
+
+script.on_configuration_changed(function()
+    game.print("Config changed")
+    initialize_globals()
 end)
 
 local function test_add_pickup_request()
@@ -85,6 +100,10 @@ end
 ---comment
 ---@param event EventData.on_built_entity
 local function set_ghost_requests(event)
+    if event.created_entity.name == "wooden-chest" then
+        return
+    end
+
     local count = 1
     local ghost_entity
     local item
@@ -162,7 +181,7 @@ local function entity_destroyed_event(event)
 end
 
 local function foo(command)
-    global.worker = nil
+    --global.worker = nil
     --local player = game.players[command.player_index]
     --player.surface.spill_item_stack(player.position, {name = "copper-plate", count=10}, false, "neutral", true)
 end
@@ -176,9 +195,6 @@ script.on_event(defines.events.on_built_entity, set_ghost_requests)
 
 script.on_event(defines.events.on_entity_destroyed, entity_destroyed_event)
 
+script.on_event(defines.events.on_ai_command_completed, ba_worker.on_ai_command_completed)
 
---script.on_event(defines.events.on_ai_command_completed, on_ai_command_completed)
 script.on_nth_tick(30, pol_work)
-
-local handler = require("event_handler")
-handler.add_lib(require("worker"))
