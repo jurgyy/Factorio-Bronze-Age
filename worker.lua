@@ -209,6 +209,7 @@ worker.execute_step = function(unit_data)
                     return
                 end
             else
+                unit_data.inventory.remove{name=command.item, count=command.amount}
                 unit_data.entity.surface.create_entity{
                     name = "ba-dropoff-text",
                     position = unit_data.entity.position,
