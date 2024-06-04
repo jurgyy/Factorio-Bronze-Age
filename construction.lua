@@ -3,10 +3,6 @@ local util = require("ba-util")
 
 local ba_construction = {}
 
-local function get_worker_capacity(item_name)
-    -- todo custom capacity per item?
-    return 2
-end
 
 local function get_sticker_line(current, total, item_name) 
     return current .. "/" .. total .. " [item=" .. item_name .. "]" 
@@ -39,9 +35,6 @@ end
 ---@param ghost_entity LuaEntity The ghost entity
 ---@param ingredients Ingredient[] The entity's ingredients
 local function create_new_sticker(ghost_entity, ingredients)
-    -- todo can be removed:
-    --if not global.constructions then global.constructions = {} end
-
     local offset_per_line = 0.4
     local offset = -(offset_per_line * #ingredients / 2) - offset_per_line
     renderings = {}
@@ -96,19 +89,7 @@ ba_construction.new = function(ghost_entity, recipe, count)
 
     for _, ingredient in ipairs(ingredients) do
         ingredient.amount = ingredient.amount * count
-        local worker_capacity = get_worker_capacity(ingredient.name)
-        if ingredient.amount <= worker_capacity  then
-            ba_requests.add_request(ba_requests.request_building_item(ghost_entity, table.deepcopy(ingredient)))
-        else
-            local remaining = ingredient.amount
-            while remaining > 0 do
-                local split_ingredient = table.deepcopy(ingredient)
-                split_ingredient.amount = math.min(remaining, worker_capacity)
-                remaining = remaining - worker_capacity
-
-                ba_requests.add_request(ba_requests.request_building_item(ghost_entity, split_ingredient))
-            end
-        end
+        ba_requests.add_request(ba_requests.request_building_item(ghost_entity, table.deepcopy(ingredient)))
     end
 
     create_new_sticker(ghost_entity, ingredients)
@@ -164,7 +145,7 @@ end
 ---comments
 ---@param ghost_id integer unit_number of the ghost entity
 ---@param surface LuaSurface Surface of the construction
----@param position MapPosition.0|MapPosition.1 Position of the ghost entity
+---@param position MapPosition Position of the ghost entity
 ---@param item_stack SimpleItemStack Item stack of the delivered items
 ---@return boolean delivered
 ba_construction.deliver_item = function(ghost_id, surface, position, item_stack)

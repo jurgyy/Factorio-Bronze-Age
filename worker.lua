@@ -48,6 +48,11 @@ worker.next_step = function(args)
     worker.execute_step(unit_data)
 end
 
+worker.get_worker_capacity = function(item_name)
+    -- todo custom capacity per item?
+    return 2
+end
+
 ---Change the current command with a new command. Does not add the old command back to the request queue.
 ---@param unit_data UnitData
 ---@param new_command Command.defines_command_compound
@@ -122,43 +127,6 @@ worker.execute_step = function(unit_data)
             }
             unit_data.inventory.insert(items)
 
-        elseif command.subtype == "dropoff" then
-            ---@cast command DropoffCommand
-            local chests = unit_data.entity.surface.find_entities_filtered{
-                name = "wooden-chest",
-                position = unit_data.entity.position,
-                radius = 1.5
-            }
-
-            if not chests or #chests == 0 then
-                util.print("Chest not found")
-                --unit_data.entity.surface.spill_item_stack(unit_data.entity.position, {name=command.item, count=command.amount}, false, "neutral", true)
-                worker.finalize_command(unit_data)
-                return
-            end
-
-            local chest
-            for _, v in ipairs(chests) do
-                if v.valid then
-                    chest = v
-                end
-            end
-            if not chest then
-                util.print("No valid chest found")
-                --unit_data.entity.surface.spill_item_stack(unit_data.entity.position, {name=command.item, count=command.amount}, false, "neutral", true)
-                worker.finalize_command(unit_data)
-                return
-            end
-
-            chest.insert({name = command.item, count=command.amount})
-
-            local e = unit_data.entity.surface.create_entity{
-                name = "ba-dropoff-text",
-                position = unit_data.entity.position,
-                text = command.amount .. "x [item=" .. command.item .. "]",
-                speed = 10,
-                time_to_live = 20
-            }
         elseif command.subtype == "dropoff-chest" then
             ---@cast command DropoffChestCommand
             local chest = command.chest --[[@as LuaEntity]]
@@ -224,7 +192,11 @@ worker.execute_step = function(unit_data)
         end
     end
 
-    unit_data.entity.set_command(command)
+    if unit_data.entity and unit_data.entity.valid then
+        unit_data.entity.set_command(command)
+    else
+        worker.finalize_command(unit_data)
+    end
 end
 
 worker.cancel_commands = function()

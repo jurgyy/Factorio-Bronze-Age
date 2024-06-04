@@ -7,12 +7,28 @@ local commands = {}
 ---@field subtype string Subtype of the command
 
 ---comments
----@param position MapPosition
+---@param position MapPosition Position to go to
+---@param radius number|nil Distance allowed from the position. Defaults to 1
 ---@return Command.defines_command_go_to_location go_to_command
-function commands.go_to_command(position)
+function commands.go_to_command(position, radius)
+    radius = radius or 1
     return {
         type = defines.command.go_to_location,
         destination = position,
+        radius = radius,
+        distraction = defines.distraction.none,
+        pathfind_flags = {prefer_straight_paths = true, use_cache = true, allow_paths_through_own_entities = true}
+    }
+end
+
+---comments
+---@param entity LuaEntity Entity to go to
+---@return Command.defines_command_go_to_location go_to_command
+function commands.go_to_entity_command(entity)
+    radius = radius or 1
+    return {
+        type = defines.command.go_to_location,
+        destination_entity = entity,
         radius = 1,
         distraction = defines.distraction.none,
         pathfind_flags = {prefer_straight_paths = true, use_cache = true, allow_paths_through_own_entities = true}
@@ -48,24 +64,6 @@ function commands.pickup_command(pickup_request)
     }
 end
 
----@class DropoffCommand : StopCommandWithSubtype
----@field item string
----@field amount integer
-
----comments
----@param dropoff_request any
----@return DropoffCommand
-function commands.dropoff_command(dropoff_request)
-    return {
-        type = defines.command.stop,
-        subtype = "dropoff",
-        distraction= defines.distraction.none,
-        ticks_to_wait = dropoff_duration,
-        item = dropoff_request.item,
-        amount = dropoff_request.amount
-    }
-end
-
 ---@class DropoffChestCommand : StopCommandWithSubtype
 ---@field item_stack SimpleItemStack
 ---@field chest LuaEntity
@@ -90,16 +88,16 @@ end
 ---@field amount integer
 
 ---comments
----@param build_item_request BuildItemRequest
+---@param request BuildItemRequest|ItemDeliveryRequest
 ---@return PickupV2Command
-function commands.pickup_v2_command(build_item_request)
+function commands.pickup_v2_command(request)
     return {
         type = defines.command.stop,
         subtype = "pickup",
         distraction= defines.distraction.none,
         ticks_to_wait = pickup_duration,
-        item = build_item_request.ingredient.name,
-        amount = build_item_request.ingredient.amount
+        item = request.ingredient.name,
+        amount = request.ingredient.amount
     }
 end
 

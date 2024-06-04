@@ -1,4 +1,5 @@
 local Queue = require("ba-queue")
+local pathfinding = require("pathfinding")
 
 requests = {}
 
@@ -22,6 +23,47 @@ requests.request_building_item = function(ghost_entity, ingredient)
     }
 end
 
+
+--- @class GoToRequest : Request
+--- @field position MapPosition
+--- @field surface LuaSurface
+
+---A request to send a worker to a specific position
+---@param surface LuaSurface
+---@param position MapPosition
+---@return GoToRequest
+requests.request_go_to = function(surface, position)
+    return {
+        type = "go-to",
+        surface = surface,
+        position = position
+    }
+end
+
+---@class ItemDeliveryRequest : Request
+---@field surface LuaSurface
+---@field start MapPosition
+---@field goal MapPosition
+---@field chest LuaEntity
+---@field ghost LuaEntity
+---@field ingredient Ingredient
+
+---comments
+---@param path Path
+---@param amount integer Number of items to request
+---@return ItemDeliveryRequest
+requests.request_item_delivery = function(path, amount)
+    return {
+        type = "delivery",
+        surface = game.surfaces[path.collection.surface_index],
+        start = path.start,
+        goal = path.goal,
+        chest = path.start_entity,
+        ghost = path.collection.goal_entity,
+        ingredient = {name = path.collection.item_name, amount = amount}
+    }
+end
+
 requests.add_request = function(request)
     Queue.push_back(global.request_queue, request)
 end
@@ -31,7 +73,6 @@ requests.get_request = function()
     if not request then
         return
     end
-    --game.print("request: " .. game.table_to_json(request))
     return request
 end
 
