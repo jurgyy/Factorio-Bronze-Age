@@ -35,17 +35,21 @@ function console_commands.show_disjoint_tile_set(data)
     if ds then
         for x, parent_x in pairs(ds.parent) do
             for y, parent_xy in pairs(parent_x) do
-                util.highlight_position(
-                    surface,
-                    {x = x, y = y},
-                    {
-                        r = 128 + 127 * f(parent_xy.x),
-                        g = 128 + 127 * f(parent_xy.y),
-                        b = 128 + 127 * f(parent_xy.x + parent_xy.y),
-                        a = 128
-                    },
-                    true
-                )
+                local position = {x = x, y = y}
+                local parent = ds:find(position)
+                if parent then
+                    util.highlight_position(
+                        surface,
+                        position,
+                        {
+                            r = 128 + 127 * f(parent.x),
+                            g = 128 + 127 * f(parent.y),
+                            b = 128 + 127 * f(parent.x + parent.y),
+                            a = 255
+                        },
+                        true
+                    )
+                end
             end
         end
     end
