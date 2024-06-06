@@ -107,7 +107,7 @@ function DisjointSet:add(tile_or_position)
     
     if self:get_parent(position) == nil then
         self:set_parent(position, position)
-        self:set_rank(position, 0) -- TODO is this needed? get_rank returns 0 if it does not exist
+        -- We do not initialize the rank since the getter already returns 0 if it's not stored
     end
 
     self:union(position, {x = position.x - 1, y = position.y})
