@@ -72,7 +72,7 @@ function DisjointSet:find(index)
     if not equal(parent, index) and index then
         self:set_parent(index, self:find(parent))
     end
-    return parent
+    return self:get_parent(index)
 end
 
 ---Adds a connection between two indices
