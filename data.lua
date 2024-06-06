@@ -6,6 +6,20 @@ local function gaussian (mean, variance)
             math.cos(2 * math.pi * math.random()) + mean
 end
 
+local ammo_category = function(name)
+  if not data.raw["ammo-category"][name] then
+    data:extend{{type = "ammo-category", name = name, localised_name = {name}}}
+  end
+  return name
+end
+
+local damage_type = function(name)
+  if not data.raw["damage-type"][name] then
+    data:extend{{type = "damage-type", name = name, localised_name = {name}}}
+  end
+  return name
+end
+
 local worker_collision_mask =
 {
   "ground-tile",
@@ -81,7 +95,7 @@ local worker = {
       range = 0.5,
       ammo_type =
       {
-        category = util.ammo_category("mining-drone"),
+        category = ammo_category("mining-drone"),
         target_type = "entity",
         action =
         {
@@ -94,7 +108,7 @@ local worker = {
               {
                 {
                   type = "damage",
-                  damage = {amount = 5 , type = util.damage_type("physical")}
+                  damage = {amount = 5 , type = damage_type("physical")}
                 }
               }
             }
