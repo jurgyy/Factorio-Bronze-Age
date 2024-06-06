@@ -23,49 +23,29 @@ function console_commands.show_pathfinding_tile_nearest_entity(command)
 end
 
 
----Function that converts any string in a pratically (but deterministic) random color with 128 (50%) alpha
----@param str string
----@return Color
-local function string_to_rgb(str)
-    local function f(x)
-        --return math.sin(2 * math.pi^2 * x)
-        return math.sin(10000000/x)
-    end
-
-    local s = 0
-    for i=1,#str do
-        s = s + string.byte(str, i)
-    end
-
-    return {
-        r = math.floor(128 + 128 * f(s + 1)),
-        g = math.floor(128 + 128 * f(s)),
-        b = math.floor(128 + 128 * f(s - 1)),
-        a = 128
-    }
-end
-
-
 ---@param data CustomCommandData
 function console_commands.show_disjoint_tile_set(data)
-    local function split_with_comma(str)
-        local fields = {}
-        for field in str:gmatch('([^,]+)') do
-            fields[#fields+1] = field
-        end
-        return fields
+    local function f(x)
+        return math.sin(10000000/x)
     end
 
     local surface = game.players[data.player_index].surface
     local ds = global.tiles_disjoint_sets[surface.index]
 
     if ds then
-        for k, v in pairs(ds.parent) do
-            local splits = split_with_comma(k)
-            local pos = {x = splits[1], y = splits[2]}
-            local parent = ds:find(k)
-            if parent then
-                util.highlight_position(surface, pos, string_to_rgb(parent), true)
+        for x, parent_x in pairs(ds.parent) do
+            for y, parent_xy in pairs(parent_x) do
+                util.highlight_position(
+                    surface,
+                    {x = x, y = y},
+                    {
+                        r = 128 + 127 * f(parent_xy.x),
+                        g = 128 + 127 * f(parent_xy.y),
+                        b = 128 + 127 * f(parent_xy.x + parent_xy.y),
+                        a = 128
+                    },
+                    true
+                )
             end
         end
     end
@@ -83,8 +63,10 @@ function console_commands.recalculate_disjoint_tiles(data)
         end
 
         -- Compressing
-        for k, _ in pairs(ds.parent) do
-            ds:find(k)
+        for x, parent_x in pairs(ds.parent) do
+            for y, parent_xy in pairs(parent_x) do
+                ds:find{x = x, y = y}
+            end
         end
 
         global.tiles_disjoint_sets[surface.index] = ds

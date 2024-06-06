@@ -1,8 +1,8 @@
 util = require("ba-util")
 
 --- @class DisjointSet
---- @field parent table<Index, Index>
---- @field rank table<Index, integer>
+--- @field parent table<integer, table<integer, MapPosition>>
+--- @field rank table<integer, table<integer, integer>>
 local DisjointSet = {}
 DisjointSet.__index = DisjointSet
 script.register_metatable("disjoint_set", DisjointSet)
@@ -13,41 +13,6 @@ script.register_metatable("disjoint_set", DisjointSet)
 
 --- @alias Index string
 
----Get the index given two integers
----@param x integer
----@param y integer
----@return Index
-local function get_index(x, y)
-    return x .. "," .. y
-end
-
-
--- Szudzik's pairing function to uniquely map (int32, int32) -> int64
--- local function get_index(x, y)
---     local A, B
---     if x >= 0 then
---         A = 2 * x
---     else
---         A = -2 * x - 1
---     end
---     if y >= 0 then
---         B = 2 * y
---     else
---         B = -2 * y - 1
---     end
-
---     local C
---     if A >= B then
---         C = (A * A + A + B) / 2
---     else
---         C = (A + B * B) / 2
---     end
---     if not (x < 0 and y < 0 or x >= 0 and y >= 0) then
---         C = -1 * C - 1
---     end
---     return C
--- end
-
 ---Creates a new DisjointSet
 ---@return DisjointSet
 function DisjointSet.new()
@@ -57,32 +22,75 @@ function DisjointSet.new()
     return self
 end
 
+---@param position MapPosition? The index position
+---@return MapPosition? parent The parent. Returns the index position if not found
+function DisjointSet:get_parent(position)
+    if not position then return nil end
+
+    local x = self.parent[position.x]
+    if not x then return nil end
+    return x[position.y]
+end
+
+---@param position MapPosition The index position
+---@param parent MapPosition? The parent
+function DisjointSet:set_parent(position, parent)
+    local parent_x = self.parent[position.x] or {}
+    parent_x[position.y] = parent
+    self.parent[position.x] = parent_x
+end
+
+---@param position MapPosition The index position
+---@return integer rank The position's rank
+function DisjointSet:get_rank(position)
+    local rank_x = self.rank[position.x]
+    if not rank_x then return 0 end
+    return rank_x[position.y] or 0
+end
+
+---@param position MapPosition The index position
+---@param value integer The position's rank
+function DisjointSet:set_rank(position, value)
+    local x = self.rank[position.x] or {}
+    x[position.y] = value
+    self.rank[position.x] = x
+end
+
+---Are the two positions equal?
+---@param pos1 MapPosition?
+---@param pos2 MapPosition?
+local function equal(pos1, pos2)
+    return pos1 == pos2 or (pos1 and pos2 and pos1.x == pos2.x and pos1.y == pos2.y)
+end
 
 ---Is the index in the disjointed set? Returns the index of itself if it is alone.
 ---The index of its parent if in a group or nil if it is not in the entire set.
----@param index Index
----@return Index?
+---@param index MapPosition?
+---@return MapPosition?
 function DisjointSet:find(index)
-    if self.parent[index] ~= index then
-        self.parent[index] = self:find(self.parent[index])
+    local parent = self:get_parent(index)
+    if not equal(parent, index) and index then
+        self:set_parent(index, self:find(parent))
     end
-    return self.parent[index]
+    return parent
 end
 
 ---Adds a connection between two indices
----@param index1 Index
----@param index2 Index
+---@param index1 MapPosition
+---@param index2 MapPosition
 function DisjointSet:union(index1, index2)
-    local rootX = self:find(index1)
-    local rootY = self:find(index2)
-    if rootX and rootY and rootX ~= rootY then
-        if self.rank[rootX] > self.rank[rootY] then
-            self.parent[rootY] = rootX
-        elseif self.rank[rootX] < self.rank[rootY] then
-            self.parent[rootX] = rootY
+    local root1 = self:find(index1)
+    local root2 = self:find(index2)
+    if root1 and root2 and not equal(root1, root2) then
+        local rank1 = self:get_rank(root1)
+        local rank2 = self:get_rank(root2)
+        if rank1 > rank2 then
+            self:set_parent(root2, root1)
+        elseif rank1 < rank2 then
+            self:set_parent(root1, root2)
         else
-            self.parent[rootY] = rootX
-            self.rank[rootX] = self.rank[rootX] + 1
+            self:set_parent(root2, root1)
+            self:set_rank(root1, rank1 + 1)
         end
     end
 end
@@ -95,19 +103,17 @@ function DisjointSet:add(tile_or_position)
         util.print("Cannot add value: no tile or position given")
         return
     end
-    local x = math.floor(position.x)
-    local y = math.floor(position.y)
+    position = {x = math.floor(position.x), y = math.floor(position.y)}
     
-    local index = get_index(x, y)
-    if self.parent[index] == nil then
-        self.parent[index] = index
-        self.rank[index] = 0
+    if self:get_parent(position) == nil then
+        self:set_parent(position, position)
+        self:set_rank(position, 0) -- TODO is this needed? get_rank returns 0 if it does not exist
     end
 
-    self:union(index, get_index(x - 1, y))
-    self:union(index, get_index(x + 1, y))
-    self:union(index, get_index(x, y - 1))
-    self:union(index, get_index(x, y + 1))
+    self:union(position, {x = position.x - 1, y = position.y})
+    self:union(position, {x = position.x + 1, y = position.y})
+    self:union(position, {x = position.x, y = position.y - 1})
+    self:union(position, {x = position.x, y = position.y + 1})
 end
 
 ---Are two positions connect
@@ -115,12 +121,12 @@ end
 ---@param pos2 MapPosition
 ---@return boolean
 function DisjointSet:isConnected(pos1, pos2)
-    local index1 = get_index(math.floor(pos1.x), math.floor(pos1.y))
-    local index2 = get_index(math.floor(pos2.x), math.floor(pos2.y))
-    if self.parent[index1] == nil or self.parent[index2] == nil then
+    pos1 = {x = math.floor(pos1.x), y = math.floor(pos1.y)}
+    pos2 = {x = math.floor(pos2.x), y = math.floor(pos2.y)}
+    if self:get_parent(pos1) == nil or self:get_parent(pos2) == nil then
         return false
     end
-    return self:find(index1) == self:find(index2)
+    return self:find(pos1) == self:find(pos2)
 end
 
 return DisjointSet
