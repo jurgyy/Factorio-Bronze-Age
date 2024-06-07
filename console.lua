@@ -22,12 +22,35 @@ function console_commands.show_pathfinding_tile_nearest_entity(command)
     end
 end
 
-
----@param data CustomCommandData
-function console_commands.show_disjoint_tile_set(data)
+local function highlight_tile(surface, position, parent)
     local function f(x)
         return math.sin(10000000/x)
     end
+
+    local color
+    if parent then
+        color = {
+            r = 128 + 127 * f(parent.x),
+            g = 128 + 127 * f(parent.y),
+            b = 128 + 127 * f(parent.x + parent.y),
+            a = 255
+        }
+    else
+        color = { r = 255, g = 0, b = 0, a = 255 }
+    end
+
+    util.highlight_position(
+        surface,
+        position,
+        color,
+        true
+    )
+end
+
+--- Compresses every tile and then shows a color based on its parent
+---@param data CustomCommandData
+function console_commands.show_disjoint_tile_set(data)
+
 
     local surface = game.players[data.player_index].surface
     local ds = global.tiles_disjoint_sets[surface.index]
@@ -38,23 +61,14 @@ function console_commands.show_disjoint_tile_set(data)
                 local position = {x = x, y = y}
                 local parent = ds:find(position)
                 if parent then
-                    util.highlight_position(
-                        surface,
-                        position,
-                        {
-                            r = 128 + 127 * f(parent.x),
-                            g = 128 + 127 * f(parent.y),
-                            b = 128 + 127 * f(parent.x + parent.y),
-                            a = 255
-                        },
-                        true
-                    )
+                    highlight_tile(surface, position, parent)
                 end
             end
         end
     end
 end
 
+---Searches all surfaces for all path tiles and recalculates disjoint sets from those. Afterwards it calls the show_disjoint_tile_set to compress the disj
 ---@param data CustomCommandData|nil
 function console_commands.recalculate_disjoint_tiles(data)
     for _, surface in pairs(game.surfaces) do
@@ -62,17 +76,19 @@ function console_commands.recalculate_disjoint_tiles(data)
          
         local path = surface.find_tiles_filtered{name="ba-path"}
         for _, tile in ipairs(path) do
-            util.highlight_position(surface, tile.position, {r=0.5, b=0.5, g=0, a=0.5}, true)
             ds:add{tile=tile}
         end
 
         -- Compressing
         for x, parent_x in pairs(ds.parent) do
             for y, parent_xy in pairs(parent_x) do
-                ds:find{x = x, y = y}
+                local parent = ds:find{x = x, y = y}
+
+                if data and surface.index == game.players[data.player_index].surface.index then
+                    highlight_tile(surface, {x=x, y=y}, parent)
+                end
             end
         end
-
         global.tiles_disjoint_sets[surface.index] = ds
     end
 end
@@ -87,15 +103,30 @@ function console_commands.test_two_tiles(data)
         util.print("no entity found")
         return
     end
+
+    local set1 = util.get_path_sets_around(surface, entities[1].bounding_box)
+    local set2 = util.get_path_sets_around(surface, entities[2].bounding_box)
     
-    local pos1 = entities[1].position
-    local pos2 = entities[2].position
-
-    util.highlight_position(surface, pos1, {r=1, g=0, b=0, a=0.5}, true)
-    util.highlight_position(surface, pos2, {r=1, g=0, b=0, a=0.5}, true)
-
     local ds = global.tiles_disjoint_sets[surface.index]
-    util.print(ds:isConnected(pos1, pos2))
+
+    local connected = false
+    for _, pos1 in pairs(set1) do
+        for _, pos2 in pairs(set2) do
+            connected = connected or ds:isConnected(pos1, pos2)
+        end
+    end
+    util.print(connected)
+
+    -- Just for show:
+    for _, pos1 in pairs(set1) do
+        highlight_tile(surface, pos1, ds:find(ds:get_index(pos1)))
+    end
+    for _, pos2 in pairs(set2) do
+        highlight_tile(surface, pos2, ds:find(ds:get_index(pos2)))
+    end
+
+    util.highlight_position(surface, entities[1].position, {r=1, g=0, b=0, a=0.5}, true)
+    util.highlight_position(surface, entities[2].position, {r=1, g=0, b=0, a=0.5}, true)
 
 end
 
