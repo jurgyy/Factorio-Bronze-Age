@@ -202,3 +202,16 @@ dropoff_text.speed = dropoff_text.speed * -1
 
 
 data:extend{ worker, path, path_item, pickup_text, dropoff_text }
+
+construction_template = require("data/construction-template")
+
+data:extend(construction_template(1,1))
+data:extend(construction_template(1,2))
+data:extend(construction_template(2,1))
+data:extend(construction_template(2,2))
+data:extend(construction_template(2,3))
+data:extend(construction_template(3,2))
+data:extend(construction_template(3,3))
+data:extend(construction_template(3,5))
+data:extend(construction_template(4,4))
+data:extend(construction_template(5,5))

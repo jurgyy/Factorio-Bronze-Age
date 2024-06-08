@@ -29,7 +29,8 @@ end
 --- @field ingredients Ingredient ingredients
 --- @field current table<string, integer> delivered items
 --- @field surface_index integer Surface index of the construction
---- @field position MapPosition Position of the construction
+--- @field position MapPosition Position of the construction,
+--- @field construction_entity LuaEntity? Construction entity
 
 ---Create a new sticker for a ghost entity
 ---@param ghost_entity LuaEntity The ghost entity
@@ -183,8 +184,28 @@ ba_construction.deliver_item = function(ghost_id, surface, position, item_stack)
         util.print("Can't find item in construction ingredients")
         return false
     end
+
+    if not construction.construction_entity then
+        local box = ghost.bounding_box
+        local width = math.ceil(box.right_bottom.x - box.left_top.x)
+        local height = math.ceil(box.right_bottom.y - box.left_top.y) 
+        construction.construction_entity = surface.create_entity{
+            name = "construction-"..width.."x"..height,
+            position = ghost.position,
+            direction = ghost.direction,
+            force = ghost.force,
+            create_build_effect_smoke = false
+        }
+
+        if not construction.construction_entity then
+            util.print("Unable to create construction entity")
+        end
+    end
     
     if is_completed(construction) then
+        if construction.construction_entity then
+            construction.construction_entity.destroy()
+        end
         global.constructions[ghost_id] = nil
         ghost.revive()
     else
