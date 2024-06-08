@@ -1,5 +1,25 @@
+
+local function startswith(str, start)
+    return string.sub(str, 1, string.len(start)) == start
+ end
+
+collisions = {}
+
 for type in pairs(defines.prototypes.entity) do
     for _, prototype in pairs(data.raw[type]) do
+        ---@cast prototype LuaEntityPrototype
+
+        local box = prototype.collision_box
+        if not (startswith(prototype.name, "construction-")) and box then
+            local width = math.ceil(box[2][1] - box[1][1])
+            local height = math.ceil(box[2][2] - box[1][2])
+            local index = width .. "," .. height
+            if not collisions[index] then
+                collisions[index] = {}
+            end
+            table.insert(collisions[index], prototype.name)
+        end
+
         if prototype.minable then
             local recipe = data.raw.recipe[prototype.minable.result]
             if recipe and (recipe.ingredients or recipe.normal) then
@@ -34,3 +54,8 @@ for type in pairs(defines.prototypes.entity) do
         end
     end
 end
+
+for shape, prototypes in pairs(collisions) do
+    log("Shape " .. shape .. ": " .. table.concat(prototypes, ", "))
+end
+
