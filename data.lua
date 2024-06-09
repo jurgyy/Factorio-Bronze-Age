@@ -1,5 +1,6 @@
 local util = require("ba-util")
 local collision_util = require("collision-mask-util")
+require("__bronze-age__/data/data")
 
 local function gaussian (mean, variance)
     return  math.sqrt(-2 * variance * math.log(math.random())) *

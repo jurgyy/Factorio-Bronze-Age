@@ -304,7 +304,7 @@ worker.on_ai_command_completed = function(event)
         end
         worker.finalize_command(unit_data)
     else
-        error("Unable to retrieve unit_data")
+        --error("Unable to retrieve unit_data")
     end
 end
 
