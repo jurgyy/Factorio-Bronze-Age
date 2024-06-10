@@ -1,7 +1,7 @@
 local data_util = require("__bronze-age__/data/data-util")
 
 return {
-    type = "item",
+    type = "tool",
     name = "hephaestus-blessing",
     icon = data_util.icons_root .. "hephaestus-blessing.png",
     icon_size = 64,
@@ -9,5 +9,6 @@ return {
     flags = {},
     subgroup = "science-pack",
     order = "za-hephaestus-blessing",
-    stack_size = 50
+    stack_size = 50,
+    durability = 1
 }
