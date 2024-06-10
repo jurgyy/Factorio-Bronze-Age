@@ -3,4 +3,7 @@ local root = data_util.data_root .. "bricks/"
 
 local item = require(root .. "bricks-item")
 
-data:extend{item}
+data:extend{
+    item,
+    require(root .. "bricks-recipe")
+}

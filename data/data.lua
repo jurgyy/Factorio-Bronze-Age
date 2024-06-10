@@ -20,5 +20,8 @@ require(data_util.data_root .. "shacks/data")
 require(data_util.data_root .. "simple-furnace/data")
 require(data_util.data_root .. "tin-ore/data")
 
-local logging_resource_category = require(data_util.data_root .. "logging-resource-category")
-data:extend{logging_resource_category}
+require(data_util.data_root .. "technology")
+
+data:extend{
+    require(data_util.data_root .. "logging-resource-category"),
+}

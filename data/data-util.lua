@@ -4,6 +4,7 @@ data_util.root = "__bronze-age__/"
 data_util.data_root = data_util.root .. "data/"
 data_util.graphics_root = data_util.root .. "graphics/"
 data_util.icons_root = data_util.graphics_root .. "icons/"
+data_util.tech_icons_root = data_util.graphics_root .. "technology/"
 
 ---@param width integer
 ---@param height integer
