@@ -3,8 +3,10 @@ local camps_data = require("shared/camp-defines")
 
 --- @type data.Sprite
 local sprite = data_util.place_holder_sprite(3,5)
-local name = "mining-camp"
+sprite.tint = {r=0.3, g=0.3, b=0.3, a=1}
+sprite.hr_version.tint = sprite.tint
 
+local name = "mining-camp"
 local camp_data = camps_data.camps[name]
 if not camp_data then error("unknown camp " .. name) end
 

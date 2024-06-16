@@ -1,13 +1,19 @@
 local data_util = require("__bronze-age__/data/data-util")
 
 --- @type data.Sprite
-local sprite = data_util.place_holder_sprite(3,3)
+local sprite = data_util.place_holder_sprite(3,5)
+sprite.tint = {r=0.7, g=0.3, b=0.1, a=1}
+sprite.hr_version.tint = sprite.tint
+
+local name = "loggers-camp"
+local camp_data = camps_data.camps[name]
+if not camp_data then error("unknown camp " .. name) end
 
 return {
-    name = "loggers-camp",
+    name = name,
     type = "assembling-machine",
-    collision_box = {{-1.35, -1.35}, {1.35, 1.35}},
-    selection_box = {{-1.5, -1.5}, {1.5, 1.5}},
+    collision_box = {{-1.35, -2.35}, {1.35, 2.35}},
+    selection_box = {{-1.5, -2.5}, {1.5, 2.5}},
     allowed_effects = {},
     close_sound =
     {
@@ -50,7 +56,7 @@ return {
     minable =
     {
       mining_time = 1,
-      result = "loggers-camp"
+      result = name
     },
     open_sound =
     {
