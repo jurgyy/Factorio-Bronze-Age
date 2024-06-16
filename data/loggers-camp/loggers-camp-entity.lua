@@ -1,4 +1,5 @@
 local data_util = require("__bronze-age__/data/data-util")
+local camps_data = require("shared/camp-defines")
 
 --- @type data.Sprite
 local sprite = data_util.place_holder_sprite(3,5)
@@ -68,6 +69,17 @@ return {
     animation = {
       layers = {
         sprite
+      }
+    },
+    radius_visualisation_specification =
+    {
+      distance =  camp_data.mining_radius,
+      offset = {0, (-camp_data.mining_radius_offset - camp_data.mining_radius) - 0.5},
+      sprite =
+      {
+        filename = "__base__/graphics/entity/electric-mining-drill/electric-mining-drill-radius-visualization.png",
+        height = 10,
+        width = 10
       }
     }
 }
