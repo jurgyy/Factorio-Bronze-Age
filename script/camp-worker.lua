@@ -50,7 +50,7 @@ local add_worker = function(worker)
 end
 
 ---Remove a worker from the script data
----@param worker any
+---@param worker CampWorkerData
 local remove_worker = function(worker)
     script_data.workers[worker.unit_number] = nil
 end
