@@ -11,8 +11,8 @@ util.highlight_bbox = function(surface, bbox, color)
   end
   rendering.draw_rectangle {
       color = color,
-      left_top = bbox.left_top,
-      right_bottom = bbox.right_bottom,
+      left_top = bbox.left_top or bbox[1],
+      right_bottom = bbox.right_bottom or bbox[2],
       time_to_live = 120,
       surface = surface
   }
