@@ -1,7 +1,7 @@
 local flib_bounding_box = require("__flib__/bounding-box")
 local disjointSet     = require("disjointSet")
 
-local ba_console_commands = require("console")
+local ba_console_commands = require("script/console")
 local Queue = require("ba-queue")
 local util = require("ba-util")
 local ba_worker = require("worker")
