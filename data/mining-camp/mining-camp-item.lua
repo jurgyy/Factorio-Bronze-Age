@@ -9,5 +9,6 @@ return {
     flags = {},
     subgroup = "extraction-machine",
     order = "za-mining-camp",
+    place_result = "mining-camp",
     stack_size = 50
 }

@@ -1,7 +1,8 @@
+local collision_util = require("collision-mask-util")
 
 local function startswith(str, start)
     return string.sub(str, 1, string.len(start)) == start
- end
+end
 
 collisions = {}
 
@@ -59,3 +60,42 @@ for shape, prototypes in pairs(collisions) do
     log("Shape " .. shape .. ": " .. table.concat(prototypes, ", "))
 end
 
+local worker_miner = table.deepcopy(data.raw["unit"]["mining-drone"])
+local coal_resource = data.raw.resource["coal"]
+
+worker_miner.name = "worker-miner"
+data:extend{worker_miner, {
+    type = "recipe",
+    name = "ba-mine-coal",
+    icon = coal_resource.icon,
+    icon_size = coal_resource.icon_size,
+    icons = coal_resource.icons,
+    icon_mipmaps = coal_resource.icon_mipmaps,
+    ingredients = {
+        {type = "item", name = "worker-miner", amount = 1}
+    },
+    results = {{type = "item", name = "coal", amount = 0, show_details_in_recipe_tooltip = false}},
+    category = "mining",
+    subgroup = "extraction-machine",
+    --overload_multiplier = 100,
+    hide_from_player_crafting = true,
+    main_product = "",
+    allow_decomposition = false,
+    allow_as_intermediate = false,
+    allow_intermediates = true,
+    order = "zzzzz",
+    allow_inserter_overload = false,
+    energy_required = 1.166
+}}
+
+local worker_mask = table.deepcopy(worker_miner.collision_mask)
+collision_util.remove_layer(worker_mask, "doodad-layer")
+if worker_mask then
+    for _, layer in pairs(worker_mask) do
+        local mining_camp = data.raw["assembling-machine"]["mining-camp"]
+        if mining_camp then
+            log("Removing layer " .. layer .. " from collision mask of " .. mining_camp.name)
+            collision_util.remove_layer(mining_camp.collision_mask, layer)
+        end
+    end
+end

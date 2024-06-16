@@ -49,6 +49,12 @@ local function initialize_globals()
     global.pathfinding_requests = global.pathfinding_requests or {}
     --[[@type table<integer, DisjointSet>]]
     global.tiles_disjoint_sets = global.tiles_disjoint_set or {}
+
+    --[[@type CampScriptData?]]
+    global.camps = global.camps or {}
+    
+    --[[@type CampWorkerScriptData?]]
+    global.camp_workers = global.camp_workers or {}
 end
 
 script.on_init(function()
@@ -86,7 +92,7 @@ local function set_ghost_requests(event)
     -- for i, pos in ipairs(around) do
     --     util.highlight_radius(event.created_entity.surface, pos, 0.2, {r = 0, b = 1/#around * i, g = 0, a = 0.5})
     -- end
-    -- if true then return end
+    if true then return end
 
     if event.created_entity.name == "wooden-chest" then
         return
@@ -150,7 +156,7 @@ local function entity_destroyed_event(event)
     game.print("Entity destroyed")
     ghost_id = global.destruction_ids[event.registration_number]
     if not ghost_id then
-        error("ghost_id not found")
+        --error("ghost_id not found")
         return
     end
     ba_requests.cancel_build_requests(ghost_id)
@@ -234,7 +240,14 @@ local function tile_built_event(event)
         end
         global.tiles_disjoint_sets[event.surface_index]:add{position=position}
     end
+    ba_console_commands.show_disjoint_tile_set{player_index = event.player_index}
 end
+
+local handler = require("event_handler")
+handler.add_lib(require("script/camp-worker"))
+handler.add_lib(require("script/camp"))
+
+commands.add_command("ba-reinitialize", nil, initialize_globals)
 
 commands.add_command("ba-show-tile", nil, ba_console_commands.show_pathfinding_tile_nearest_entity)
 commands.add_command("ba-test-connected", nil, ba_console_commands.test_two_tiles)
@@ -242,13 +255,13 @@ commands.add_command("ba-test-connected", nil, ba_console_commands.test_two_tile
 commands.add_command("ba-recalculate-disjoint-tiles", nil, ba_console_commands.recalculate_disjoint_tiles)
 commands.add_command("ba-show-disjoint-tiles", nil, ba_console_commands.show_disjoint_tile_set)
 
-script.on_event(defines.events.on_built_entity, set_ghost_requests)
+-- script.on_event(defines.events.on_built_entity, set_ghost_requests)
 
-script.on_event(defines.events.on_entity_destroyed, entity_destroyed_event)
+-- script.on_event(defines.events.on_entity_destroyed, entity_destroyed_event)
 
-script.on_event(defines.events.on_ai_command_completed, ba_worker.on_ai_command_completed)
-script.on_event(defines.events.on_script_path_request_finished, handle_path_request)
-script.on_event(defines.events.on_robot_built_tile, tile_built_event)
-script.on_event(defines.events.on_player_built_tile, tile_built_event)
+-- script.on_event(defines.events.on_ai_command_completed, ba_worker.on_ai_command_completed)
+-- script.on_event(defines.events.on_script_path_request_finished, handle_path_request)
+-- script.on_event(defines.events.on_robot_built_tile, tile_built_event)
+-- script.on_event(defines.events.on_player_built_tile, tile_built_event)
 
-script.on_nth_tick(30, pol_work)
+-- script.on_nth_tick(30, pol_work)

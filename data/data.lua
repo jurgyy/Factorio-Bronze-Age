@@ -22,6 +22,8 @@ require(data_util.data_root .. "tin-ore/data")
 
 require(data_util.data_root .. "technology")
 
-data:extend{
-    require(data_util.data_root .. "logging-resource-category"),
-}
+require(data_util.data_root .. "resource-categories")
+
+local worker_miner = table.deepcopy(data.raw["item"]["mining-drone"])
+worker_miner.name = "worker-miner"
+data:extend{worker_miner}
