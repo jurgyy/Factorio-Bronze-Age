@@ -3,6 +3,7 @@
 ---@class CampDefinesCampRecipe
 ---@field resource string Entity name of the associated resource
 ---@field carry_count integer How much of this resource can a worker haul in one go
+---@field category string Recipe category
 
 ---@class CampDefinesCamp
 ---@field mining_radius number The camp's search radius
@@ -32,9 +33,10 @@ local data = {
             worker_name = "worker-logger",
             crafting_categories = {"logging"},
             recipes = {
-                ["wood"] = {
+                ["loggers-camp-wood"] = {
                     resource = "wood",
-                    carry_count = 3
+                    carry_count = 3,
+                    category = "logging"
                 }
             }
         },
@@ -46,9 +48,10 @@ local data = {
             worker_name = "worker-miner",
             crafting_categories = {"mining"},
             recipes = {
-                ["ba-mine-coal"] = {
+                ["mining-camp-coal"] = {
                     resource = "coal",
-                    carry_count = 3
+                    carry_count = 3,
+                    category = "mining"
                 }
             }
         }

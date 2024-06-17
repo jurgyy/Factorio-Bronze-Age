@@ -1,4 +1,5 @@
 local collision_util = require("collision-mask-util")
+local camp_defines = require("shared/camp-defines")
 
 local function startswith(str, start)
     return string.sub(str, 1, string.len(start)) == start
@@ -60,42 +61,54 @@ for shape, prototypes in pairs(collisions) do
     log("Shape " .. shape .. ": " .. table.concat(prototypes, ", "))
 end
 
-local worker_miner = table.deepcopy(data.raw["unit"]["mining-drone"])
-local coal_resource = data.raw.resource["coal"]
 
-worker_miner.name = "worker-miner"
-data:extend{worker_miner, {
-    type = "recipe",
-    name = "ba-mine-coal",
-    icon = coal_resource.icon,
-    icon_size = coal_resource.icon_size,
-    icons = coal_resource.icons,
-    icon_mipmaps = coal_resource.icon_mipmaps,
-    ingredients = {
-        {type = "item", name = "worker-miner", amount = 1}
-    },
-    results = {{type = "item", name = "coal", amount = 0, show_details_in_recipe_tooltip = false}},
-    category = "mining",
-    subgroup = "extraction-machine",
-    --overload_multiplier = 100,
-    hide_from_player_crafting = true,
-    main_product = "",
-    allow_decomposition = false,
-    allow_as_intermediate = false,
-    allow_intermediates = true,
-    order = "zzzzz",
-    allow_inserter_overload = false,
-    energy_required = 1.166
-}}
+for name, worker_def in pairs(camp_defines.workers) do
+    local worker = table.deepcopy(data.raw["unit"]["mining-drone"])
+    worker.name = name
+    worker.localised_name = nil
+    worker.localised_description = nil
+    data:extend{worker}
+end
 
-local worker_mask = table.deepcopy(worker_miner.collision_mask)
-collision_util.remove_layer(worker_mask, "doodad-layer")
-if worker_mask then
-    for _, layer in pairs(worker_mask) do
-        local mining_camp = data.raw["assembling-machine"]["mining-camp"]
-        if mining_camp then
-            log("Removing layer " .. layer .. " from collision mask of " .. mining_camp.name)
-            collision_util.remove_layer(mining_camp.collision_mask, layer)
+for _, camp in pairs(camp_defines.camps) do
+    local worker = data.raw["unit"]["mining-drone"]
+    local worker_mask = table.deepcopy(worker.collision_mask)
+    collision_util.remove_layer(worker_mask, "doodad-layer")
+    if worker_mask then
+        for _, layer in pairs(worker_mask) do
+            local mining_camp = data.raw["assembling-machine"]["mining-camp"]
+            if mining_camp then
+                log("Removing layer " .. layer .. " from collision mask of " .. mining_camp.name)
+                collision_util.remove_layer(mining_camp.collision_mask, layer)
+            end
         end
+    end
+
+    for name, recipe in pairs(camp.recipes) do
+        local resource_item = data.raw.item[recipe.resource]
+        
+        data:extend{{
+            type = "recipe",
+            name = name,
+            icon = resource_item.icon,
+            icon_size = resource_item.icon_size,
+            icons = resource_item.icons,
+            icon_mipmaps = resource_item.icon_mipmaps,
+            ingredients = {
+                {type = "item", name = camp.worker_name, amount = 1}
+            },
+            results = {{type = "item", name = recipe.resource, amount = 0, show_details_in_recipe_tooltip = false}},
+            category = recipe.category,
+            subgroup = "extraction-machine",
+            --overload_multiplier = 100,
+            hide_from_player_crafting = true,
+            main_product = "",
+            allow_decomposition = false,
+            allow_as_intermediate = false,
+            allow_intermediates = true,
+            order = "zzzzz",
+            allow_inserter_overload = false,
+            energy_required = 1.166
+        }}
     end
 end

@@ -1,4 +1,5 @@
 local data_util = require("__bronze-age__/data/data-util")
+local camp_defines = require("shared/camp-defines")
 
 require(data_util.data_root .. "bricks/data")
 require(data_util.data_root .. "charcoal/data")
@@ -22,8 +23,22 @@ require(data_util.data_root .. "tin-ore/data")
 
 require(data_util.data_root .. "technology")
 
-require(data_util.data_root .. "resource-categories")
+for _, camp in pairs(camp_defines.camps) do
+    if not data.raw["item"][camp.worker_name] then
+        local worker_item = table.deepcopy(data.raw["item"]["mining-drone"])
+        worker_item.name = camp.worker_name
+        worker_item.localised_name = worker_item.name
+        worker_item.localised_description = nil
+        data:extend{worker_item}
+    end
 
-local worker_miner = table.deepcopy(data.raw["item"]["mining-drone"])
-worker_miner.name = "worker-miner"
-data:extend{worker_miner}
+    for _, cat in pairs(camp.crafting_categories) do
+        if not data.raw["recipe-category"][cat] then
+            local recipe_cat = {
+                type = "recipe-category",
+                name = cat
+            }
+            data:extend{recipe_cat}
+        end
+    end
+end
