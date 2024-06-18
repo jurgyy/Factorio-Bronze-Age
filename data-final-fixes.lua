@@ -179,8 +179,6 @@ collisions = {}
 
 for type in pairs(defines.prototypes.entity) do
     for _, prototype in pairs(data.raw[type]) do
-        ---@cast prototype LuaEntityPrototype
-
         local box = prototype.collision_box
         if not (startswith(prototype.name, "construction-")) and box then
             local width = math.ceil(box[2][1] - box[1][1])
@@ -193,6 +191,7 @@ for type in pairs(defines.prototypes.entity) do
         end
 
         if prototype.minable then
+            ---@cast prototype data.EntityPrototype|data.TilePrototype
             local recipe = data.raw.recipe[prototype.minable.result]
             if recipe and (recipe.ingredients or recipe.normal) then
                 local ingredients = (recipe.ingredients or recipe.normal.ingredients)
@@ -218,6 +217,7 @@ for type in pairs(defines.prototypes.entity) do
                 end
                 prototype.minable = {
                     mining_time = prototype.minable.mining_time,
+                    result = nil,
                     results = results
                 }
             else
