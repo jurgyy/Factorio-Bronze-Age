@@ -1,4 +1,6 @@
 -- Largely copied from Mining Drones by Klonan
+local shared_util = require("shared/shared-util")
+
 
 ---@type CampDefines
 local camps_data = require("__bronze-age__/shared/camp-defines")
@@ -107,13 +109,9 @@ local get_proxy_name = function(resource_entity)
         return proxy_name
     end
     
-    -- TODO
-    local attack_proxy_name = "mining-drone-attack-proxy-new"
-    if game.entity_prototypes[attack_proxy_name..resource_entity.name] then
-        proxy_name = attack_proxy_name..resource_entity.name
-    else
-        local size = math.min(math.ceil((math.max(resource_entity.get_radius() - 0.1, 0.25)) * 2), 10)
-        proxy_name = attack_proxy_name..size
+    proxy_name = shared_util.get_proxy_name(resource_entity)
+    if not game.entity_prototypes[proxy_name] then
+        error("Proxy not registered")
     end
 
     proxy_names_cache[entity_name] = proxy_name
@@ -200,7 +198,7 @@ function camp_worker:process_mining()
     -- pollute(target.position, pollution_per_mine)
     -- pollution_flow(default_bot_name, pollution_per_mine)
   
-    if target.type ~= "resource" then error("HUEHRUEH") end
+    --if target.type ~= "resource" then error("HUEHRUEH") end
   
     local mine_opts = {inventory = self.inventory}
     local mine = target.mine

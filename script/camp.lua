@@ -19,6 +19,7 @@ local camp_worker = require("script/camp-worker")
 ---@field unit_number integer Unit number of the camp
 ---@field target_resource_name string? Prototype name of the entity being targeted
 ---@field target_carry_count integer? How much of the target resource can a worker haul in one go
+---@field target_resource_define CampDefinesResource? Current selected recipe
 ---@field defines CampDefinesCamp Prototype and script data about the camp type
 local camp = {}
 local camp_metatable = {__index = camp}
@@ -196,10 +197,10 @@ function camp:get_target_resource_name()
     local recipe = self.entity.get_recipe()
     if not recipe then return end
 
-    local recipe_data = self.defines.recipes[recipe.name]
-    if not recipe_data then return end
+    local target_name = self.defines.recipes[recipe.name]
+    if not target_name then return end
 
-    return recipe_data.resource
+    return target_name
 end
 
 ---Get the carry count of the target resource
@@ -209,16 +210,27 @@ function camp:get_target_carry_count()
     local recipe = self.entity.get_recipe()
     if not recipe then return end
 
-    local recipe_data = self.defines.recipes[recipe.name]
-    if not recipe_data then return end
+    local target_name = self.defines.recipes[recipe.name]
+    if not target_name then return end
 
-    return recipe_data.carry_count
+    return camp_defines.resources[target_name].carry_count
+end
+
+---Get the current selected recipe data
+---@return CampDefinesResource?
+function camp:get_target_resource_define()
+    local recipe = self.entity.get_recipe()
+    if not recipe then return end
+    
+    local resource = self.defines.recipes[recipe.name]
+    return camp_defines.resources[resource]
 end
 
 ---Camp recipe has changed. Clear all paths, cancel all orders and find new resources to mine
 function camp:target_name_changed()
     self.target_resource_name = self:get_target_resource_name()
     self.target_carry_count = self:get_target_carry_count()
+    self.target_resource_define = self:get_target_resource_define()
     
     self:clear_path_requests()
     self:cancel_all_orders()
@@ -394,13 +406,17 @@ function camp:find_potential_targets()
       self.mined_any = nil
       return
     end
-  
+    
+    if self.target_resource_define.type == "tree" then
+        target_name = nil
+    end
+
     local unsorted = self.entity.surface.find_entities_filtered{
-        type = "resource",
+        type = self.target_resource_define.type,
         area = self:get_mining_area(),
         name = target_name
     }
-
+    self:say("Found " .. tostring(#unsorted) .. " " .. tostring(target_name) .. " (" .. self.target_resource_define.type .. ")")
     util.highlight_bbox(self.entity.surface, self:get_mining_area())
   
     self.potential = self:sort_by_distance(unsorted)
@@ -483,9 +499,29 @@ end
 ---@param resource_entity LuaEntity
 ---@return integer
 function camp:get_mining_count(resource_entity)
-    if not self.target_carry_count then error("target_carry_count not set") end
+    local type = resource_entity.type
+    if type == "resource" then
+        if not self.target_carry_count then error("target_carry_count not set") end
 
-    return math.min(self.target_carry_count, resource_entity.amount) --[[@as integer]]
+        return math.min(self.target_carry_count, resource_entity.amount) --[[@as integer]]
+    elseif type == "tree" then
+        if not resource_entity.prototype.mineable_properties.minable then error("tree not minable") end
+
+        local max
+        for _, product in pairs(resource_entity.prototype.mineable_properties.products) do
+            if product.type == "item" and product.name == "wood" then
+                --[[@cast product Product.base]]
+                if not max then
+                    max = product.amount or product.amount_max
+                else
+                    max = math.max(max, product.amount or product.amount_max)
+                end
+            end
+        end
+        if not max then error("No max value") end
+        return max
+    end
+    error("Unknown resource type")
 end
 
 ---Order a worker to mine a certain entity
