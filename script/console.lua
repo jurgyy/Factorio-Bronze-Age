@@ -69,7 +69,7 @@ function console_commands.show_disjoint_tile_set(data)
 end
 
 ---Searches all surfaces for all path tiles and recalculates disjoint sets from those. Afterwards it calls the show_disjoint_tile_set to compress the disj
----@param data CustomCommandData|nil
+---@param data CustomCommandData?
 function console_commands.recalculate_disjoint_tiles(data)
     for _, surface in pairs(game.surfaces) do
         local ds = disjointSet.new()
