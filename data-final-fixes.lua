@@ -241,6 +241,8 @@ for name, worker_def in pairs(camp_defines.workers) do
     camp_worker.name = name
     camp_worker.localised_name = nil
     camp_worker.localised_description = nil
+    camp_worker.attack_parameters.range = worker_def.range
+    camp_worker.render_layer = "object"
     data:extend{camp_worker}
 end
 

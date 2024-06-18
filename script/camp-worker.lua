@@ -30,6 +30,7 @@ local worker_path_flags = {prefer_straight_paths = false, use_cache = false}
 ---@field force_index integer The worker entity's force index
 ---@field camp integer The unit number of the camp entity that spawned this worker
 ---@field inventory LuaInventory The worker's inventory
+---@field define CampDefinesWorker The workers define
 ---@field mining_target LuaEntity? The targeting entity (not proxy, I think)
 ---@field state CampWorkerStates? Current state of the worker
 ---@field fail_count integer? Number of times a worker failed its command
@@ -132,8 +133,8 @@ function camp_worker:make_attack_proxy()
 
     local count = self.mining_count
     local mining_time = get_mining_time(entity) * count
-    local mining_interval = camps_data.workers[self.entity.name].mining_interval
-    local mining_damage = camps_data.workers[self.entity.name].mining_damage
+    local mining_interval = self.define.mining_interval
+    local mining_damage = self.define.mining_damage
   
     local number_of_ticks = (mining_time / self:get_mining_speed()) * 60
     local number_of_hits = math.ceil(number_of_ticks / mining_interval)
@@ -163,8 +164,11 @@ camp_worker.new = function(entity, camp)
         unit_number = entity.unit_number,
         force_index = entity.force.index,
         camp = camp.entity.unit_number,
-        inventory = game.create_inventory(100)
+        inventory = game.create_inventory(100),
+        define = camps_data.workers[entity.name]
     }
+    if not worker.define then error("Unknown worker type " .. entity.name) end
+
     entity.ai_settings.path_resolution_modifier = 0
     setmetatable(worker, camp_worker.metatable)
 
@@ -384,6 +388,7 @@ function camp_worker:attack_mining_proxy()
       {
         type = defines.command.go_to_location,
         destination_entity = attack_proxy,
+        radius = self.define.range,
         distraction = defines.distraction.none,
         pathfind_flags = worker_path_flags
       },

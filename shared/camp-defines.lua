@@ -12,6 +12,7 @@
 ---@class CampDefinesWorker
 ---@field mining_interval integer
 ---@field mining_damage integer
+---@field range number Attack range of the worker
 
 ---@class CampDefinesResource
 ---@field carry_count integer How much of this resource can a worker haul in one go
@@ -54,11 +55,13 @@ local data = {
     workers = {
         ["worker-logger"] = {
             mining_interval = math.floor(26 * 1.5),
-            mining_damage = 5
+            mining_damage = 5,
+            range = 1
         },
         ["worker-miner"] = {
             mining_interval = math.floor(26 * 1.5),
-            mining_damage = 5
+            mining_damage = 5,
+            range = 0.5
         }
     },
     resources = {
