@@ -1,10 +1,8 @@
 local data_util = require("__bronze-age__/data/data-util")
 local camps_data = require("shared/camp-defines")
 
---- @type data.Sprite
-local sprite = data_util.place_holder_sprite(3,5)
-sprite.tint = {r=0.7, g=0.3, b=0.1, a=1}
-sprite.hr_version.tint = sprite.tint
+--- @type data.Sprite4Way
+local sprite = data_util.placeholder_4way(3, 5, {r=0.7, g=0.3, b=0.1, a=1})
 
 local name = "loggers-camp"
 local camp_data = camps_data.camps[name]
@@ -67,8 +65,25 @@ return {
       }
     },
     animation = {
-      layers = {
-        sprite
+      north = {
+        layers = {
+          sprite.north
+        }
+      },
+      east = {
+        layers = {
+          sprite.east
+        }
+      },
+      south = {
+        layers = {
+          sprite.south
+        }
+      },
+      west = {
+        layers = {
+          sprite.west
+        }
       }
     },
     radius_visualisation_specification =
