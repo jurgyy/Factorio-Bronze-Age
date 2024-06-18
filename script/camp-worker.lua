@@ -109,7 +109,7 @@ local get_proxy_name = function(resource_entity)
         return proxy_name
     end
     
-    proxy_name = shared_util.get_proxy_name(resource_entity)
+    proxy_name = shared_util.get_proxy_name(resource_entity.prototype --[[@as CampSupportedEntityPrototypes]])
     if not game.entity_prototypes[proxy_name] then
         error("Proxy not registered")
     end
