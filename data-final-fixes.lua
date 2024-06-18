@@ -96,7 +96,7 @@ local mining_wood_trigger =
   }
 }
 
----@param prototype data.ResourceEntityPrototype|data.TreePrototype
+---@param prototype CampSupportedEntityPrototypes
 ---@return data.Sound
 local function get_sound(prototype)
     if prototype.type == "tree" then
@@ -108,7 +108,7 @@ local function get_sound(prototype)
     error("Unknown type")
 end
 
----@param resource data.ResourceEntityPrototype|data.TreePrototype
+---@param resource CampSupportedEntityPrototypes
 local make_resource_attack_proxy = function(resource)
     local attack_proxy =
     {

@@ -1,6 +1,6 @@
 local shared_util = {}
 
----@param prototype data.ResourceEntityPrototype|data.TreePrototype
+---@param prototype CampSupportedEntityPrototypes
 function shared_util.get_proxy_name(prototype)
     if prototype.type == "tree" then
         return "ba-attack-proxy-tree"

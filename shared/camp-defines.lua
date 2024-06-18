@@ -23,6 +23,8 @@
 ---@field workers table<string, CampDefinesWorker>
 ---@field resources table<string, CampDefinesResource>
 
+---@alias CampSupportedEntityPrototypes data.TreePrototype|data.ResourceEntityPrototype
+
 ---@type CampDefines
 local data = {
     camps = {
