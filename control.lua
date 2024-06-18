@@ -240,7 +240,11 @@ local function tile_built_event(event)
         end
         global.tiles_disjoint_sets[event.surface_index]:add{position=position}
     end
-    ba_console_commands.show_disjoint_tile_set{player_index = event.player_index}
+    ba_console_commands.show_disjoint_tile_set{
+        player_index = event.player_index,
+        name = "script",
+        tick = event.tick
+    }
 end
 
 local handler = require("event_handler")
