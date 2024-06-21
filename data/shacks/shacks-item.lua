@@ -9,5 +9,6 @@ return {
     flags = {},
     subgroup = "production-machine",
     order = "za-shacks",
+    place_result = "shacks",
     stack_size = 50
 }
