@@ -96,20 +96,29 @@ local mining_wood_trigger =
   }
 }
 
----@param prototype CampSupportedEntityPrototypes
+---@param visual_type CampDefinesResourceType
 ---@return data.Sound
-local function get_sound(prototype)
-    if prototype.type == "tree" then
+local function get_sound(visual_type)
+    if visual_type == "tree" then
         return mining_wood_trigger
     end
-    if prototype.type == "resource" then
+    if visual_type == "resource" then
         return axe_mining_ore_trigger
     end
     error("Unknown type")
 end
 
 ---@param resource CampSupportedEntityPrototypes
-local make_resource_attack_proxy = function(resource)
+---@param visual_type CampDefinesResourceType
+local make_resource_attack_proxy = function(resource, visual_type)
+    local animation = empty_rotated_animation()
+    -- animation = table.deepcopy(data.raw["unit"]["small-spitter"].run_animation)
+    -- local color = {r=0.3, g=0.1, b=0.1, a=0.1}
+    -- for _, layer in pairs(animation.layers) do
+    --   layer.tint = color
+    --   layer.hr_version.tint = color
+    -- end
+
     local attack_proxy =
     {
       type = "unit",
@@ -122,7 +131,7 @@ local make_resource_attack_proxy = function(resource)
       collision_box = {{-0.1, -0.1}, {0.1, 0.1}},
       collision_mask = {"colliding-with-tiles-only"},
       selection_box = nil,
-      run_animation = empty_rotated_animation(),
+      run_animation = animation,--empty_rotated_animation(),
       attack_parameters = empty_attack_parameters(),
       movement_speed = 0,
       distance_per_frame = 0,
@@ -134,7 +143,7 @@ local make_resource_attack_proxy = function(resource)
     local sound_enabled = true
     local damaged_trigger =
     {
-      sound_enabled and get_sound(resource) or nil
+      sound_enabled and get_sound(visual_type) or nil
     }
   
     local particle = resource.minable.mining_particle
@@ -243,6 +252,7 @@ for name, worker_def in pairs(camp_defines.workers) do
     camp_worker.localised_description = nil
     camp_worker.attack_parameters.range = worker_def.range
     camp_worker.render_layer = "object"
+    camp_worker.corpse = nil
     data:extend{camp_worker}
 end
 
@@ -268,12 +278,13 @@ for camp_name, camp in pairs(camp_defines.camps) do
         end
     end
 
-    for name, resource_name in pairs(camp.recipes) do
-        local resource_item = data.raw.item[resource_name]
+    for recipe_name, define_recipe in pairs(camp.recipes) do
+        local result = define_recipe.result
+        local resource_item = data.raw.item[result]
         
         data:extend{{
             type = "recipe",
-            name = name,
+            name = recipe_name,
             icon = resource_item.icon,
             icon_size = resource_item.icon_size,
             icons = resource_item.icons,
@@ -281,8 +292,8 @@ for camp_name, camp in pairs(camp_defines.camps) do
             ingredients = {
                 {type = "item", name = camp.worker_name, amount = 1}
             },
-            results = {{type = "item", name = resource_name, amount = 0, show_details_in_recipe_tooltip = false}},
-            category = camp_defines.resources[resource_name].category,
+            results = {{type = "item", name = result, amount = 0, show_details_in_recipe_tooltip = false}},
+            category = camp_defines.resources[result].category,
             subgroup = "extraction-machine",
             --overload_multiplier = 100,
             hide_from_player_crafting = true,
@@ -298,12 +309,15 @@ for camp_name, camp in pairs(camp_defines.camps) do
 end
 
 for resource_name, define in pairs(camp_defines.resources) do
-    local entity
+    local entity, visual_type
     if define.type == "tree" then
         _, entity = next(data.raw["tree"])
+        visual_type = camp_defines.resources["wood"].visual_type or camp_defines.resources["wood"].type
+
     elseif define.type == "resource" then
         entity = data.raw["resource"][resource_name]
+        visual_type = camp_defines.resources[resource_name].visual_type or camp_defines.resources[resource_name].type
     end
     if not entity then error("No entity") end
-    make_resource_attack_proxy(entity)
+    make_resource_attack_proxy(entity, visual_type)
 end

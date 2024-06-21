@@ -8,10 +8,12 @@ local camps_data = require("__bronze-age__/shared/camp-defines")
 ---@class CampWorkerScriptData
 ---@field workers table<integer, CampWorkerData> The scripts workers index by their unit number
 ---@field big_migration boolean Big migration
+---@field trees table<integer, boolean> All pre-cut tree proxy unit numbers
 local script_data =
 {
   workers = {},
-  big_migration = true
+  big_migration = true,
+  trees = {}
 }
 
 ---@enum CampWorkerStates
@@ -38,6 +40,8 @@ local worker_path_flags = {prefer_straight_paths = false, use_cache = false}
 local camp_worker = {}
 
 camp_worker.metatable = {__index = camp_worker}
+
+local fallen_tree_name = "ba-fallen-tree-resource"
 
 ---Will be overwritten when worker-camp gets loaded
 ---@param unit_number integer
@@ -149,7 +153,12 @@ function camp_worker:make_attack_proxy()
     local proxy = entity.surface.create_entity{name = get_proxy_name(entity), position = position, force = "neutral"}
     proxy.health = number_of_hits * mining_damage
     proxy.active = false
-  
+
+    if proxy and proxy.valid and entity.type == "tree" then
+        if not script_data.trees then script_data.trees = {} end
+        script_data.trees[proxy.unit_number] = true
+    end
+
     self.attack_proxy = proxy
 end
 
@@ -182,6 +191,23 @@ function camp_worker:get_camp()
     return camp_worker.get_mining_camp(self.camp)
 end
 
+
+---Mine the actual (non-proxy) target entity
+---@param target LuaEntity Non-proxy target entity
+function camp_worker:mine_underlying_target(target)
+    local mine_opts = {inventory = self.inventory}
+    local mine = target.mine
+    for k = 1, self.mining_count do
+        if target.valid then
+            mine(mine_opts)
+        else
+            self:clear_mining_target()
+            break
+        end
+    end
+    self.mining_count = nil
+end
+
 function camp_worker:process_mining()
     local target = self.mining_target
     if not (target and target.valid) then
@@ -203,18 +229,7 @@ function camp_worker:process_mining()
     -- pollution_flow(default_bot_name, pollution_per_mine)
   
     --if target.type ~= "resource" then error("HUEHRUEH") end
-  
-    local mine_opts = {inventory = self.inventory}
-    local mine = target.mine
-    for k = 1, self.mining_count do
-        if target.valid then
-            mine(mine_opts)
-        else
-            self:clear_mining_target()
-            break
-        end
-    end
-    self.mining_count = nil
+    self:mine_underlying_target(target)
     self:return_to_camp()
 end
 
@@ -411,7 +426,7 @@ end
 
 ---Make an attack proxy, move to it and start attacking it
 ---@param entity LuaEntity The resource entity (not proxy)
----@param count integer IDK TODO
+---@param count? integer IDK TODO
 function camp_worker:mine_entity(entity, count)
     self.mining_count = count or 1
     self.mining_target = entity
@@ -550,9 +565,26 @@ local on_ai_command_completed = function(event)
     worker:update(event)
 end
 
+---Spawn a fallen tree and return the entity
+---@param source_entity LuaEntity Entity that will be replaced by the fallen tree
+---@return LuaEntity?
+local spawn_fallen_tree = function(source_entity)
+    local position = source_entity.position
+    -- position.y = position.y + 2
+    -- position.x = position.x + 2
+    local fallen_tree = source_entity.surface.create_entity{name = fallen_tree_name, position = position, force = "neutral"}
+    if fallen_tree and fallen_tree.valid then
+        fallen_tree.amount = math.random(50, 250)
+    else
+        game.print("Couldn't spawn fallen tree")
+    end
+    return fallen_tree
+end
+
 ---Event handler for all events that might remove a worker
 ---@param event EventData.on_player_mined_entity|EventData.on_robot_mined_entity|EventData.on_entity_died|EventData.script_raised_destroy
 local on_entity_removed = function(event)
+    game.print("Worker delete")
     local entity = event.entity
     if not (entity and entity.valid) then return end
 
@@ -560,7 +592,28 @@ local on_entity_removed = function(event)
     if not unit_number then return end
 
     local worker = get_worker(unit_number)
-    if not worker then return end
+    if not worker then
+        if not script_data.trees then script_data.trees = {} end -- TODO <-- remove
+        if script_data.trees[unit_number] then
+            game.print("is tree")
+            script_data.trees[unit_number] = nil
+            worker = get_worker(event.cause.unit_number)
+            if worker then
+                worker:mine_underlying_target(worker.mining_target)
+                local fallen_tree = spawn_fallen_tree(entity)
+                if fallen_tree and fallen_tree.valid then
+                    local camp = worker:get_camp()
+                    if camp then
+                        camp:add_resource_and_mine(fallen_tree, 1)
+                    else
+                        error("Worker has no camp")
+                    end
+                    worker:mine_entity(fallen_tree, camps_data.resources[fallen_tree_name].carry_count)
+                end
+            end
+        end
+        return
+    end
 
     -- if event.force and event.force.valid then
     --   event.force.kill_count_statistics.on_flow(default_bot_name, 1)

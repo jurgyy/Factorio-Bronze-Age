@@ -17,9 +17,8 @@ local camp_worker = require("script/camp-worker")
 ---@field surface_index integer Surface index of the camp
 ---@field force_index integer Force index of the camp
 ---@field unit_number integer Unit number of the camp
----@field target_resource_name string? Prototype name of the entity being targeted
----@field target_carry_count integer? How much of the target resource can a worker haul in one go
----@field target_resource_define CampDefinesResource? Current selected recipe
+---@field current_recipe_name string? Name of the currently selected recipe
+---@field target_resource_defines table<string, CampDefinesResource>? Current selected recipe
 ---@field defines CampDefinesCamp Prototype and script data about the camp type
 local camp = {}
 local camp_metatable = {__index = camp}
@@ -192,15 +191,15 @@ function camp:cancel_all_orders()
 end
 
 ---Get the resource associated with the selected recipe
----@return string? resource_name
-function camp:get_target_resource_name()
+---@return string[]? resource_name
+function camp:get_target_resource_names()
     local recipe = self.entity.get_recipe()
     if not recipe then return end
 
-    local target_name = self.defines.recipes[recipe.name]
-    if not target_name then return end
+    local define_recipe = self.defines.recipes[recipe.name]
+    if not define_recipe then error("No define recipe " .. recipe.name) end
 
-    return target_name
+    return define_recipe.targets
 end
 
 ---Get the carry count of the target resource
@@ -216,21 +215,33 @@ function camp:get_target_carry_count()
     return camp_defines.resources[target_name].carry_count
 end
 
----Get the current selected recipe data
----@return CampDefinesResource?
-function camp:get_target_resource_define()
+---Get the current selected recipe name
+---@return string?
+function camp:get_current_recipe_name()
     local recipe = self.entity.get_recipe()
     if not recipe then return end
-    
-    local resource = self.defines.recipes[recipe.name]
-    return camp_defines.resources[resource]
+    return recipe.name
+end
+
+---Get the current selected recipe data
+---@return CampDefinesResource[]?
+function camp:get_target_resource_defines()
+    local recipe_name = self:get_current_recipe_name()
+    if not recipe_name then return end
+    local resources = {}
+    for _, resource_name in pairs(self.defines.recipes[recipe_name].targets) do
+        local resource = camp_defines.resources[resource_name]
+        if not resource then error("Unknown resource define " .. resource_name) end
+        resources[resource_name] = resource
+    end
+    return resources
 end
 
 ---Camp recipe has changed. Clear all paths, cancel all orders and find new resources to mine
-function camp:target_name_changed()
-    self.target_resource_name = self:get_target_resource_name()
-    self.target_carry_count = self:get_target_carry_count()
-    self.target_resource_define = self:get_target_resource_define()
+---@param new_recipe_name string?
+function camp:recipe_changed(new_recipe_name)
+    self.current_recipe_name = new_recipe_name
+    self.target_resource_defines = self:get_target_resource_defines()
     
     self:clear_path_requests()
     self:cancel_all_orders()
@@ -243,14 +254,14 @@ function camp:update()
     local camp_entity = self.entity
     if not (camp_entity and camp_entity.valid) then return end
   
-    local resource_name = self:get_target_resource_name()
-    if resource_name ~= self.target_resource_name then
+    local recipe_name = self:get_current_recipe_name()
+    if recipe_name ~= self.current_recipe_name then
         --TODO get_target_resource_name() gets called twice
-        self:target_name_changed()
+        self:recipe_changed(recipe_name)
         return
     end
   
-    if not resource_name then return end
+    if not recipe_name then return end
   
     if not self:has_mining_targets() then
         --Nothing to mine, nothing to do...
@@ -296,8 +307,13 @@ function camp:get_should_spawn_worker_count(extra)
     return math.ceil(ratio * max_workers) - active
 end
 
-function camp:say(text)
-    self.entity.surface.create_entity{name = "flying-text", position = self.entity.position, text = text}
+---Spawn flying text at the camp
+---@param text string
+---@param y_offset integer? Y-offset of the text
+function camp:say(text, y_offset)
+    local position = self.entity.position
+    position.y = position.y + (y_offset or 0)
+    self.entity.surface.create_entity{name = "flying-text", position = position, text = text}
 end
 
 function camp:try_to_mine_targets()
@@ -399,29 +415,57 @@ end
 
 ---Find potential resources to mine, sort them and store the result in self.potential
 function camp:find_potential_targets()
-    local target_name = self.target_resource_name
-    if not target_name then
+    local current_recipe_name = self.current_recipe_name
+    if not current_recipe_name then
       self.potential = {}
       self.recent = {}
       self.mined_any = nil
       return
     end
     
-    if self.target_resource_define.type == "tree" then
-        target_name = nil
+    
+    local unsorted
+    local i = 0
+    for resource_name, resource_define in pairs(self.target_resource_defines) do
+        ---@type string?
+        local name = resource_name
+        if resource_define.type == "tree" then
+            name = nil
+        end
+        local found = self.entity.surface.find_entities_filtered{
+            type = resource_define.type,
+            area = self:get_mining_area(),
+            name = name
+        }
+        self:say("Found " .. tostring(#found) .. " " .. tostring(name) .. " (" .. resource_define.type .. ")", i)
+        i = i + 1
+        if not unsorted then
+            unsorted = found
+        else
+            for _, entity in pairs(found) do
+                unsorted[#unsorted+1] = entity
+            end
+        end
     end
-
-    local unsorted = self.entity.surface.find_entities_filtered{
-        type = self.target_resource_define.type,
-        area = self:get_mining_area(),
-        name = target_name
-    }
-    self:say("Found " .. tostring(#unsorted) .. " " .. tostring(target_name) .. " (" .. self.target_resource_define.type .. ")")
     util.highlight_bbox(self.entity.surface, self:get_mining_area())
   
     self.potential = self:sort_by_distance(unsorted)
     self.recent = {}
     self.mined_any = nil
+end
+
+---Add an entity to the script's targeted_resources
+---@param entity LuaEntity
+---@param mining integer? Number of workers mining this entity
+function camp:add_resource_and_mine(entity, mining)
+    local targeted_resources = script_data.targeted_resources[self.surface_index]
+    local index = unique_index(entity)
+    targeted_resources[index] = {
+        entity = entity,
+        camps = {},
+        max_mining = math.ceil(entity.get_radius() ^ 2),
+        mining = mining or 0
+    }
 end
 
 
@@ -501,10 +545,13 @@ end
 function camp:get_mining_count(resource_entity)
     local type = resource_entity.type
     if type == "resource" then
-        if not self.target_carry_count then error("target_carry_count not set") end
+        local resource_define = self.target_resource_defines[resource_entity.name]
+        if not resource_define then error("No resource define for " .. resource_entity.name) end
 
-        return math.min(self.target_carry_count, resource_entity.amount) --[[@as integer]]
+        return math.min(resource_define.carry_count, resource_entity.amount) --[[@as integer]]
     elseif type == "tree" then
+        -- TODO set to 0?
+
         if not resource_entity.prototype.mineable_properties.minable then error("tree not minable") end
 
         local max
@@ -821,10 +868,11 @@ end
 
 ---Check if target recipe has changed
 function camp:check_for_rescan()
-    if self.target_resource_name == self:get_target_resource_name() then
+    local current_recipe = self:get_current_recipe_name()
+    if self.current_recipe_name == current_recipe then
         return
     end
-    self:target_name_changed()
+    self:recipe_changed(current_recipe)
 end
 
 ---Cancel all orders on all camps

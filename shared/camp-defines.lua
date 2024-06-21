@@ -6,8 +6,12 @@
 ---@field capacity integer The number of items can be stored in the camp before halting work
 ---@field drop_offset table<number, number> TODO idk
 ---@field worker_name string Name of the entity prototype associated with this camp
----@field recipes table<string, string> Table to map the camps recipe name to the resource name
+---@field recipes table<string, CampDefineRecipe> Table to map the camps recipe name to the resulting resource name and targeting resources
 ---@field crafting_categories string[] All crafting categories for this camp
+
+---@class CampDefineRecipe
+---@field result string
+---@field targets string[]
 
 ---@class CampDefinesWorker
 ---@field mining_interval integer
@@ -18,6 +22,7 @@
 ---@field carry_count integer How much of this resource can a worker haul in one go
 ---@field category string Recipe category
 ---@field type CampDefinesResourceType Type of resource
+---@field visual_type CampDefinesResourceType? Type that the resource sounds and looks like. If nil it falls back to type
 
 ---@class CampDefines
 ---@field camps table<string, CampDefinesCamp>
@@ -37,8 +42,11 @@ local data = {
             worker_name = "worker-logger",
             crafting_categories = {"logging"},
             recipes = {
-                ["loggers-camp-wood"] = "wood"
-            }
+                ["loggers-camp-wood"] = {
+                    result = "wood",
+                    targets = {"wood", "ba-fallen-tree-resource"}
+                }
+            },
         },
         ["mining-camp"] = {
             mining_radius = 25 + 0.5,
@@ -48,8 +56,11 @@ local data = {
             worker_name = "worker-miner",
             crafting_categories = {"mining"},
             recipes = {
-                ["mining-camp-coal"] = "coal"
-            }
+                ["mining-camp-coal"] = {
+                    result = "coal",
+                    targets = {"coal"}
+                }
+            },
         }
     },
     workers = {
@@ -69,6 +80,12 @@ local data = {
             carry_count = 3,
             category = "logging",
             type = "tree"
+        },
+        ["ba-fallen-tree-resource"] = {
+            carry_count = 3,
+            category = "logging",
+            type = "resource",
+            visual_type = "tree"
         },
         ["coal"] = {
             carry_count = 3,
