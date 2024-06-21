@@ -255,6 +255,7 @@ function camp_worker:process_mining()
         end
         return
     end
+    if target.type ~= "resource" then error("Unknown type " .. target.type) end
   
     -- local pollute = self.entity.surface.pollute
     -- local pollution_flow = game.pollution_statistics.on_flow
@@ -262,7 +263,6 @@ function camp_worker:process_mining()
     -- pollute(target.position, pollution_per_mine)
     -- pollution_flow(default_bot_name, pollution_per_mine)
   
-    --if target.type ~= "resource" then error("HUEHRUEH") end
     self:mine_underlying_target(target)
     self:return_to_camp()
 end
