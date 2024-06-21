@@ -208,6 +208,22 @@ function camp_worker:mine_underlying_target(target)
     self.mining_count = nil
 end
 
+---Spawn a fallen tree and return the entity
+---@param surface LuaSurface
+---@param position MapPosition
+---@return LuaEntity?
+local spawn_fallen_tree = function(surface, position)
+    -- position.y = position.y + 2
+    -- position.x = position.x + 2
+    local fallen_tree = surface.create_entity{name = fallen_tree_name, position = position, force = "neutral"}
+    if fallen_tree and fallen_tree.valid then
+        fallen_tree.amount = math.random(50, 250)
+    else
+        game.print("Couldn't spawn fallen tree")
+    end
+    return fallen_tree
+end
+
 function camp_worker:process_mining()
     local target = self.mining_target
     if not (target and target.valid) then
@@ -221,6 +237,24 @@ function camp_worker:process_mining()
         return
     end
   
+    if target.type == "tree" then
+        local surface = target.surface
+        local position = target.position
+
+        target.die(self.entity.force, self.entity)
+        
+        local fallen_tree = spawn_fallen_tree(surface, position)
+        if fallen_tree and fallen_tree.valid then
+            local camp = self:get_camp()
+            if camp then
+                camp:add_resource_and_mine(fallen_tree, 1)
+            else
+                error("Worker has no camp")
+            end
+            self:mine_entity(fallen_tree, camps_data.resources[fallen_tree_name].carry_count)
+        end
+        return
+    end
   
     -- local pollute = self.entity.surface.pollute
     -- local pollution_flow = game.pollution_statistics.on_flow
@@ -565,22 +599,6 @@ local on_ai_command_completed = function(event)
     worker:update(event)
 end
 
----Spawn a fallen tree and return the entity
----@param source_entity LuaEntity Entity that will be replaced by the fallen tree
----@return LuaEntity?
-local spawn_fallen_tree = function(source_entity)
-    local position = source_entity.position
-    -- position.y = position.y + 2
-    -- position.x = position.x + 2
-    local fallen_tree = source_entity.surface.create_entity{name = fallen_tree_name, position = position, force = "neutral"}
-    if fallen_tree and fallen_tree.valid then
-        fallen_tree.amount = math.random(50, 250)
-    else
-        game.print("Couldn't spawn fallen tree")
-    end
-    return fallen_tree
-end
-
 ---Event handler for all events that might remove a worker
 ---@param event EventData.on_player_mined_entity|EventData.on_robot_mined_entity|EventData.on_entity_died|EventData.script_raised_destroy
 local on_entity_removed = function(event)
@@ -593,25 +611,6 @@ local on_entity_removed = function(event)
 
     local worker = get_worker(unit_number)
     if not worker then
-        if not script_data.trees then script_data.trees = {} end -- TODO <-- remove
-        if script_data.trees[unit_number] then
-            game.print("is tree")
-            script_data.trees[unit_number] = nil
-            worker = get_worker(event.cause.unit_number)
-            if worker then
-                worker:mine_underlying_target(worker.mining_target)
-                local fallen_tree = spawn_fallen_tree(entity)
-                if fallen_tree and fallen_tree.valid then
-                    local camp = worker:get_camp()
-                    if camp then
-                        camp:add_resource_and_mine(fallen_tree, 1)
-                    else
-                        error("Worker has no camp")
-                    end
-                    worker:mine_entity(fallen_tree, camps_data.resources[fallen_tree_name].carry_count)
-                end
-            end
-        end
         return
     end
 
