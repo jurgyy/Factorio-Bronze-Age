@@ -55,6 +55,9 @@ local function initialize_globals()
     
     --[[@type CampWorkerScriptData?]]
     global.camp_workers = global.camp_workers or {}
+
+    --[[@type HousingScriptData?]]
+    global.housing = global.housing or {}
 end
 
 script.on_init(function()
@@ -250,6 +253,8 @@ end
 local handler = require("event_handler")
 handler.add_lib(require("script/camp-worker"))
 handler.add_lib(require("script/camp"))
+handler.add_lib(require("script/housing"))
+handler.add_lib(require("script/worker-distribution"))
 
 commands.add_command("ba-reinitialize", nil, initialize_globals)
 
@@ -265,7 +270,7 @@ commands.add_command("ba-show-disjoint-tiles", nil, ba_console_commands.show_dis
 
 -- script.on_event(defines.events.on_ai_command_completed, ba_worker.on_ai_command_completed)
 -- script.on_event(defines.events.on_script_path_request_finished, handle_path_request)
--- script.on_event(defines.events.on_robot_built_tile, tile_built_event)
--- script.on_event(defines.events.on_player_built_tile, tile_built_event)
+script.on_event(defines.events.on_robot_built_tile, tile_built_event)
+script.on_event(defines.events.on_player_built_tile, tile_built_event)
 
 -- script.on_nth_tick(30, pol_work)

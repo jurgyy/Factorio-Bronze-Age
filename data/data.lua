@@ -24,6 +24,7 @@ require(data_util.data_root .. "tin-ore/data")
 require(data_util.data_root .. "technology")
 
 data:extend{require(data_util.data_root .. "fallen-tree-resource")}
+data:extend{require(data_util.data_root .. "electric-pole-compound-entity")}
 
 for _, camp in pairs(camp_defines.camps) do
     if not data.raw["item"][camp.worker_name] then

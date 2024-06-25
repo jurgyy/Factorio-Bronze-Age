@@ -5,8 +5,10 @@ local util = require("ba-util")
 ---@type CampDefines
 local camp_defines = require("__bronze-age__/shared/camp-defines")
 local camp_worker = require("script/camp-worker")
+---@type ScriptObjectWithWorkers
+local object_with_workers = require("script/object-with-workers")
 
----@class CampData
+---@class CampData : ScriptObjectWithWorkers
 ---@field entity LuaEntity Camp building entity
 ---@field workers table<integer, boolean> Worker's unit_numbers associated with this camp
 ---@field potential integer[] Index of the potential resources for CampScriptData.targeted_resources ordered by distance (closest last)
@@ -21,7 +23,12 @@ local camp_worker = require("script/camp-worker")
 ---@field target_resource_defines table<string, CampDefinesResource>? Current selected recipe
 ---@field defines CampDefinesCamp Prototype and script data about the camp type
 local camp = {}
-local camp_metatable = {__index = camp}
+local camp_metatable = {
+    __index = camp,
+    __eq = function (a, b)
+        return a.unit_number ~= nil and a.unit_number == b.unit_number
+    end
+}
 
 ---@class TargetedResource
 ---@field entity LuaEntity The resource entity
@@ -75,19 +82,18 @@ end
 ---@param camp_entity LuaEntity The new camp entity
 ---@return CampData camp_data The script data for the new camp
 function camp.new(camp_entity)
-    ---@type CampData
-    local camp_data = {
-        entity = camp_entity,
-        workers = {},
-        potential = {},
-        recent = {},
-        path_requests = {},
-        entity_name = camp_entity.name,
-        surface_index = camp_entity.surface.index,
-        force_index = camp_entity.force.index,
-        unit_number = camp_entity.unit_number,
-        defines = camp_defines.camps[camp_entity.name]
-    }
+    local camp_data = object_with_workers.new(camp_entity, 10)
+    ---@cast camp_data CampData
+    camp_data.entity = camp_entity
+    camp_data.workers = {}
+    camp_data.potential = {}
+    camp_data.recent = {}
+    camp_data.path_requests = {}
+    camp_data.entity_name = camp_entity.name
+    camp_data.surface_index = camp_entity.surface.index
+    camp_data.force_index = camp_entity.force.index
+    camp_data.unit_number = camp_entity.unit_number
+    camp_data.defines = camp_defines.camps[camp_entity.name]
 
     setmetatable(camp_data, camp_metatable)
     if not script_data.targeted_resources[camp_data.surface_index] then
@@ -141,10 +147,22 @@ local direction_names =
   [6] = "west"
 }
 
+---@param amount integer? Amount of workers to add. Defaults to 1
+---@return integer added The number of workers added
+function camp:add_workers(amount)
+    amount = amount or 1
+    local old_worker_count = self.assigned_workers
+    self.assigned_workers = math.min(self.assigned_workers + amount, self.max_workers)
+    local added_workers = self.assigned_workers - old_worker_count
+    return added_workers
+end
+
 ---Spawn a new worker
 ---@return CampWorkerData? worker The worker entity or nil if the worker can't be created
 function camp:spawn_worker()
-    if self:get_active_worker_count() >= self:get_worker_item_count() then
+    local active_count = self:get_active_worker_count()
+    local available_count = self.assigned_workers
+    if active_count >= available_count then
       return
     end
   
@@ -290,21 +308,12 @@ local max_target_amount = 65000 / 250
 ---@param extra boolean? Add one extra to the amount of already active number of workers
 ---@return integer amount Number of workers to spawn
 function camp:get_should_spawn_worker_count(extra)
-    -- Number of worker items in the camp
-    local max_workers = self:get_worker_item_count()
-
-    local active = (self:get_active_worker_count() - (extra and 1 or 0))
-
-    if active >= max_workers then return 0 end
-
-    -- ???
-    local current_target_item_count = math.min(target_amount_per_drone , max_target_amount) * max_workers
-    local current_item_count = self:get_max_output_amount()
-
-    -- ???
-    local ratio = 1 - ((current_item_count / current_target_item_count) ^ 2)
-
-    return math.ceil(ratio * max_workers) - active
+    local active_count = self:get_active_worker_count()
+    local available_count = self.assigned_workers
+    if available_count >= active_count then
+      return available_count - active_count
+    end
+    return 0
 end
 
 ---Spawn flying text at the camp
@@ -317,15 +326,7 @@ function camp:say(text, y_offset)
 end
 
 function camp:try_to_mine_targets()
-    local max_workers = self:get_worker_item_count()
-    local active = self:get_active_worker_count()
-  
-    if active >= max_workers then
-        return
-    end
-  
     local should_spawn_count = self:get_should_spawn_worker_count()
-  
     if should_spawn_count <= 0 then return end
   
     for k = 1, should_spawn_count do
@@ -740,6 +741,9 @@ end
 function camp:handle_camp_deletion()
     self:cancel_all_orders()
     self.workers = nil
+
+    script_data.camps[self.unit_number] = nil
+    object_with_workers.remove(self)
 end
 
 ---Get the number of active workers
@@ -818,6 +822,8 @@ local flags = {cache = false, low_priority = false}
 ---Will make a path request, and if it passes, send a worker to go mine it.
 ---@param resource_entity LuaEntity
 function camp:request_path(resource_entity)
+    if not self.entity then return end
+
     local box, mask = get_box_and_mask(camp_defines.camps[self.entity_name].worker_name)
     util.highlight_position(self.entity.surface, resource_entity.position, {r=1, g=0, b=0, a=1})
     util.highlight_position(self.entity.surface, self.entity.position, {r=0, g=1, b=0, a=1})
@@ -944,6 +950,7 @@ lib.on_configuration_changed = function()
     if not global.camps then 
         global.camps = script_data
     end
+
     if not script_data.big_migration then
         script_data.big_migration = true
         script_data.targeted_resources = {}
