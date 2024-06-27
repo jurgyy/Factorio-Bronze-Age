@@ -81,6 +81,15 @@ function dist.add_population(surface_index, amount)
     end
 end
 
+---@param pop integer
+---@param amount integer
+---@return integer
+local function calculate_ratio(pop, amount)
+    if amount ~= 0 then
+        return math.min(1, pop / amount)
+    end
+    return 0
+end
 
 ---Recalculate the worker distribution of all buildings on a surface
 ---@param surface_index integer
@@ -115,46 +124,38 @@ function dist.recalculate(surface_index)
         ::continue::
     end
 
-    local ratio_high, ration_medium, ration_low = 0, 0, 0
-    WorkforceNeeded = math.floor(high + medium + low)
+    local total_needed = math.floor(high + medium + low)
 
-    if high ~= 0 then
-        ratio_high = math.min(1, pop / high)
-    end
-    if medium ~= 0 then
-        ration_medium = math.min(1, (pop - high) / medium)
-    end
-    if low ~= 0 then
-        ration_low = math.min(1, (pop - high - medium) / low)
-    end
+    local priority_ratios = {
+        [Priority.High] = calculate_ratio(pop, high),
+        [Priority.Medium] = calculate_ratio(pop - high, medium),
+        [Priority.Low] = calculate_ratio(pop - high - medium, low)
+    }
 
-    for _, building in pairs(buildings) do
+    local bRatios = {}
+    for unit_number, building in pairs(buildings) do
+        --local category = b:getCategory()
+        local priority = Priority.Medium -- priorityMap[category]
+        bRatios[unit_number] = math.floor(building.max_workers * priority_ratios[priority])
         building.assigned_workers = 0
     end
 
-    while pop_remaining > pop - WorkforceNeeded or pop_remaining == 0 do
-        for _, b in pairs(buildings) do
+    while pop_remaining > pop - total_needed or pop_remaining == 0 do
+        for unit_number, ratio in pairs(bRatios) do
+            local b = buildings[unit_number]
             if pop_remaining <= 0 then
                 break
             end
 
-            --local category = b:getCategory()
-            local priority = Priority.Medium--priorityMap[category]
             local bPopMax = b.max_workers
             local bPop = b.assigned_workers
 
-            if priority == Priority.High and bPopMax > bPop and math.floor(bPopMax * ratio_high) >= bPop then
+            if bPopMax > bPop and ratio >= bPop then
                 pop_remaining = pop_remaining - 1
-                b.assigned_workers = b.assigned_workers + 1
-            elseif priority == Priority.Medium and bPopMax > bPop and math.floor(bPopMax * ration_medium) >= bPop then
-                pop_remaining = pop_remaining - 1
-                b.assigned_workers = b.assigned_workers + 1
-            elseif priority == Priority.Low and bPopMax > bPop and math.floor(bPopMax * ration_low) >= bPop then
-                pop_remaining = pop_remaining - 1
-                b.assigned_workers = b.assigned_workers + 1
+                b:add_workers(1)
+            else
+                bRatios[unit_number] = nil
             end
-
-            ::continue::
         end
 
         if pop_remaining <= 0 then
