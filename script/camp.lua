@@ -542,8 +542,9 @@ end
 
 ---TODO comments
 ---@param resource_entity LuaEntity
----@return integer
+---@return integer?
 function camp:get_mining_count(resource_entity)
+    if not self.target_resource_defines then return end
     local type = resource_entity.type
     if type == "resource" then
         local resource_define = self.target_resource_defines[resource_entity.name]
@@ -581,6 +582,10 @@ function camp:order_worker(worker, resource_entity)
     end
   
     local mining_count = self:get_mining_count(resource_entity)
+    if not mining_count then
+        self:return_worker(worker)
+        return
+    end
   
     worker.entity.speed = self:get_worker_speed()
     worker:mine_entity(resource_entity, mining_count)
