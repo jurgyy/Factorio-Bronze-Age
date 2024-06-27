@@ -5,23 +5,35 @@ local worker_distribution = require("script/worker-distribution")
 ---@field assigned_workers integer Current amount of workers available
 ---@field max_workers integer Maximum number of workers
 ---@field entity LuaEntity
-object_with_worker = {}
+object_with_worker = {
+    assigned_workers = 0
+}
 
----@param entity LuaEntity Target entity
----@param max_workers integer Maximum number of workers
+local object_with_worker_metatable = {
+    __index = object_with_worker
+}
+
+
+---@param entity LuaEntity? Target entity
+---@param max_workers integer? Maximum number of workers
+---@param o any? Data for the instance of the inheriting class
 ---@return ScriptObjectWithWorkers
-function object_with_worker.new(entity, max_workers)
-    local data = {
-        assigned_workers = 0,
-        max_workers = max_workers,
-        entity = entity
-    }
-    worker_distribution.add_building(data)
-    return data
+function object_with_worker:new(entity, max_workers, o)
+    o = o or {}
+    setmetatable(o, object_with_worker_metatable)
+
+    if entity then
+        o.max_workers = max_workers
+        o.entity = entity
+    
+        worker_distribution.add_building(o)
+    end
+
+    return o
 end
 
-function object_with_worker.remove(data)
-    worker_distribution.remove_building(data)
+function object_with_worker:handle_deletion()
+    worker_distribution.remove_building(self)
 end
 
 ---@param amount integer? Amount of workers to add

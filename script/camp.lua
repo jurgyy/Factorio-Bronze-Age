@@ -22,7 +22,7 @@ local object_with_workers = require("script/object-with-workers")
 ---@field current_recipe_name string? Name of the currently selected recipe
 ---@field target_resource_defines table<string, CampDefinesResource>? Current selected recipe
 ---@field defines CampDefinesCamp Prototype and script data about the camp type
-local camp = {}
+local camp = object_with_workers:new()
 local camp_metatable = {
     __index = camp,
     __eq = function (a, b)
@@ -81,21 +81,23 @@ end
 ---Initialize a new camp
 ---@param camp_entity LuaEntity The new camp entity
 ---@return CampData camp_data The script data for the new camp
-function camp.new(camp_entity)
-    local camp_data = object_with_workers.new(camp_entity, 10)
-    ---@cast camp_data CampData
-    camp_data.entity = camp_entity
-    camp_data.workers = {}
-    camp_data.potential = {}
-    camp_data.recent = {}
-    camp_data.path_requests = {}
-    camp_data.entity_name = camp_entity.name
-    camp_data.surface_index = camp_entity.surface.index
-    camp_data.force_index = camp_entity.force.index
-    camp_data.unit_number = camp_entity.unit_number
-    camp_data.defines = camp_defines.camps[camp_entity.name]
-
+function camp:new(camp_entity)
+    local camp_data = object_with_workers.new(self, camp_entity, 10, {
+        workers = {},
+        potiential = {},
+        recent = {},
+        path_requests = {},
+        entity_name = camp_entity.name,
+        surface_index = camp_entity.surface.index,
+        force_index = camp_entity.force.index,
+        unit_number = camp_entity.unit_number,
+        defines = camp_defines.camps[camp_entity.name]
+    })
+    
     setmetatable(camp_data, camp_metatable)
+    self.__index = self
+    
+    --[[@cast camp_data CampData]]
     if not script_data.targeted_resources[camp_data.surface_index] then
         script_data.targeted_resources[camp_data.surface_index] = {}
     end
@@ -116,7 +118,7 @@ local on_built_entity = function(event)
   
     if camp_defines.camps[entity.name] == nil then return end
   
-    camp.new(entity)
+    camp:new(entity)
 end
 
 function camp:add_box()
@@ -147,15 +149,6 @@ local direction_names =
   [6] = "west"
 }
 
----@param amount integer? Amount of workers to add. Defaults to 1
----@return integer added The number of workers added
-function camp:add_workers(amount)
-    amount = amount or 1
-    local old_worker_count = self.assigned_workers
-    self.assigned_workers = math.min(self.assigned_workers + amount, self.max_workers)
-    local added_workers = self.assigned_workers - old_worker_count
-    return added_workers
-end
 
 ---Spawn a new worker
 ---@return CampWorkerData? worker The worker entity or nil if the worker can't be created
@@ -748,7 +741,7 @@ function camp:handle_camp_deletion()
     self.workers = nil
 
     script_data.camps[self.unit_number] = nil
-    object_with_workers.remove(self)
+    self:handle_deletion()
 end
 
 ---Get the number of active workers
