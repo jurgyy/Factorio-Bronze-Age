@@ -431,7 +431,7 @@ function camp:find_potential_targets()
             area = self:get_mining_area(),
             name = name
         }
-        self:say("Found " .. tostring(#found) .. " " .. tostring(name) .. " (" .. resource_define.type .. ")", i)
+        
         i = i + 1
         if not unsorted then
             unsorted = found
@@ -441,7 +441,7 @@ function camp:find_potential_targets()
             end
         end
     end
-    util.highlight_bbox(self.entity.surface, self:get_mining_area())
+    --util.highlight_bbox(self.entity.surface, self:get_mining_area())
   
     self.potential = self:sort_by_distance(unsorted)
     self.recent = {}
@@ -645,26 +645,22 @@ function camp:handle_path_request_finished(event)
     self.path_requests[event.id] = nil
   
     if event.try_again_later then
-        self:say("Try again later")
         self:attempt_to_mine(entity)
         return
     end
   
     if not (event.path and self.entity.valid) then
         --we can't reach it, don't spawn any workers.
-        self:say("Can't reach")
         self:add_mining_target(entity, true)
         return
     end
     local worker = self:spawn_worker()
     
     if not worker then
-        self:say("Can't spawn")
          --For some reason, we can't spawn a worker
         self:add_mining_target(entity)
         return
     end
-    self:say("Spawned")
     self:order_worker(worker, entity)
 end
 
@@ -678,7 +674,6 @@ local direction_name =
 
 ---Event handler for when a worker deposits a resource
 function camp:on_resource_given()
-    self:say("Resource given")
     return
 end
 
@@ -823,8 +818,8 @@ function camp:request_path(resource_entity)
     if not self.entity then return end
 
     local box, mask = get_box_and_mask(camp_defines.camps[self.entity_name].worker_name)
-    util.highlight_position(self.entity.surface, resource_entity.position, {r=1, g=0, b=0, a=1})
-    util.highlight_position(self.entity.surface, self.entity.position, {r=0, g=1, b=0, a=1})
+    --util.highlight_position(self.entity.surface, resource_entity.position, {r=1, g=0, b=0, a=1})
+    --util.highlight_position(self.entity.surface, self.entity.position, {r=0, g=1, b=0, a=1})
     local path_request_id = self.entity.surface.request_path{
         bounding_box = box,
         collision_mask = mask,
