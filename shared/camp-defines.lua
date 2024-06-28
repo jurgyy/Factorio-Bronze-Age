@@ -11,7 +11,9 @@
 
 ---@class CampDefineRecipe
 ---@field result string
+---@field store_amount integer Amount of the resource that can be stored in the camp
 ---@field targets string[]
+---@field carry_count integer How much of this resource can a worker haul in one go
 
 ---@class CampDefinesWorker
 ---@field mining_interval integer
@@ -19,7 +21,6 @@
 ---@field range number Attack range of the worker
 
 ---@class CampDefinesResource
----@field carry_count integer How much of this resource can a worker haul in one go
 ---@field category string Recipe category
 ---@field type CampDefinesResourceType Type of resource
 ---@field visual_type CampDefinesResourceType? Type that the resource sounds and looks like. If nil it falls back to type
@@ -44,7 +45,9 @@ local data = {
             recipes = {
                 ["loggers-camp-wood"] = {
                     result = "wood",
-                    targets = {"wood", "ba-fallen-tree-resource"}
+                    store_amount = 250,
+                    targets = {"wood", "ba-fallen-tree-resource"},
+                    carry_count = 3,
                 }
             },
         },
@@ -58,7 +61,9 @@ local data = {
             recipes = {
                 ["mining-camp-coal"] = {
                     result = "coal",
-                    targets = {"coal"}
+                    store_amount = 250,
+                    targets = {"coal"},
+                    carry_count = 3,
                 }
             },
         }
@@ -77,18 +82,15 @@ local data = {
     },
     resources = {
         ["wood"] = {
-            carry_count = 3,
             category = "logging",
             type = "tree"
         },
         ["ba-fallen-tree-resource"] = {
-            carry_count = 3,
             category = "logging",
             type = "resource",
             visual_type = "tree"
         },
         ["coal"] = {
-            carry_count = 3,
             category = "mining",
             type = "resource"
         }

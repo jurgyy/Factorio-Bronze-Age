@@ -251,7 +251,8 @@ function camp_worker:process_mining()
             else
                 error("Worker has no camp")
             end
-            self:mine_entity(fallen_tree, camps_data.resources[fallen_tree_name].carry_count)
+
+            self:mine_entity(fallen_tree, camp:get_target_carry_count())
         end
         return
     end

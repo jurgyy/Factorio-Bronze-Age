@@ -214,7 +214,6 @@ function camp:get_target_resource_names()
 end
 
 ---Get the carry count of the target resource
----TODO optimize with get_target_resource_name()
 ---@return integer?
 function camp:get_target_carry_count()
     local recipe = self.entity.get_recipe()
@@ -223,7 +222,7 @@ function camp:get_target_carry_count()
     local target_name = self.defines.recipes[recipe.name]
     if not target_name then return end
 
-    return camp_defines.resources[target_name].carry_count
+    return self.defines.recipes[self.current_recipe_name].carry_count
 end
 
 ---Get the current selected recipe name
@@ -301,10 +300,27 @@ local max_target_amount = 65000 / 250
 ---@param extra boolean? Add one extra to the amount of already active number of workers
 ---@return integer amount Number of workers to spawn
 function camp:get_should_spawn_worker_count(extra)
-    local active_count = self:get_active_worker_count()
     local available_count = self.assigned_workers
+    local active_count = self:get_active_worker_count()
+    if available_count == 0 or available_count == active_count then return 0 end
+
+    local current_recipe_name = self:get_current_recipe_name()
+    if not current_recipe_name then return 0 end
+    
+    local recipe_define = self.defines.recipes[current_recipe_name]
+    
+    local output = self:get_output_inventory()
+    local output_count = output.get_contents()[recipe_define.result] or 0
+    
+    if output_count >= recipe_define.store_amount then return 0 end
+    
     if available_count >= active_count then
-      return available_count - active_count
+        local remaining_count = recipe_define.store_amount - output_count
+        local carry_count = self:get_target_carry_count()
+        local max_workers = math.floor(remaining_count / carry_count)
+        local max_unspawned = math.max(0, max_workers - active_count)
+
+      return math.min(available_count - active_count, max_unspawned)
     end
     return 0
 end
@@ -540,10 +556,9 @@ function camp:get_mining_count(resource_entity)
     if not self.target_resource_defines then return end
     local type = resource_entity.type
     if type == "resource" then
-        local resource_define = self.target_resource_defines[resource_entity.name]
-        if not resource_define then error("No resource define for " .. resource_entity.name) end
+        local carry_count = self.defines.recipes[self.current_recipe_name].carry_count
 
-        return math.min(resource_define.carry_count, resource_entity.amount) --[[@as integer]]
+        return math.min(carry_count, resource_entity.amount) --[[@as integer]]
     elseif type == "tree" then
         -- TODO set to 0?
 
