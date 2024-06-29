@@ -1,7 +1,7 @@
 return {
     type = "recipe",
-    name = "potter",
-    localised_name = {"potter"},
+    name = "pottery-workshop",
+    localised_name = {"pottery-workshop"},
     enabled = false,
     ingredients =
     {
@@ -9,5 +9,5 @@ return {
       {"stone", 10}
     },
     energy_required = 5,
-    result = "potter"
+    result = "pottery-workshop"
 }

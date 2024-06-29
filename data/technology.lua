@@ -10,11 +10,19 @@ data:extend{{
     {
       {
         type = "unlock-recipe",
-        recipe = "potter"
+        recipe = "pottery-workshop"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "unfired-pottery"
       },
       {
         type = "unlock-recipe",
         recipe = "pottery"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "unfired-bricks"
       },
       {
         type = "unlock-recipe",

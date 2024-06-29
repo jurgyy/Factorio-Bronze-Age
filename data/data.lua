@@ -15,13 +15,16 @@ require(data_util.data_root .. "marble/data")
 require(data_util.data_root .. "masonry/data")
 require(data_util.data_root .. "mining-camp/data")
 require(data_util.data_root .. "oracle/data")
-require(data_util.data_root .. "potter/data")
+require(data_util.data_root .. "pottery-workshop/data")
 require(data_util.data_root .. "pottery/data")
 require(data_util.data_root .. "shacks/data")
 require(data_util.data_root .. "simple-furnace/data")
 require(data_util.data_root .. "tin-ore/data")
+require(data_util.data_root .. "unfired-bricks/data")
+require(data_util.data_root .. "unfired-pottery/data")
 
 require(data_util.data_root .. "technology")
+require(data_util.data_root .. "recipe-categories")
 
 data:extend{require(data_util.data_root .. "fallen-tree-resource")}
 data:extend{require(data_util.data_root .. "electric-pole-compound-entity")}

@@ -2,11 +2,11 @@ return {
     type = "recipe",
     name = "bricks",
     localised_name = {"bricks"},
+    category = "wood-burn",
     enabled = false,
     ingredients =
     {
-      {"wood", 10},
-      {"clay", 10}
+      {"unfired-bricks", 1},
     },
     energy_required = 5,
     result = "bricks"
