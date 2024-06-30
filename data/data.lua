@@ -27,9 +27,12 @@ require(data_util.data_root .. "unfired-clay-idol/data")
 
 require(data_util.data_root .. "technology")
 require(data_util.data_root .. "recipe-categories")
+require(data_util.data_root .. "fuel-categories")
 
 data:extend{require(data_util.data_root .. "fallen-tree-resource")}
 data:extend{require(data_util.data_root .. "electric-pole-compound-entity")}
+
+data.raw["item"]["wood"].fuel_category = "wood-burn"
 
 for _, camp in pairs(camp_defines.camps) do
     if not data.raw["item"][camp.worker_name] then
