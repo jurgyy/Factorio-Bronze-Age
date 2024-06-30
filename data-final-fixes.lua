@@ -321,3 +321,8 @@ for resource_name, define in pairs(camp_defines.resources) do
     if not entity then error("No entity") end
     make_resource_attack_proxy(entity, visual_type)
 end
+
+for _, character in pairs(data.raw["character"]) do
+    table.insert(character.crafting_categories, "pottery-or-handcrafting")
+    table.insert(character.crafting_categories, "masonry-or-handcrafting")
+end

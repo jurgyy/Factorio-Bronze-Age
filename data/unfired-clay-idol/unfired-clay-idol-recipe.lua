@@ -1,8 +1,8 @@
-
-local handcraft_recipe =  {
+return {
     type = "recipe",
-    name = "unfired-clay-idol-hand-craft",
+    name = "unfired-clay-idol",
     localised_name = {"unfired-clay-idol"},
+    category = "pottery-or-handcrafting",
     enabled = true,
     ingredients = {
       {"clay", 3}
@@ -10,10 +10,3 @@ local handcraft_recipe =  {
     energy_required = 5,
     result = "unfired-clay-idol"
 }
-
-local pottery_recipe = table.deepcopy(handcraft_recipe)
-pottery_recipe.name = "unfired-clay-idol"
-pottery_recipe.category = "pottery"
-pottery_recipe.hide_from_player_crafting = true
-
-return {handcraft_recipe, pottery_recipe}

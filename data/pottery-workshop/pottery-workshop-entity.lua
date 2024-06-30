@@ -67,7 +67,7 @@ return {
         }
     },
 
-    crafting_categories = {"pottery"},
+    crafting_categories = {"pottery", "pottery-or-handcrafting"},
     crafting_speed = 1,
     energy_source =
     {
