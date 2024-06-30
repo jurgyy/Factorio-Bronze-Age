@@ -8,7 +8,7 @@ local name = "pottery-workshop"
 return {
     type = "assembling-machine",
     name = name,
-    icon = "__base__/graphics/icons/assembling-machine-3.png",
+    icon = data_util.icons_root .. "potter.png",
     icon_size = 64, icon_mipmaps = 4,
     flags = {"placeable-neutral","placeable-player", "player-creation"},
     minable = {mining_time = 0.2, result = name},
