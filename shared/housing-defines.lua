@@ -19,7 +19,7 @@
 ---@type HousingDefines
 return {
     ["shacks"] = {
-        workers = 5,
+        workers = 3,
         upgrades_to = nil--"hut"
     },
     ["hut"] = {

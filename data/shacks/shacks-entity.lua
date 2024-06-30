@@ -28,5 +28,5 @@ return {
       }
     },
     vehicle_impact_sound = nil,
-    production = "5W"
+    production = "3W",
 }
