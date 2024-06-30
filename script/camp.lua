@@ -292,10 +292,6 @@ function camp:update()
     self:try_to_mine_targets()
 end
 
--- ???
-local target_amount_per_drone = 100
-local max_target_amount = 65000 / 250
-
 ---How many workers should be spawned
 ---@param extra boolean? Add one extra to the amount of already active number of workers
 ---@return integer amount Number of workers to spawn
@@ -320,7 +316,7 @@ function camp:get_should_spawn_worker_count(extra)
         local max_workers = math.floor(remaining_count / carry_count)
         local max_unspawned = math.max(0, max_workers - active_count)
 
-      return math.min(available_count - active_count, max_unspawned)
+        return math.min(available_count - active_count, max_unspawned)
     end
     return 0
 end
@@ -472,7 +468,7 @@ function camp:add_resource_and_mine(entity, mining)
     local index = unique_index(entity)
     targeted_resources[index] = {
         entity = entity,
-        camps = {},
+        camps = { [self.unit_number] = true },
         max_mining = math.ceil(entity.get_radius() ^ 2),
         mining = mining or 0
     }
