@@ -1,7 +1,7 @@
 return {
     type = "recipe",
     name = "copper-ingot",
-    category = "smelting",
+    category = "coal-burn",
     localised_name = {"copper-ingot"},
     enabled = false,
     ingredients =
