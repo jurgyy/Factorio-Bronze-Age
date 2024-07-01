@@ -18,5 +18,9 @@ data:extend{
     {
         type = "recipe-category",
         name = "masonry-or-handcrafting"
+    },
+    {
+        type = "recipe-category",
+        name = "forge"
     }
 }
