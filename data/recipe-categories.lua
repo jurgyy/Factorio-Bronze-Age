@@ -30,5 +30,9 @@ data:extend{
     {
         type = "recipe-category",
         name = "pyrolysis"
+    },
+    {
+        type = "recipe-category",
+        name = "copper-smith"
     }
 }
