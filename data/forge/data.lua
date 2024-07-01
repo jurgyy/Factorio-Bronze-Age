@@ -3,5 +3,6 @@ local root = data_util.data_root .. "forge/"
 
 data:extend{
     require(root .. "forge-item"),
-    require(root .. "forge-recipe")
+    require(root .. "forge-recipe"),
+    require(root .. "forge-entity"),
 }

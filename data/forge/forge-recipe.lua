@@ -2,6 +2,7 @@ return {
     type = "recipe",
     name = "forge",
     localised_name = {"forge"},
+    category = "masonry",
     enabled = false,
     ingredients =
     {
