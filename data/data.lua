@@ -3,6 +3,7 @@ local camp_defines = require("shared/camp-defines")
 
 require(data_util.data_root .. "bricks/data")
 require(data_util.data_root .. "charcoal/data")
+require(data_util.data_root .. "charcoal-pit/data")
 require(data_util.data_root .. "clay/data")
 require(data_util.data_root .. "clay-idol/data")
 require(data_util.data_root .. "copper-ingot/data")
