@@ -2,6 +2,7 @@ return {
     type = "recipe",
     name = "pottery-workshop",
     localised_name = {"pottery-workshop"},
+    category = "masonry-or-handcrafting",
     enabled = false,
     ingredients =
     {
