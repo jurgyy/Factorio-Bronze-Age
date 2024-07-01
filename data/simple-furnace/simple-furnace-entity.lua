@@ -7,7 +7,7 @@ return {
     icon = "__base__/graphics/icons/stone-furnace.png",
     icon_size = 64, icon_mipmaps = 4,
     flags = {"placeable-neutral", "placeable-player", "player-creation"},
-    minable = {mining_time = 0.2, result = "stone-furnace"},
+    minable = {mining_time = 0.2, result = "simple-furnace"},
     max_health = 200,
     corpse = "stone-furnace-remnants",
     dying_explosion = "stone-furnace-explosion",
