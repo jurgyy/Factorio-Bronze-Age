@@ -22,5 +22,13 @@ data:extend{
     {
         type = "recipe-category",
         name = "forge"
+    },
+    {
+        type = "recipe-category",
+        name = "coal-burn"
+    },
+    {
+        type = "recipe-category",
+        name = "pyrolysis"
     }
 }
