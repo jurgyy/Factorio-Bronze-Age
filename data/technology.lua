@@ -69,6 +69,10 @@ data:extend{{
       },
       {
         type = "unlock-recipe",
+        recipe = "copper-ingot"
+      },
+      {
+        type = "unlock-recipe",
         recipe = "copper-smith"
       },
       {
