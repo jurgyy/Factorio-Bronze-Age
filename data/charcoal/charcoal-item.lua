@@ -7,6 +7,8 @@ return {
     icon_size = 64,
     icon_mipmaps = 1,
     flags = {},
+    fuel_category = "coal-burn",
+    fuel_value = "3MJ",
     subgroup = "raw-material",
     order = "za-charcoal",
     stack_size = 50
