@@ -9,5 +9,6 @@ return {
     flags = {},
     subgroup = "production-machine",
     order = "za-oracle",
+    place_result = "oracle",
     stack_size = 50
 }
