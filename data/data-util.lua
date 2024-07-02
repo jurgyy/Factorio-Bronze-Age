@@ -8,14 +8,16 @@ data_util.tech_icons_root = data_util.graphics_root .. "technology/"
 
 ---@param width integer
 ---@param height integer
+---@param tint Color?
 ---@return data.Sprite
-function data_util.place_holder_sprite(width, height)
+function data_util.place_holder_sprite(width, height, tint)
     return {
         filename = "__bronze-age__/graphics/placeholder/construction/construction-"..width.."-"..height..".png",
         priority = "extra-high",
         width = width * 64,
         height = height * 64 + 16,
         shift = util.by_pixel(-0.25, -0.5),
+        tint = tint,
         scale = 0.5,
         hr_version =
         {
@@ -24,6 +26,7 @@ function data_util.place_holder_sprite(width, height)
             width = width * 64,
             height = height * 64 + 16,
             shift = util.by_pixel(-0.25, -0.5),
+            tint = tint,
             scale = 0.5
         }
     }
