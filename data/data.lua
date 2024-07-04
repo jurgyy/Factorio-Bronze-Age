@@ -26,6 +26,7 @@ require(data_util.data_root .. "unfired-bricks/data")
 require(data_util.data_root .. "unfired-pottery/data")
 require(data_util.data_root .. "unfired-clay-idol/data")
 
+require(data_util.data_root .. "resources/data")
 require(data_util.data_root .. "technology")
 require(data_util.data_root .. "recipe-categories")
 require(data_util.data_root .. "fuel-categories")
