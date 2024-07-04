@@ -19,7 +19,7 @@ local function resource(resource_parameters, autoplace_parameters, initizalize)
     if coverage == nil then coverage = 0.02 end
     
     ---@type data.ResourceEntityPrototype
-    local resource = {
+    local entity = {
         type = "resource",
         name = resource_parameters.name,
         icon = data_util.icons_root .. resource_parameters.name .. ".png",
@@ -75,7 +75,40 @@ local function resource(resource_parameters, autoplace_parameters, initizalize)
         map_color = resource_parameters.map_color,
         mining_visualisation_tint = resource_parameters.mining_visualisation_tint
     }
-    return resource
+    return entity
+end
+
+data.raw["resource"]["iron-ore"].autoplace = resource_autoplace.resource_autoplace_settings
+{
+    name = "iron-ore",
+    order = "b",
+    base_density = 1, -- From 10
+    has_starting_area_placement = false,
+    regular_rq_factor_multiplier = 1.10,
+    regular_blob_amplitude_multiplier = 0.5, -- new
+    --candidate_spot_count = 22,
+    base_spots_per_km2 = 0.75 -- new
+}
+
+data.raw["resource"]["coal"].autoplace = resource_autoplace.resource_autoplace_settings
+{
+    name = "coal",
+    order = "b",
+    base_density = 2, -- From 8,
+    has_starting_area_placement = false,
+    regular_rq_factor_multiplier = 1.1,
+    regular_blob_amplitude_multiplier = 0.75, -- new default is 1
+    base_spots_per_km2 = 3.5 -- new default is 2.5
+}
+
+-- Remove resources from the world generation and the sliders in the menu
+local removed_resources = {"uranium-ore", "crude-oil"}
+for _, resource_name in pairs(removed_resources) do
+    data.raw["resource"][resource_name] = nil
+    data.raw["autoplace-control"][resource_name] = nil
+    data.raw["map-gen-presets"]["default"]["rail-world"].basic_settings.autoplace_controls[resource_name] = nil
+    data.raw["map-gen-presets"]["default"]["ribbon-world"].basic_settings.autoplace_controls[resource_name] = nil
+    data.raw["map-gen-presets"]["default"]["rich-resources"].basic_settings.autoplace_controls[resource_name] = nil
 end
 
 local marble = require(root .. "marble-resource")
