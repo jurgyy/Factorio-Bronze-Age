@@ -64,6 +64,30 @@ local data = {
                     store_amount = 250,
                     targets = {"coal"},
                     carry_count = 3,
+                },
+                ["mining-camp-copper"] = {
+                    result = "copper-ore",
+                    store_amount = 250,
+                    targets = {"copper-ore"},
+                    carry_count = 3,
+                },
+                ["mining-camp-iron"] = {
+                    result = "iron-ore",
+                    store_amount = 250,
+                    targets = {"iron-ore"},
+                    carry_count = 3,
+                },
+                ["mining-camp-marble"] = {
+                    result = "marble",
+                    store_amount = 250,
+                    targets = {"marble"},
+                    carry_count = 3,
+                },
+                ["mining-camp-clay"] = {
+                    result = "clay",
+                    store_amount = 250,
+                    targets = {"clay"},
+                    carry_count = 3,
                 }
             },
         }
@@ -91,6 +115,22 @@ local data = {
             visual_type = "tree"
         },
         ["coal"] = {
+            category = "mining",
+            type = "resource"
+        },
+        ["copper-ore"] = {
+            category = "mining",
+            type = "resource"
+        },
+        ["iron-ore"] = {
+            category = "mining",
+            type = "resource"
+        },
+        ["marble"] = {
+            category = "mining",
+            type = "resource"
+        },
+        ["clay"] = {
             category = "mining",
             type = "resource"
         }
