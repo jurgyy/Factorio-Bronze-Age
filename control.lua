@@ -255,6 +255,7 @@ handler.add_lib(require("script/camp-worker"))
 handler.add_lib(require("script/camp"))
 handler.add_lib(require("script/housing"))
 handler.add_lib(require("script/worker-distribution"))
+handler.add_lib(require("script/worker-compounds"))
 
 commands.add_command("ba-reinitialize", nil, initialize_globals)
 

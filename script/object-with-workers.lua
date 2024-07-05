@@ -23,6 +23,8 @@ function object_with_worker:new(entity, max_workers, o)
     setmetatable(o, object_with_worker_metatable)
 
     if entity then
+        if not entity.unit_number then error("currently only entities with unit number are supported") end
+
         o.max_workers = max_workers
         o.entity = entity
     
@@ -44,6 +46,11 @@ function object_with_worker:add_workers(amount)
     self.assigned_workers = math.min(self.assigned_workers + amount, self.max_workers)
     local added_workers = self.assigned_workers - old_worker_count
     return added_workers
+end
+
+---Should be called assigned_workers is changed. Can be overloaded by derived class
+function object_with_worker:on_workers_set()
+    game.print("base")
 end
 
 return object_with_worker

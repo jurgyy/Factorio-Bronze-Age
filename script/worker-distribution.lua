@@ -163,6 +163,10 @@ function dist.recalculate(surface_index)
         end
     end
 
+    for unit_number, building in pairs(buildings) do
+        building:on_workers_set()
+    end
+
     game.print("Unemployed: " .. pop_remaining)
     self.unemployed = pop_remaining
     --lastActiveNbr = city:getActiveBuilding() -- Update the lastActiveNbr with the current active building count
