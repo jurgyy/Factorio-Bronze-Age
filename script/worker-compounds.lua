@@ -23,19 +23,7 @@ local function spawn_compound(source_entity, name)
     local compound = source_entity.surface.create_entity{
         name = name,
         --position = source_entity.position,
-        position = {x = source_entity.position.x + 1, y = source_entity.position.y},
-        force = source_entity.force
-    }
-    if not compound or not compound.valid then
-        error(name .. " not valid")
-    end
-    return compound
-end
-
-local function spawn_compound2(source_entity, name)
-    local compound = source_entity.surface.create_entity{
-        name = name,
-        position = {x = source_entity.position.x - 1, y = source_entity.position.y},
+        position = source_entity.position,
         force = source_entity.force
     }
     if not compound or not compound.valid then
@@ -54,21 +42,25 @@ function worker_compounds:new(entity)
 
     local compounds_data = object_with_workers.new(self, entity, entity_define.max_workers, {
         eei = spawn_compound(entity, "compound-eei"),
-        pole = spawn_compound2(entity, "electric-pole-compound")
+        pole = spawn_compound(entity, "electric-pole-compound")
     })
-
+    
     setmetatable(compounds_data, metatable)
     --[[@cast compounds_data WorkerCompoundsData]]
     
     script_data.compounds[entity.unit_number] = compounds_data
 
+    -- Eei's can only provide power per tick equal to their buffer size.
+    -- To minimize the buffer size set it to the maximum power draw needed: max_workers / 60
+    -- But divide by 59 to give it a little bit of extra juice to handle short spikes of extra power draw
+    -- Which happens for example during pickup and dropoff of inserters
+    compounds_data.eei.electric_buffer_size = compounds_data.max_workers / 59
     compounds_data.eei.power_production = 0
 
     return compounds_data
 end
 
 function worker_compounds:handle_entity_deletion()
-    game.print("deletion")
     if self.eei and self.eei.valid then
         self.eei.destroy()
     end

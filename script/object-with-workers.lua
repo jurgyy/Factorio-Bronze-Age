@@ -50,7 +50,6 @@ end
 
 ---Should be called assigned_workers is changed. Can be overloaded by derived class
 function object_with_worker:on_workers_set()
-    game.print("base")
 end
 
 return object_with_worker
