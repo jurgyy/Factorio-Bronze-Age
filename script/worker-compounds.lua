@@ -38,7 +38,10 @@ end
 function worker_compounds:new(entity)
     local entity_define = get_entities_with_workers_defines()[entity.name]
     if not entity_define then return end
-    game.print("New")
+
+    if entity_define.max_workers > 100 then
+        game.print("WARNING: large number of workers detected (".. entity_define.max_workers .."). Possibly not balanced for this mod")
+    end
 
     local compounds_data = object_with_workers.new(self, entity, entity_define.max_workers, {
         eei = spawn_compound(entity, "compound-eei"),
@@ -74,7 +77,6 @@ function worker_compounds:handle_entity_deletion()
 end
 
 function worker_compounds:on_workers_set()
-    game.print("worker_compounds")
     local ratio = self.assigned_workers / self.max_workers
     self.eei.power_production = self.max_workers * ratio / 60 -- Unit is in joulticks therefore divide it by 60
 end
