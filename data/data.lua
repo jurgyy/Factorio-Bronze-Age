@@ -1,6 +1,8 @@
 local data_util = require("__bronze-age__/data/data-util")
 local camp_defines = require("shared/camp-defines")
 
+require(data_util.data_root .. "base-overrides/data")
+
 require(data_util.data_root .. "bricks/data")
 require(data_util.data_root .. "charcoal/data")
 require(data_util.data_root .. "charcoal-pit/data")
@@ -31,7 +33,6 @@ require(data_util.data_root .. "technology")
 require(data_util.data_root .. "recipe-categories")
 require(data_util.data_root .. "fuel-categories")
 
-require(data_util.data_root .. "base-overrides/data")
 
 data:extend{require(data_util.data_root .. "fallen-tree-resource")}
 data:extend{require(data_util.data_root .. "eei-compound-entity")}
