@@ -392,13 +392,13 @@ function camp_worker:update(event)
     end
 
     if self.state == states.mining_entity then
-        self:say("Mining completed")
+        --self:say("Mining completed")
         self:process_mining()
         return
     end
 
     if self.state == states.return_to_camp then
-        self:say("Returning completed")
+        --self:say("Returning completed")
         self:process_return_to_camp()
         return
     end
@@ -603,7 +603,6 @@ end
 ---Event handler for all events that might remove a worker
 ---@param event EventData.on_player_mined_entity|EventData.on_robot_mined_entity|EventData.on_entity_died|EventData.script_raised_destroy
 local on_entity_removed = function(event)
-    game.print("Worker delete")
     local entity = event.entity
     if not (entity and entity.valid) then return end
 
