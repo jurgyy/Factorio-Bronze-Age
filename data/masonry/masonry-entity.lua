@@ -73,9 +73,10 @@ return {
     {
       type = "electric",
       usage_priority = "secondary-input",
-      emissions_per_minute = 2
+      emissions_per_minute = 2,
+      drain = "0W"
     },
-    energy_usage = "3W",
+    energy_usage = "5W",
     module_specification =
     {
       module_slots = 4

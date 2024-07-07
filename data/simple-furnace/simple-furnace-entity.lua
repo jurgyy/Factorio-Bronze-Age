@@ -49,7 +49,7 @@ return {
     damaged_trigger_effect = nil,--hit_effects.rock(),
     crafting_categories = {"wood-burn"},
     result_inventory_size = 1,
-    energy_usage = "90kW",
+    energy_usage = "3W",
     crafting_speed = 1,
     source_inventory_size = 1,
     energy_source =

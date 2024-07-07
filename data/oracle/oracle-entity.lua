@@ -37,9 +37,10 @@ return {
     energy_source =
     {
       type = "electric",
-      usage_priority = "secondary-input"
+      usage_priority = "secondary-input",
+      drain = "0W"
     },
-    energy_usage = "60kW",
+    energy_usage = "10W",
     researching_speed = 1,
     inputs = {"hephaestus-blessing"},
     module_specification =
