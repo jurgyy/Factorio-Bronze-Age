@@ -27,6 +27,8 @@ local excluded = {
     ["mining-depot"] = true, -- TODO remove once the dependancy on Mining-Drones is removed
     ["mining-camp"] = true,
     ["loggers-camp"] = true,
+    ["charcoal-pit"] = true,
+    ["forge"] = true,
 }
 
 local function get_defines()
