@@ -8,7 +8,7 @@ return {
     {
         type = "recipe",
         name = "iron-chest",
-        enabled = true,
+        enabled = false,
         ingredients = {{"iron-plate", 8}},
         result = "iron-chest"
     },
@@ -17,8 +17,10 @@ return {
         name = "transport-belt",
         ingredients =
         {
-          {"iron-plate", 1},
-          {"iron-gear-wheel", 1}
+        --   {"iron-plate", 1},
+        --   {"iron-gear-wheel", 1}
+            {"wood", 1},
+            {"clay-disk", 6}
         },
         result = "transport-belt",
         result_count = 2
@@ -26,11 +28,11 @@ return {
     {
         type = "recipe",
         name = "fast-transport-belt",
-        enabled = true, --enabled = false,
+        enabled = false,
         ingredients =
         {
-          {"iron-gear-wheel", 5},
-          {"transport-belt", 1}
+            {"iron-gear-wheel", 5},
+            {"transport-belt", 1}
         },
         result = "fast-transport-belt"
     },
@@ -38,18 +40,19 @@ return {
         type = "recipe",
         name = "express-transport-belt",
         category = "crafting-with-fluid",
+        enabled = false,
         ingredients =
         {
-        {"iron-gear-wheel", 10},
-        {"fast-transport-belt", 1},
-        {type="fluid", name="lubricant", amount=20}
+            {"iron-gear-wheel", 10},
+            {"fast-transport-belt", 1},
+            {type="fluid", name="lubricant", amount=20}
         },
         result = "express-transport-belt"
     },
     {
         type = "recipe",
         name = "underground-belt",
-        enabled = true, --enabled = false,
+        enabled = false,
         energy_required = 1,
         ingredients =
         {
@@ -63,7 +66,7 @@ return {
         type = "recipe",
         name = "fast-underground-belt",
         energy_required = 2,
-        enabled = true, --enabled = false,
+        enabled = false,
         ingredients =
         {
           {"iron-gear-wheel", 40},
@@ -77,7 +80,7 @@ return {
         name = "express-underground-belt",
         energy_required = 2,
         category = "crafting-with-fluid",
-        enabled = true, --enabled = false,
+        enabled = false,
         ingredients =
         {
           {"iron-gear-wheel", 80},
@@ -90,7 +93,7 @@ return {
     {
         type = "recipe",
         name = "splitter",
-        enabled = true, --enabled = false,
+        enabled = false,
         energy_required = 1,
         ingredients =
         {
@@ -103,7 +106,7 @@ return {
     {
         type = "recipe",
         name = "fast-splitter",
-        enabled = true, --enabled = false,
+        enabled = false,
         energy_required = 2,
         ingredients =
         {
@@ -117,7 +120,7 @@ return {
         type = "recipe",
         name = "express-splitter",
         category = "crafting-with-fluid",
-        enabled = true, --enabled = false,
+        enabled = false,
         energy_required = 2,
         ingredients =
         {
@@ -133,16 +136,19 @@ return {
         name = "inserter",
         ingredients =
         {
-          {"electronic-circuit", 1},
-          {"iron-gear-wheel", 1},
-          {"iron-plate", 1}
+        --   {"electronic-circuit", 1},
+        --   {"iron-gear-wheel", 1},
+        --   {"iron-plate", 1},
+          {"clay-disk", 3},
+          {"stone", 1},
+          {"wood", 2}
         },
         result = "inserter"
     },
     {
         type = "recipe",
         name = "long-handed-inserter",
-        enabled = true, --enabled = false,
+        enabled = false,
         ingredients =
         {
           {"iron-gear-wheel", 1},
@@ -154,7 +160,7 @@ return {
     {
         type = "recipe",
         name = "fast-inserter",
-        enabled = true, --enabled = false,
+        enabled = false,
         ingredients =
         {
           {"electronic-circuit", 2},
@@ -166,7 +172,7 @@ return {
     {
         type = "recipe",
         name = "filter-inserter",
-        enabled = true, --enabled = false,
+        enabled = false,
         ingredients =
         {
           {"fast-inserter", 1},
@@ -177,7 +183,7 @@ return {
     {
         type = "recipe",
         name = "stack-inserter",
-        enabled = true, --enabled = false,
+        enabled = false,
         ingredients =
         {
           {"iron-gear-wheel", 15},
@@ -190,7 +196,7 @@ return {
     {
         type = "recipe",
         name = "stack-filter-inserter",
-        enabled = true, --enabled = false,
+        enabled = false,
         ingredients =
         {
           {"stack-inserter", 1},
@@ -201,7 +207,7 @@ return {
     {
         type = "recipe",
         name = "small-lamp",
-        enabled = true, --enabled = false,
+        enabled = false,
         ingredients =
         {
           {"electronic-circuit", 1},
@@ -213,7 +219,7 @@ return {
     {
         type = "recipe",
         name = "red-wire",
-        enabled = true, --enabled = false,
+        enabled = false,
         ingredients =
         {
           {"electronic-circuit", 1},
@@ -224,7 +230,7 @@ return {
     {
         type = "recipe",
         name = "green-wire",
-        enabled = true, --enabled = false,
+        enabled = false,
         ingredients =
         {
           {"electronic-circuit", 1},
@@ -235,7 +241,7 @@ return {
     {
         type = "recipe",
         name = "arithmetic-combinator",
-        enabled = true, --enabled = false,
+        enabled = false,
         ingredients =
         {
           {"copper-cable", 5},
@@ -246,7 +252,7 @@ return {
     {
         type = "recipe",
         name = "decider-combinator",
-        enabled = true, --enabled = false,
+        enabled = false,
         ingredients =
         {
           {"copper-cable", 5},
@@ -257,7 +263,7 @@ return {
     {
         type = "recipe",
         name = "constant-combinator",
-        enabled = true, --enabled = false,
+        enabled = false,
         ingredients =
         {
           {"copper-cable", 5},
@@ -268,7 +274,7 @@ return {
     {
         type = "recipe",
         name = "power-switch",
-        enabled = true, --enabled = false,
+        enabled = false,
         energy_required = 2,
         ingredients =
         {
@@ -281,7 +287,7 @@ return {
     {
         type = "recipe",
         name = "programmable-speaker",
-        enabled = true, --enabled = false,
+        enabled = false,
         energy_required = 2,
         ingredients =
         {

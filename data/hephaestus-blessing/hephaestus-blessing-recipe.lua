@@ -5,9 +5,9 @@ return {
     enabled = true,
     ingredients =
     {
-      {"charcoal", 10},
-      {"copper-ore", 10},
-      {"flowers", 10}
+      {"charcoal", 5},
+      {"copper-ore", 3},
+      {"clay-idol", 1}
     },
     energy_required = 5,
     result = "hephaestus-blessing"

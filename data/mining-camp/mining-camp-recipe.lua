@@ -6,8 +6,7 @@ return {
     ingredients =
     {
       {"wood", 10},
-      {"stone", 10},
-      {"copper-tools", 10}
+      {"stone", 20},
     },
     energy_required = 5,
     result = "mining-camp"

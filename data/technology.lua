@@ -31,7 +31,7 @@ data:extend{{
     },
     unit =
     {
-      count = 10,
+      count = 5,
       ingredients = {{"hephaestus-blessing", 1}},
       time = 15
     },
@@ -51,7 +51,7 @@ data:extend{{
     prerequisites = {"pottery"},
     unit =
     {
-      count = 10,
+      count = 5,
       ingredients = {{"hephaestus-blessing", 1}},
       time = 15
     },
@@ -100,10 +100,9 @@ data:extend{{
         recipe = "mining-camp"
       },
     },
-    prerequisites = {"smithing"},
     unit =
     {
-      count = 10,
+      count = 5,
       ingredients = {{"hephaestus-blessing", 1}},
       time = 15
     },

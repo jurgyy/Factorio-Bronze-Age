@@ -6,7 +6,7 @@ return {
     ingredients =
     {
       {"wood", 10},
-      {"stone", 10}
+      {"stone", 5}
     },
     energy_required = 5,
     result = "simple-furnace"

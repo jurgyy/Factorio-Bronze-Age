@@ -44,7 +44,7 @@ return {
     damaged_trigger_effect = nil, --hit_effects.entity(),
     crafting_categories = {"forge"},
     result_inventory_size = 1,
-    energy_usage = "7W",
+    energy_usage = "120kW",
     crafting_speed = 1,
     source_inventory_size = 1,
     energy_source =
