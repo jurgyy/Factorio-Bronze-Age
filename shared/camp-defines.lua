@@ -88,6 +88,12 @@ local data = {
                     store_amount = 250,
                     targets = {"clay"},
                     carry_count = 3,
+                },
+                ["mining-camp-stone"] = {
+                    result = "stone",
+                    store_amount = 250,
+                    targets = {"stone"},
+                    carry_count = 3,
                 }
             },
         }
@@ -131,6 +137,10 @@ local data = {
             type = "resource"
         },
         ["clay"] = {
+            category = "mining",
+            type = "resource"
+        },
+        ["stone"] = {
             category = "mining",
             type = "resource"
         }
