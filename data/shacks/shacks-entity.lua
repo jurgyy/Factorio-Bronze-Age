@@ -3,7 +3,7 @@ local data_util = require("__bronze-age__/data/data-util")
 local sprite = data_util.place_holder_sprite(2, 2)
 
 return {
-    type = "solar-panel",
+    type = "simple-entity",
     name = "shacks",
     icon = "__base__/graphics/icons/solar-panel.png",
     icon_size = 64, icon_mipmaps = 1,
@@ -15,11 +15,6 @@ return {
     collision_box = {{-0.9, -0.9}, {0.9, 0.9}},
     selection_box = {{-1, -1}, {1, 1}},
     damaged_trigger_effect = nil,
-    energy_source =
-    {
-      type = "electric",
-      usage_priority = "solar"
-    },
     picture =
     {
       layers =
@@ -28,5 +23,4 @@ return {
       }
     },
     vehicle_impact_sound = nil,
-    production = "3W",
 }

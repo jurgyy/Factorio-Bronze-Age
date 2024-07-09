@@ -7,7 +7,8 @@ local housing_defines = require("shared/housing-defines")
 local worker_distribution = require("script/worker-distribution")
 
 ---@class HousingData
----@field unit_number integer
+---@field id integer
+---@field surface_index integer
 ---@field entity LuaEntity
 ---@field define HousingDefine Define for the current housing level
 local housing = {}
@@ -23,10 +24,10 @@ local script_data = {
 ---@param housing_data HousingData
 ---@param update_workers boolean? Update the workers. Defaults to true
 local function add_housing(housing_data, update_workers)
-    script_data.houses[housing_data.unit_number] = housing_data
+    script_data.houses[housing_data.id] = housing_data
     
     if update_workers == nil or update_workers then
-        local surface_index = housing_data.entity.surface_index
+        local surface_index = housing_data.surface_index
         worker_distribution.add_population(surface_index, housing_data.define.workers)
         worker_distribution.recalculate(surface_index)
     end
@@ -36,10 +37,10 @@ end
 ---@param housing_data HousingData
 ---@param update_workers boolean? Update the workers. Defaults to true
 local function remove_housing(housing_data, update_workers)
-    script_data.houses[housing_data.unit_number] = nil
+    script_data.houses[housing_data.id] = nil
 
     if update_workers == nil or update_workers then
-        local surface_index = housing_data.entity.surface_index
+        local surface_index = housing_data.surface_index
         worker_distribution.add_population(surface_index, -housing_data.define.workers)
         worker_distribution.recalculate(surface_index)
     end
@@ -53,7 +54,7 @@ local function swap_entity(housing_data, new_entity)
     remove_housing(housing_data, false)
     
     housing_data.entity = new_entity
-    housing_data.unit_number = new_entity.unit_number
+    housing_data.id = new_entity.unit_number
     housing_data.define = housing_defines[new_entity.name]
     
     if not housing_data.define then error("Unknown housing " .. new_entity.name) end
@@ -61,7 +62,7 @@ local function swap_entity(housing_data, new_entity)
     local delta_workers = housing_data.define.workers - prev_workers
     add_housing(housing_data, false)
 
-    local surface_index = housing_data.entity.surface_index
+    local surface_index = housing_data.surface_index
 
     worker_distribution.add_population(surface_index, delta_workers)
     worker_distribution.recalculate(surface_index)
@@ -73,7 +74,8 @@ end
 function housing.new(housing_entity)
     ---@type HousingData
     local housing_data = {
-        unit_number = housing_entity.unit_number,
+        id = script.register_on_entity_destroyed(housing_entity),
+        surface_index = housing_entity.surface_index,
         entity = housing_entity,
         define = housing_defines[housing_entity.name]
     }
@@ -94,7 +96,7 @@ end
 ---@param new_entity_name any
 local function swap_housing(housing_data, new_entity_name)
     if not housing_data.entity.valid then error("Current entity not valid") end
-    local surface = housing_data.entity.surface
+    local surface = housing_data.surface
     local position = housing_data.entity.position
     housing_data.entity.destroy()
 
@@ -134,18 +136,12 @@ local function on_built_entity(event)
     housing.new(entity)
 end
 
----@param event EventData.on_player_mined_entity|EventData.on_robot_mined_entity|EventData.on_entity_died|EventData.script_raised_destroy
+---@param event EventData.on_entity_destroyed --EventData.on_player_mined_entity|EventData.on_robot_mined_entity|EventData.on_entity_died|EventData.script_raised_destroy
 local on_entity_removed = function(event)
-    local unit_number = event.unit_number --[[@as integer?]]
+    local unit_number = event.registration_number --[[@as integer?]]
     if not unit_number then
-        local entity = event.entity
-        if not (entity and entity.valid) then
-            return
-        end
-        unit_number = entity.unit_number
+        return
     end
-  
-    if not unit_number then return end
   
     local housing_data = script_data.houses[unit_number]
     if not housing_data then return end
@@ -176,11 +172,7 @@ lib.events = {
     [defines.events.script_raised_revive] = on_built_entity,
     [defines.events.script_raised_built] = on_built_entity,
 
-    [defines.events.on_player_mined_entity] = on_entity_removed,
-    [defines.events.on_robot_mined_entity] = on_entity_removed,
-
-    [defines.events.on_entity_died] = on_entity_removed,
-    [defines.events.script_raised_destroy] = on_entity_removed,
+    [defines.events.on_entity_destroyed] = on_entity_removed,
 
     --[defines.events.on_tick] = on_tick
 }
