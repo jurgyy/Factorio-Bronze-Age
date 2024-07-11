@@ -1,7 +1,5 @@
 local flib_bounding_box = require("__flib__/bounding-box")
-local disjointSet     = require("disjointSet")
 
-local ba_console_commands = require("script/console")
 local Queue = require("ba-queue")
 local util = require("ba-util")
 local ba_worker = require("worker")
@@ -10,6 +8,8 @@ local ba_requests = require("requests")
 local ba_construction = require("construction")
 
 local item_recipe_cache = {}
+
+---@alias SurfaceIndex integer
 
 ---Returns the recipe that produces a given item
 ---@param item_name string Name of an item
@@ -229,41 +229,15 @@ local function handle_path_request(event)
     end
 end
 
----@param event EventData.on_player_built_tile|EventData.on_robot_built_tile
-local function tile_built_event(event)
-    if event.tile.name ~= "ba-path" then
-        return
-    end
-
-    for _, old_tile_and_position in ipairs(event.tiles) do
-        local position = {x = math.floor(old_tile_and_position.position.x), y = math.floor(old_tile_and_position.position.y)}
-
-        if not global.tiles_disjoint_sets[event.surface_index] then
-            global.tiles_disjoint_sets[event.surface_index] = disjointSet.new()
-        end
-        global.tiles_disjoint_sets[event.surface_index]:add{position=position}
-    end
-    ba_console_commands.show_disjoint_tile_set{
-        player_index = event.player_index,
-        name = "script",
-        tick = event.tick
-    }
-end
-
 local handler = require("event_handler")
 handler.add_lib(require("script/camp-worker"))
 handler.add_lib(require("script/camp"))
 handler.add_lib(require("script/housing"))
 handler.add_lib(require("script/worker-distribution"))
 handler.add_lib(require("script/worker-compounds"))
+handler.add_lib(require("script/paths"))
 
-commands.add_command("ba-reinitialize", nil, initialize_globals)
-
-commands.add_command("ba-show-tile", nil, ba_console_commands.show_pathfinding_tile_nearest_entity)
-commands.add_command("ba-test-connected", nil, ba_console_commands.test_two_tiles)
-
-commands.add_command("ba-recalculate-disjoint-tiles", nil, ba_console_commands.recalculate_disjoint_tiles)
-commands.add_command("ba-show-disjoint-tiles", nil, ba_console_commands.show_disjoint_tile_set)
+-- commands.add_command("ba-reinitialize", nil, initialize_globals)
 
 -- script.on_event(defines.events.on_built_entity, set_ghost_requests)
 
@@ -271,7 +245,5 @@ commands.add_command("ba-show-disjoint-tiles", nil, ba_console_commands.show_dis
 
 -- script.on_event(defines.events.on_ai_command_completed, ba_worker.on_ai_command_completed)
 -- script.on_event(defines.events.on_script_path_request_finished, handle_path_request)
-script.on_event(defines.events.on_robot_built_tile, tile_built_event)
-script.on_event(defines.events.on_player_built_tile, tile_built_event)
 
 -- script.on_nth_tick(30, pol_work)
