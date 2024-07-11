@@ -1,6 +1,5 @@
 local util = require("ba-util")
 
-local ba_console_commands = require("script/console")
 local disjointSet = require("disjointSet")
 
 ---@class PathsScriptData
@@ -190,11 +189,11 @@ lib.on_configuration_changed = function()
 end
 
 lib.add_commands = function()
-    commands.add_command("ba-show-tile", nil, ba_console_commands.show_pathfinding_tile_nearest_entity)
-    commands.add_command("ba-test-connected", nil, ba_console_commands.test_two_tiles)
+    commands.add_command("ba-show-tile", nil, show_pathfinding_tile_nearest_entity)
+    commands.add_command("ba-test-connected", nil, test_two_tiles)
 
-    commands.add_command("ba-recalculate-disjoint-tiles", nil, ba_console_commands.recalculate_disjoint_tiles)
-    commands.add_command("ba-show-disjoint-tiles", nil, ba_console_commands.show_disjoint_tile_set)
+    commands.add_command("ba-recalculate-disjoint-tiles", nil, recalculate_disjoint_tiles)
+    commands.add_command("ba-show-disjoint-tiles", nil, show_disjoint_tile_set)
 end
 
 return lib
