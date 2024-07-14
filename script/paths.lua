@@ -22,11 +22,22 @@ local function tile_built_event(event)
         script_data.disjoint_sets[event.surface_index]:add{position=position}
     end
     
-    show_disjoint_tile_set{
-        player_index = event.player_index,
-        name = "script",
-        tick = event.tick
-    }
+    -- show_disjoint_tile_set{
+    --     player_index = event.player_index,
+    --     name = "script",
+    --     tick = event.tick
+    -- }
+end
+
+---@param event EventData.on_player_mined_tile|EventData.on_robot_mined_tile
+local function tile_mined_event(event)
+    local ds = script_data.disjoint_sets[event.surface_index]
+    if not ds then
+        return
+    end
+    for _, old_tile_and_position in pairs(event.tiles) do
+        ds:remove(old_tile_and_position)
+    end
 end
 
 ---Commands---
@@ -51,18 +62,21 @@ end
 
 ---@param surface LuaSurface
 ---@param position MapPosition
----@param parent DisjointSetIndex
-local function highlight_tile(surface, position, parent)
+---@param index DisjointSetIndex
+---@param scale float?
+---@param filled boolean?
+local function highlight_tile(surface, position, index, scale, filled)
     local function f(x)
         return math.sin(10000000/x)
     end
+    scale = scale or 1
 
     local color
-    if parent then
+    if index then
         color = {
-            r = 128 + 127 * f(parent.x),
-            g = 128 + 127 * f(parent.y),
-            b = 128 + 127 * f(parent.x + parent.y),
+            r = 128 + 127 * f(index.x),
+            g = 128 + 127 * f(index.y),
+            b = 128 + 127 * f(index.x + index.y),
             a = 255
         }
     else
@@ -73,15 +87,15 @@ local function highlight_tile(surface, position, parent)
         surface,
         position,
         color,
-        true
+        true,
+        scale,
+        filled
     )
 end
 
 --- Compresses every tile and then shows a color based on its parent
 ---@param data CustomCommandData
 function show_disjoint_tile_set(data)
-
-
     local surface = game.players[data.player_index].surface
     local ds = script_data.disjoint_sets[surface.index]
 
@@ -90,8 +104,31 @@ function show_disjoint_tile_set(data)
             for y, parent_xy in pairs(parent_x) do
                 local position = {x = x, y = y}
                 local parent = ds:find(position)
+                --local parent = ds:get_parent(ds:get_index(position))
                 if parent then
                     highlight_tile(surface, position, parent)
+                end
+            end
+        end
+    end
+end
+
+---@param data CustomCommandData
+function show_child_parent(data)
+    local surface = game.players[data.player_index].surface
+    local ds = script_data.disjoint_sets[surface.index]
+
+    if ds then
+        for x, parent_x in pairs(ds.parent) do
+            for y, parent_xy in pairs(parent_x) do
+                local position = {x = x, y = y}
+                local pos_index = ds:get_index(position)
+                -- local parent_index = ds:get_parent(ds:get_index(position))
+
+                highlight_tile(surface, position, pos_index)
+                local children = (ds.children[pos_index.x] and ds.children[pos_index.x][pos_index.y]) or {}
+                for _, child in pairs(children) do
+                    highlight_tile(surface, child, position, 10, true)
                 end
             end
         end
@@ -125,7 +162,6 @@ end
 
 ---@param data CustomCommandData
 function test_two_tiles(data)
-    
     local surface = game.players[data.player_index].surface
     
     local entities = surface.find_entities_filtered{name="wooden-chest", position=game.player.position, radius=100}
@@ -172,6 +208,8 @@ local lib = {}
 lib.events = {
     [defines.events.on_player_built_tile] = tile_built_event,
     [defines.events.on_robot_built_tile] = tile_built_event,
+    [defines.events.on_player_mined_tile] = tile_mined_event,
+    [defines.events.on_robot_mined_tile] = tile_mined_event,
 }
 
 lib.on_init = function()
@@ -194,6 +232,7 @@ lib.add_commands = function()
 
     commands.add_command("ba-recalculate-disjoint-tiles", nil, recalculate_disjoint_tiles)
     commands.add_command("ba-show-disjoint-tiles", nil, show_disjoint_tile_set)
+    commands.add_command("ba-show-children", nil, show_child_parent)
 end
 
 return lib
