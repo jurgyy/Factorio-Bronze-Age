@@ -167,6 +167,10 @@ local worker = {
 
 local path = table.deepcopy(data.raw.tile["green-refined-concrete"])
 path.name = "ba-path"
+path.minable = {
+  mining_time = 0.1,
+  result = "ba-item-path"
+}
 path.collision_mask = {"train-layer"}
 path.tint = { r = 0.300, g = 0.300, b = 0.200,   a = 0.25 }
 
