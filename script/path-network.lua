@@ -70,7 +70,6 @@ local get_node = function(surface, x, y)
   if not x_map then return end
 
   return x_map[y]
-
 end
 
 ---Gets all the neighboring nodes
@@ -81,15 +80,21 @@ end
 local get_neighbors = function(surface, x, y)
     local neighbors = {}
 
+    local node_map_surface = script_data.node_map[surface]
+    if not node_map_surface then return neighbors end
+
     local k = 1
     for _, xo in pairs(offsets) do
         local x_offset = x + xo
-        for _, yo in pairs(offsets) do
-            if not (xo == 0 and yo == 0) then
-                local node = get_node(surface, x_offset, y + yo)
-                if node then
-                    neighbors[k] = node
-                    k = k + 1
+        local node_map_x = node_map_surface[x_offset]
+        if node_map_x then
+            for _, yo in pairs(offsets) do
+                if not (xo == 0 and yo == 0) then
+                    local node = node_map_x[y + yo]
+                    if node then
+                        neighbors[k] = node
+                        k = k + 1
+                    end
                 end
             end
         end
@@ -117,20 +122,19 @@ local get_neighbor_count = function(surface, x, y)
     return count
 end
 
----@param surface SurfaceIndex
+---@param node_map_surface table<integer, table<integer>>
+---@param root_node PathNode
 ---@param x integer
 ---@param y integer
-local accumulate_nodes = function(surface, x, y)
+local accumulate_nodes = function(node_map_surface, root_node, x, y)
     --game.print("Accumulating")
     local nodes = {}
     local new_nodes = {}
 
-    local root_node = get_node(surface, x, y) --[[@as PathNode]]
     nodes[root_node] = true
     new_nodes[root_node] = {x, y}
 
     local offsets = offsets
-    local get_node = get_node
     local next = next
     local pairs = pairs
 
@@ -141,14 +145,17 @@ local accumulate_nodes = function(surface, x, y)
         new_nodes[node] = nil
         for _, xo in pairs(offsets) do
             local nx = node_position[1] + xo
-            for _, yo in pairs(offsets) do
-                if not (xo == 0 and yo == 0) then
-                    local ny = node_position[2] + yo
-                    local neighbor = get_node(surface, nx, ny)
-                    if neighbor then
-                        if not nodes[neighbor] then
-                            nodes[neighbor] = true
-                            new_nodes[neighbor] = {nx, ny}
+            local node_map_x = node_map_surface[nx]
+            if node_map_x then
+                for _, yo in pairs(offsets) do
+                    if not (xo == 0 and yo == 0) then
+                        local ny = node_position[2] + yo
+                        local neighbor = node_map_x[ny]
+                        if neighbor then
+                            if not nodes[neighbor] then
+                                nodes[neighbor] = true
+                                new_nodes[neighbor] = {nx, ny}
+                            end
                         end
                     end
                 end
@@ -159,34 +166,37 @@ local accumulate_nodes = function(surface, x, y)
     return nodes
 end
 
----@param surface SurfaceIndex
+---@param node_map_surface table<integer, table<integer>>
+---@param root_node_1 PathNode
 ---@param x1 integer
 ---@param y1 integer
+---@param root_node_2 PathNode
 ---@param x2 integer
 ---@param y2 integer
 ---@return boolean
-local symmetric_connection_check = function(surface, x1, y1, x2, y2)
+local symmetric_connection_check = function(node_map_surface, root_node_1, x1, y1, root_node_2, x2, y2)
     --Because most often, 1 road network is significantly smaller, so this will reduce search time.
 
     local nodes_1 = {}
     local new_nodes_1 = {}
 
-    local root_node_1 = get_node(surface, x1, y1) --[[@as PathNode]]
+    --local root_node_1 = get_node(surface, x1, y1) --[[@as PathNode]]
     nodes_1[root_node_1] = true
     new_nodes_1[root_node_1] = {x1, y1}
 
     local nodes_2 = {}
     local new_nodes_2 = {}
 
-    local root_node_2 = get_node(surface, x2, y2) --[[@as PathNode]]
+    --local root_node_2 = get_node(surface, x2, y2) --[[@as PathNode]]
     nodes_2[root_node_2] = true
     new_nodes_2[root_node_2] = {x2, y2}
 
 
     local offsets = offsets
-    local get_node = get_node
     local next = next
     local pairs = pairs
+
+    --local node_map_surface = script_data.node_map[surface]
 
     while true do
         local node, node_position = next(new_nodes_1)
@@ -196,18 +206,21 @@ local symmetric_connection_check = function(surface, x1, y1, x2, y2)
         new_nodes_1[node] = nil
         local pos_x, pos_y = node_position[1], node_position[2]
         for _, xo in pairs(offsets) do
-            local x_offset = pos_x + xo
-            for _, yo in pairs(offsets) do
-                if not (xo == 0 and yo == 0) then
-                    local nx, ny = x_offset, pos_y + yo
-                    local neighbor = get_node(surface, nx, ny)
-                    if neighbor then
+            local nx = pos_x + xo
+            local node_map_x = node_map_surface[nx]
+            if node_map_x then
+                for _, yo in pairs(offsets) do
+                    if not (xo == 0 and yo == 0) then
+                        local ny = pos_y + yo
+                        local neighbor = node_map_x[ny]
+                        if neighbor then
 
-                        if nodes_2[neighbor] then return true end
+                            if nodes_2[neighbor] then return true end
 
-                        if not nodes_1[neighbor] then
-                            nodes_1[neighbor] = true
-                            new_nodes_1[neighbor] = {nx, ny}
+                            if not nodes_1[neighbor] then
+                                nodes_1[neighbor] = true
+                                new_nodes_1[neighbor] = {nx, ny}
+                            end
                         end
                     end
                 end
@@ -220,18 +233,21 @@ local symmetric_connection_check = function(surface, x1, y1, x2, y2)
         --game.surfaces[surface].create_entity{name = "flying-text", position = {node_position[1], node_position[2]}, text = "B"}
         new_nodes_2[node] = nil
         for _, xo in pairs(offsets) do
-            local x_offset = pos_x + xo
-            for _, yo in pairs(offsets) do
-                if not (xo == 0 and yo == 0) then
-                    local nx, ny = x_offset, pos_y + yo
-                    local neighbor = get_node(surface, nx, ny)
-                    if neighbor then
+            local nx = pos_x + xo
+            local node_map_x = node_map_surface[nx]
+            if node_map_x then
+                for _, yo in pairs(offsets) do
+                    if not (xo == 0 and yo == 0) then
+                        local ny = pos_y + yo
+                        local neighbor = node_map_x[ny]
+                        if neighbor then
 
-                        if nodes_1[neighbor] then return true end
+                            if nodes_1[neighbor] then return true end
 
-                        if not nodes_2[neighbor] then
-                            nodes_2[neighbor] = true
-                            new_nodes_2[neighbor] = {nx, ny}
+                            if not nodes_2[neighbor] then
+                                nodes_2[neighbor] = true
+                                new_nodes_2[neighbor] = {nx, ny}
+                            end
                         end
                     end
                 end
@@ -243,13 +259,15 @@ local symmetric_connection_check = function(surface, x1, y1, x2, y2)
 end
 
 ---Combines two networks and returns it
----@param surface SurfaceIndex
+---@param node_map_surface table<integer, table<integer>>
+---@param root_node_1 PathNode
 ---@param x1 integer
 ---@param y1 integer
+---@param root_node_2 PathNode
 ---@param x2 integer
 ---@param y2 integer
 ---@return table<PathNode, boolean>
-local accumulate_smaller_node = function(surface, x1, y1, x2, y2)
+local accumulate_smaller_node = function(node_map_surface, root_node_1, x1, y1, root_node_2, x2, y2)
     --returns the smaller of the 2 node groups.
 
     ---@type table<PathNode, boolean>
@@ -257,7 +275,7 @@ local accumulate_smaller_node = function(surface, x1, y1, x2, y2)
     ---@type table<PathNode, integer[]>
     local new_nodes_1 = {}
     
-    local root_node_1 = get_node(surface, x1, y1) --[[@as PathNode]]
+    --local root_node_1 = get_node(surface, x1, y1) --[[@as PathNode]]
     nodes_1[root_node_1] = true
     new_nodes_1[root_node_1] = {x1, y1}
     
@@ -266,13 +284,12 @@ local accumulate_smaller_node = function(surface, x1, y1, x2, y2)
     ---@type table<PathNode, integer[]>
     local new_nodes_2 = {}
 
-    local root_node_2 = get_node(surface, x2, y2) --[[@as PathNode]]
+    --local root_node_2 = get_node(surface, x2, y2) --[[@as PathNode]]
     nodes_2[root_node_2] = true
     new_nodes_2[root_node_2] = {x2, y2}
 
 
     local offsets = offsets
-    local get_node = get_node
     local next = next
     local pairs = pairs
 
@@ -282,15 +299,18 @@ local accumulate_smaller_node = function(surface, x1, y1, x2, y2)
         --game.surfaces[surface].create_entity{name = "flying-text", position = {node_position[1], node_position[2]}, text = "A"}
         new_nodes_1[node] = nil
         for _, xo in pairs(offsets) do
-            local x_offset = node_position[1] + xo
-            for _, yo in pairs(offsets) do
-                if not (xo == 0 and yo == 0) then
-                    local nx, ny = x_offset, node_position[2] + yo
-                    local neighbor = get_node(surface, nx, ny)
-                    if neighbor then
-                        if not nodes_1[neighbor] then
-                            nodes_1[neighbor] = true
-                            new_nodes_1[neighbor] = {nx, ny}
+            local nx = node_position[1] + xo
+            local node_map_x = node_map_surface[nx]
+            if node_map_x then
+                for _, yo in pairs(offsets) do
+                    if not (xo == 0 and yo == 0) then
+                        local ny = node_position[2] + yo
+                        local neighbor = node_map_x[ny]
+                        if neighbor then
+                            if not nodes_1[neighbor] then
+                                nodes_1[neighbor] = true
+                                new_nodes_1[neighbor] = {nx, ny}
+                            end
                         end
                     end
                 end
@@ -302,15 +322,18 @@ local accumulate_smaller_node = function(surface, x1, y1, x2, y2)
         --game.surfaces[surface].create_entity{name = "flying-text", position = {node_position[1], node_position[2]}, text = "B"}
         new_nodes_2[node] = nil
         for _, xo in pairs(offsets) do
-            local x_offset = node_position[1] + xo
-            for _, yo in pairs(offsets) do
-                if not (xo == 0 and yo == 0) then
-                    local nx, ny = x_offset, node_position[2] + yo
-                    local neighbor = get_node(surface, nx, ny)
-                    if neighbor then
-                        if not nodes_2[neighbor] then
-                            nodes_2[neighbor] = true
-                            new_nodes_2[neighbor] = {nx, ny}
+            local nx = node_position[1] + xo
+            local node_map_x = node_map_surface[nx]
+            if node_map_x then
+                for _, yo in pairs(offsets) do
+                    if not (xo == 0 and yo == 0) then
+                        local ny = node_position[2] + yo
+                        local neighbor = node_map_x[ny]
+                        if neighbor then
+                            if not nodes_2[neighbor] then
+                                nodes_2[neighbor] = true
+                                new_nodes_2[neighbor] = {nx, ny}
+                            end
                         end
                     end
                 end
@@ -405,60 +428,68 @@ path_network.add_node = function(surface, x, y)
 
     local new_node_id
     local rx, ry
-    local checked = {}
 
-    for _, xo in pairs(offsets) do
-        local fx = x + xo
-        for _, yo in pairs(offsets) do
-            if not (xo == 0 and yo == 0) then
-                local fy = y + yo
-                local neighbor = get_node(surface, fx, fy)
-                if neighbor then
-                    if not new_node_id then
-                        new_node_id = neighbor.id
-                        rx, ry = fx, fy
-                    elseif neighbor.id ~= new_node_id then
-                        local smaller_node_set = accumulate_smaller_node(surface, rx, ry, fx, fy)
-                        local smaller_id = next(smaller_node_set).id
-                        if smaller_id == new_node_id then
-                            new_node_id = neighbor.id
-                            rx, ry = fx, fy
+    local node_map_surface = script_data.node_map[surface]
+
+    if node_map_surface then
+        for _, xo in pairs(offsets) do
+            local fx = x + xo
+            local node_map_x = node_map_surface[fx]
+            if node_map_x then
+                for _, yo in pairs(offsets) do
+                    if not (xo == 0 and yo == 0) then
+                        local fy = y + yo
+                        local neighbor = node_map_x[fy]
+                        if neighbor then
+                            if not new_node_id then
+                                new_node_id = neighbor.id
+                                rx, ry = fx, fy
+                                r_neighbor = neighbor
+                                --node_map_rx, node_map_ry = no
+                            elseif neighbor.id ~= new_node_id then
+                                local smaller_node_set = accumulate_smaller_node(node_map_surface, r_neighbor, rx, ry, neighbor, fx, fy)
+                                local smaller_id = next(smaller_node_set).id
+                                if smaller_id == new_node_id then
+                                    new_node_id = neighbor.id
+                                    rx, ry = fx, fy
+                                end
+                            end
                         end
                     end
                 end
             end
         end
-    end
 
 
-    for _, xo in pairs(offsets) do
-        local fx = x + xo
-        for _, yo in pairs(offsets) do
-            if not (xo == 0 and yo == 0) then
-                local fy = y + yo
-                local neighbor = get_node(surface, fx, fy)
-                if neighbor then
-                    local neighbor_id = neighbor.id
-                    if neighbor_id ~= new_node_id then
-                        local nodes = accumulate_nodes(surface, fx, fy)
-                        set_node_ids(nodes, new_node_id)
-                        clear_network(neighbor_id)
+        for _, xo in pairs(offsets) do
+            local fx = x + xo
+            local node_map_x = node_map_surface[fx]
+            if node_map_x then
+                for _, yo in pairs(offsets) do
+                    if not (xo == 0 and yo == 0) then
+                        local fy = y + yo
+                        local neighbor = node_map_x[fy]
+                        if neighbor then
+                            local neighbor_id = neighbor.id
+                            if neighbor_id ~= new_node_id then
+                                local nodes = accumulate_nodes(node_map_surface, neighbor, fx, fy)
+                                set_node_ids(nodes, new_node_id)
+                                clear_network(neighbor_id)
+                            end
+                        end
                     end
                 end
             end
         end
+    else
+        node_map_surface = {}
+        script_data.node_map[surface] = node_map_surface
     end
 
-    local surface_map = script_data.node_map[surface]
-    if not surface_map then
-        surface_map = {}
-        script_data.node_map[surface] = surface_map
-    end
-
-    local x_map = surface_map[x]
+    local x_map = node_map_surface[x]
     if not x_map then
         x_map = {}
-        surface_map[x] = x_map
+        node_map_surface[x] = x_map
     end
 
     if not new_node_id then
@@ -485,8 +516,8 @@ path_network.remove_node = function(surface, x, y)
     -- if node.depots and next(node.depots) then
     --     return true
     -- end
-
-    script_data.node_map[surface][x][y] = nil
+    local node_map_surface = script_data.node_map[surface]
+    node_map_surface[x][y] = nil
 
     local count = get_neighbor_count(surface, x, y)
 
@@ -512,29 +543,33 @@ path_network.remove_node = function(surface, x, y)
     local i = 0
     for _, xo in pairs(offsets) do
         local fx = x + xo
-        for _, yo in pairs(offsets) do
-            if not (xo == 0 and yo == 0) then
-                i = 1 + 1
-                checked[i] = true
+        local node_map_x = node_map_surface[fx]
+        if node_map_x then
+            for _, yo in pairs(offsets) do
+                if not (xo == 0 and yo == 0) then
+                    i = 1 + 1
+                    checked[i] = true
 
-                local fy = y + yo
-                local neighbor = get_node(surface, fx, fy)
+                    local fy = y + yo
+                    local neighbor = node_map_x[fy]
 
-                if neighbor then
-                    if neighbor.id == node_id then
+                    if neighbor and neighbor.id == node_id then
                         local j = 0
                         for _, xo in pairs(offsets) do
                             local nx = x + xo
-                            for _, yo in pairs(offsets) do
-                                if not (xo == 0 and yo == 0) then
-                                    j = j + 1
-                                    if not checked[j] then
-                                        local ny = y + yo
-                                        local other_neighbor = get_node(surface, nx, ny)
-                                        if other_neighbor and other_neighbor.id == neighbor.id then
-                                            if not symmetric_connection_check(surface, fx, fy, nx, ny) then
-                                                local smaller_node_set = accumulate_smaller_node(surface, fx, fy, nx, ny)
-                                                set_node_ids(smaller_node_set, new_id())
+                            local node_map_nx = node_map_surface[nx]
+                            if node_map_nx then
+                                for _, yo in pairs(offsets) do
+                                    if not (xo == 0 and yo == 0) then
+                                        j = j + 1
+                                        if not checked[j] then
+                                            local ny = y + yo
+                                            local other_neighbor = node_map_nx[ny]
+                                            if other_neighbor and other_neighbor.id == neighbor.id then
+                                                if not symmetric_connection_check(node_map_surface, neighbor, fx, fy, other_neighbor, nx, ny) then
+                                                    local smaller_node_set = accumulate_smaller_node(node_map_surface, neighbor, fx, fy, other_neighbor, nx, ny)
+                                                    set_node_ids(smaller_node_set, new_id())
+                                                end
                                             end
                                         end
                                     end
