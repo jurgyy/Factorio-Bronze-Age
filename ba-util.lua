@@ -213,7 +213,8 @@ function util.intToRainbowColor(i, cycle_length)
 end
 
 util.print = function(message)
-  game.print(message, {sound = defines.print_sound.never})
+    log(message)
+    game.print(message, {sound = defines.print_sound.never})
 end
 
 return util
