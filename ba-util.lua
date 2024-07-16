@@ -5,7 +5,7 @@ local util = require("util")
 util.path_name = "ba-path"
 
 
-util.highlight_bbox = function(surface, bbox, color)
+util.highlight_bbox = function(surface, bbox, color, filled)
   if color == nil then
       color = {r = 0, g = 1, b = 0, a = 1}
   end
@@ -14,18 +14,20 @@ util.highlight_bbox = function(surface, bbox, color)
       left_top = bbox.left_top or bbox[1],
       right_bottom = bbox.right_bottom or bbox[2],
       time_to_live = 120,
-      surface = surface
+      surface = surface,
+      filled = filled
   }
 end
 
-util.highlight_position = function(surface, position, color, snap)
+util.highlight_position = function(surface, position, color, snap, scale, filled)
+  scale = scale or 1
   if snap == nil then
     snap = false
   end
   
   local bbox = flib_bounding_box.from_position(position, snap)
-  bbox = flib_bounding_box.resize(bbox, -0.02)
-  util.highlight_bbox(surface, bbox, color)
+  bbox = flib_bounding_box.resize(bbox, -0.02 * scale)
+  util.highlight_bbox(surface, bbox, color, filled)
 end
 
 util.highlight_radius = function(surface, position, radius, color)
