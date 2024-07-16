@@ -1,6 +1,8 @@
 -- Largely copied from Transport Drones by Klonan
 -- https://github.com/Klonan/Transport_Drones
 
+local ba_util = require("ba-util")
+
 ---@class PathItemSupply
 
 ---@class PathNetwork
@@ -166,6 +168,11 @@ local accumulate_nodes = function(node_map_surface, root_node, x, y)
     return nodes
 end
 
+local spawn_debug_text = function(str, x, y, i, cycle_length)
+    r, g, b = ba_util.intToRainbowColor(i, cycle_length)
+    game.surfaces[1].create_entity{name = "flying-text", position = {x + 0.5, y + 0.5}, text = str, color = {r, g, b}}
+end
+
 ---@param node_map_surface table<integer, table<integer>>
 ---@param root_node_1 PathNode
 ---@param x1 integer
@@ -180,14 +187,12 @@ local symmetric_connection_check = function(node_map_surface, root_node_1, x1, y
     local nodes_1 = {}
     local new_nodes_1 = {}
 
-    --local root_node_1 = get_node(surface, x1, y1) --[[@as PathNode]]
     nodes_1[root_node_1] = true
     new_nodes_1[root_node_1] = {x1, y1}
 
     local nodes_2 = {}
     local new_nodes_2 = {}
 
-    --local root_node_2 = get_node(surface, x2, y2) --[[@as PathNode]]
     nodes_2[root_node_2] = true
     new_nodes_2[root_node_2] = {x2, y2}
 
@@ -196,13 +201,13 @@ local symmetric_connection_check = function(node_map_surface, root_node_1, x1, y
     local next = next
     local pairs = pairs
 
-    --local node_map_surface = script_data.node_map[surface]
-
+    -- local debug_i = 0
     while true do
         local node, node_position = next(new_nodes_1)
         if not node then break end
-        --game.surfaces[surface].create_entity{name = "flying-text", position = {node_position[1], node_position[2]}, text = "A"}
-
+        -- debug_i = debug_i + 1
+        -- spawn_debug_text("A", node_position[1], node_position[2], debug_i, 1000)
+        
         new_nodes_1[node] = nil
         local pos_x, pos_y = node_position[1], node_position[2]
         for _, xo in pairs(offsets) do
@@ -214,9 +219,9 @@ local symmetric_connection_check = function(node_map_surface, root_node_1, x1, y
                         local ny = pos_y + yo
                         local neighbor = node_map_x[ny]
                         if neighbor then
-
+                            
                             if nodes_2[neighbor] then return true end
-
+                            
                             if not nodes_1[neighbor] then
                                 nodes_1[neighbor] = true
                                 new_nodes_1[neighbor] = {nx, ny}
@@ -230,7 +235,7 @@ local symmetric_connection_check = function(node_map_surface, root_node_1, x1, y
         local node, node_position = next(new_nodes_2)
         if not node then break end
         pos_x, pos_y = node_position[1], node_position[2]
-        --game.surfaces[surface].create_entity{name = "flying-text", position = {node_position[1], node_position[2]}, text = "B"}
+        -- spawn_debug_text("B", node_position[1], node_position[2], debug_i, 1000)
         new_nodes_2[node] = nil
         for _, xo in pairs(offsets) do
             local nx = pos_x + xo
@@ -275,7 +280,6 @@ local accumulate_smaller_node = function(node_map_surface, root_node_1, x1, y1, 
     ---@type table<PathNode, integer[]>
     local new_nodes_1 = {}
     
-    --local root_node_1 = get_node(surface, x1, y1) --[[@as PathNode]]
     nodes_1[root_node_1] = true
     new_nodes_1[root_node_1] = {x1, y1}
     
@@ -284,7 +288,6 @@ local accumulate_smaller_node = function(node_map_surface, root_node_1, x1, y1, 
     ---@type table<PathNode, integer[]>
     local new_nodes_2 = {}
 
-    --local root_node_2 = get_node(surface, x2, y2) --[[@as PathNode]]
     nodes_2[root_node_2] = true
     new_nodes_2[root_node_2] = {x2, y2}
 
@@ -296,7 +299,7 @@ local accumulate_smaller_node = function(node_map_surface, root_node_1, x1, y1, 
     while true do
         local node, node_position = next(new_nodes_1)
         if not node then return nodes_1 end
-        --game.surfaces[surface].create_entity{name = "flying-text", position = {node_position[1], node_position[2]}, text = "A"}
+        --game.surfaces[1].create_entity{name = "flying-text", position = {node_position[1] + 0.5, node_position[2] + 0.5}, text = "A"}
         new_nodes_1[node] = nil
         for _, xo in pairs(offsets) do
             local nx = node_position[1] + xo
@@ -319,7 +322,7 @@ local accumulate_smaller_node = function(node_map_surface, root_node_1, x1, y1, 
 
         local node, node_position = next(new_nodes_2)
         if not node then return nodes_2 end
-        --game.surfaces[surface].create_entity{name = "flying-text", position = {node_position[1], node_position[2]}, text = "B"}
+        --game.surfaces[1].create_entity{name = "flying-text", position = {node_position[1] + 0.5, node_position[2] + 0.5}, text = "B"}
         new_nodes_2[node] = nil
         for _, xo in pairs(offsets) do
             local nx = node_position[1] + xo
@@ -445,7 +448,6 @@ path_network.add_node = function(surface, x, y)
                                 new_node_id = neighbor.id
                                 rx, ry = fx, fy
                                 r_neighbor = neighbor
-                                --node_map_rx, node_map_ry = no
                             elseif neighbor.id ~= new_node_id then
                                 local smaller_node_set = accumulate_smaller_node(node_map_surface, r_neighbor, rx, ry, neighbor, fx, fy)
                                 local smaller_id = next(smaller_node_set).id
