@@ -32,12 +32,6 @@ local script_data =
   node_map = {}
 }
 
----@param string string
-local print = function(string)
-  log(string)
-  game.print(string)
-end
-
 ---Increments the script_data's id_number and returns the value
 ---@return integer Id 
 local new_id = function()
@@ -168,9 +162,14 @@ local accumulate_nodes = function(node_map_surface, root_node, x, y)
     return nodes
 end
 
+local debug_i = 0
 local spawn_debug_text = function(str, x, y, i, cycle_length)
+    if not i then
+        i = debug_i
+        debug_i = debug_i + 1
+    end
     r, g, b = ba_util.intToRainbowColor(i, cycle_length)
-    game.surfaces[1].create_entity{name = "flying-text", position = {x + 0.5, y + 0.5}, text = str, color = {r, g, b}}
+    game.surfaces[1].create_entity{name = "flying-text", position = {x, y}, text = str, color = {r, g, b}}
 end
 
 ---@param node_map_surface table<integer, table<integer>>
@@ -201,12 +200,10 @@ local symmetric_connection_check = function(node_map_surface, root_node_1, x1, y
     local next = next
     local pairs = pairs
 
-    -- local debug_i = 0
     while true do
         local node, node_position = next(new_nodes_1)
         if not node then break end
-        -- debug_i = debug_i + 1
-        -- spawn_debug_text("A", node_position[1], node_position[2], debug_i, 1000)
+        -- spawn_debug_text("A", node_position[1], node_position[2], nil, 1000)
         
         new_nodes_1[node] = nil
         local pos_x, pos_y = node_position[1], node_position[2]
@@ -235,7 +232,7 @@ local symmetric_connection_check = function(node_map_surface, root_node_1, x1, y
         local node, node_position = next(new_nodes_2)
         if not node then break end
         pos_x, pos_y = node_position[1], node_position[2]
-        -- spawn_debug_text("B", node_position[1], node_position[2], debug_i, 1000)
+        -- spawn_debug_text("B", node_position[1], node_position[2], nil, 1000)
         new_nodes_2[node] = nil
         for _, xo in pairs(offsets) do
             local nx = pos_x + xo
@@ -274,7 +271,6 @@ end
 ---@return table<PathNode, boolean>
 local accumulate_smaller_node = function(node_map_surface, root_node_1, x1, y1, root_node_2, x2, y2)
     --returns the smaller of the 2 node groups.
-
     ---@type table<PathNode, boolean>
     local nodes_1 = {}
     ---@type table<PathNode, integer[]>
@@ -299,7 +295,7 @@ local accumulate_smaller_node = function(node_map_surface, root_node_1, x1, y1, 
     while true do
         local node, node_position = next(new_nodes_1)
         if not node then return nodes_1 end
-        --game.surfaces[1].create_entity{name = "flying-text", position = {node_position[1] + 0.5, node_position[2] + 0.5}, text = "A"}
+        --spawn_debug_text("A", node_position[1] + 0.5, node_position[2] + 0.5, nil, 2000)
         new_nodes_1[node] = nil
         for _, xo in pairs(offsets) do
             local nx = node_position[1] + xo
@@ -322,7 +318,7 @@ local accumulate_smaller_node = function(node_map_surface, root_node_1, x1, y1, 
 
         local node, node_position = next(new_nodes_2)
         if not node then return nodes_2 end
-        --game.surfaces[1].create_entity{name = "flying-text", position = {node_position[1] + 0.5, node_position[2] + 0.5}, text = "B"}
+        --spawn_debug_text("B", node_position[1] + 0.5, node_position[2] + 0.5, nil, 2000)
         new_nodes_2[node] = nil
         for _, xo in pairs(offsets) do
             local nx = node_position[1] + xo
