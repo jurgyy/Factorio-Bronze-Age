@@ -917,6 +917,8 @@ end
 
 local lib = {}
 
+lib.get_camp = get_camp
+
 lib.events =
 {
     [defines.events.on_built_entity] = on_built_entity,
