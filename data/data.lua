@@ -2,6 +2,7 @@ local data_util = require("__bronze-age__/data/data-util")
 local camp_defines = require("shared/camp-defines")
 
 require(data_util.data_root .. "base-overrides/data")
+require(data_util.data_root .. "gui")
 
 require(data_util.data_root .. "bricks/data")
 require(data_util.data_root .. "charcoal/data")
