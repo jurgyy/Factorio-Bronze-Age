@@ -1,4 +1,5 @@
 local util = require("ba-util")
+local priority_enum = require("script/worker-priority")
 
 ---@class WorkerDistribution
 ---@field buildings table<integer, ScriptObjectWithWorkers>
@@ -111,13 +112,13 @@ function dist.recalculate(surface_index)
     for _, b in pairs(self.buildings) do
 
         --local category = b:getCategory()
-        local priority = Priority.Medium--priorityMap[category]
+        local priority = priority_enum.Medium--priorityMap[category]
 
-        if priority == Priority.Low then
+        if priority == priority_enum.Low then
             low = low + b.max_workers
-        elseif priority == Priority.High then
+        elseif priority == priority_enum.High then
             high = high + b.max_workers
-        elseif priority == Priority.Medium then
+        elseif priority == priority_enum.Medium then
             medium = medium + b.max_workers
         end
 
@@ -127,15 +128,15 @@ function dist.recalculate(surface_index)
     local total_needed = math.floor(high + medium + low)
 
     local priority_ratios = {
-        [Priority.High] = calculate_ratio(pop, high),
-        [Priority.Medium] = calculate_ratio(pop - high, medium),
-        [Priority.Low] = calculate_ratio(pop - high - medium, low)
+        [priority_enum.High] = calculate_ratio(pop, high),
+        [priority_enum.Medium] = calculate_ratio(pop - high, medium),
+        [priority_enum.Low] = calculate_ratio(pop - high - medium, low)
     }
 
     local bRatios = {}
     for unit_number, building in pairs(buildings) do
         --local category = b:getCategory()
-        local priority = Priority.Medium -- priorityMap[category]
+        local priority = priority_enum.Medium -- priorityMap[category]
         bRatios[unit_number] = math.floor(building.max_workers * priority_ratios[priority])
         building.assigned_workers = 0
     end
