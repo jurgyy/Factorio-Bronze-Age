@@ -114,6 +114,14 @@ end
 
 local lib = {}
 
+
+---Returns a WorkerCompound from the script data given a unit_number
+---@param unit_number integer
+---@return WorkerCompoundsData?
+lib.get_compound = function(unit_number)
+    return script_data.compounds[unit_number]
+end
+
 lib.events =
 {
     [defines.events.on_built_entity] = on_built_entity,
