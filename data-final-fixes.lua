@@ -292,7 +292,7 @@ for camp_name, camp in pairs(camp_defines.camps) do
             ingredients = {
                 {type = "item", name = camp.worker_name, amount = 1}
             },
-            results = {{type = "item", name = result, amount = 0, show_details_in_recipe_tooltip = false}},
+            results = {{type = "item", name = result, amount = define_recipe.store_amount, show_details_in_recipe_tooltip = false}},
             category = camp_defines.resources[result].category,
             subgroup = "extraction-machine",
             --overload_multiplier = 100,
