@@ -7,6 +7,8 @@
   "description": "wip",
   "factorio_version": "1.1",
   "dependencies": [
-    "base"
+    "base",
+    "? EditorExtensions",
+    "Mining_Drones"
   ]
 }
