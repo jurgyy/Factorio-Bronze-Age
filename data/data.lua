@@ -62,3 +62,11 @@ for _, camp in pairs(camp_defines.camps) do
         end
     end
 end
+
+data:extend{{
+    type = "flying-text",
+    name = "still-text",
+    flags = {"not-on-map", "placeable-off-grid"},
+    time_to_live = 300,
+    speed = 0
+}}
