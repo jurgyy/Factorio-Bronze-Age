@@ -18,7 +18,7 @@ local ba_util = require("ba-util")
 ---@field old_contents table<string, integer>
 
 ---@class PathNode
----@field id integer
+---@field id integer Network id of the node
 ---@field depots table<integer, Depot>?
 
 ---@class PathNetworkScriptData
@@ -417,18 +417,20 @@ end
 ---@param surface SurfaceIndex
 ---@param x integer
 ---@param y integer
+---@return integer network_id The new node's id
+---@return table accumulates Map of changed node ids
 path_network.add_node = function(surface, x, y)
     --game.print("Adding node")
     local node = get_node(surface, x, y)
     if node then
-        --Eh... maybe I should error?
-        return
+        error("Node already exists")
     end
 
     local new_node_id
     local rx, ry
 
     local node_map_surface = script_data.node_map[surface]
+    local accumulates = {}
 
     if node_map_surface then
         for _, xo in pairs(offsets) do
@@ -448,6 +450,7 @@ path_network.add_node = function(surface, x, y)
                                 local smaller_node_set = accumulate_smaller_node(node_map_surface, r_neighbor, rx, ry, neighbor, fx, fy)
                                 local smaller_id = next(smaller_node_set).id
                                 if smaller_id == new_node_id then
+                                    accumulates[neighbor.id] = new_node_id
                                     new_node_id = neighbor.id
                                     rx, ry = fx, fy
                                 end
@@ -471,6 +474,7 @@ path_network.add_node = function(surface, x, y)
                             local neighbor_id = neighbor.id
                             if neighbor_id ~= new_node_id then
                                 local nodes = accumulate_nodes(node_map_surface, neighbor, fx, fy)
+                                accumulates[neighbor_id] = new_node_id
                                 set_node_ids(nodes, new_node_id)
                                 clear_network(neighbor_id)
                             end
@@ -498,12 +502,13 @@ path_network.add_node = function(surface, x, y)
     {
         id = new_node_id
     }
-
+    return new_node_id, accumulates
 end
 
 ---@param surface SurfaceIndex
 ---@param x integer
 ---@param y integer
+---@return integer? network_id Network id the node belong(s/ed) to
 path_network.remove_node = function(surface, x, y)
     --game.print("Removing node")
     local node = get_node(surface, x, y)
@@ -520,22 +525,22 @@ path_network.remove_node = function(surface, x, y)
     local count = get_neighbor_count(surface, x, y)
 
     --game.surfaces[surface].create_entity{name = "flying-text", position = {x, y}, text = count}
+    local node_id = node.id
 
     if count == 0 then
         -- No neighbors, clear the network.
         clear_network(node.id)
-        return
+        return node_id
     end
 
     if count == 1 then
         -- only 1 neighbor, no need to worry about anything.
-        return
+        return node_id
     end
 
     -- we could be splitting neighbors.
     -- Check every neighbor against every other neighbor
 
-    local node_id = node.id
 
     local checked = {}
     local i = 0
@@ -579,6 +584,7 @@ path_network.remove_node = function(surface, x, y)
             end
         end
     end
+    return node_id
 end
 
 ---@param surface SurfaceIndex

@@ -1,10 +1,13 @@
 ---@type WorkerDistribution
 local worker_distribution = require("script/worker-distribution")
+local priority_enum = require("script/worker-priority")
 
 ---@class ScriptObjectWithWorkers
 ---@field assigned_workers integer Current amount of workers available
 ---@field max_workers integer Maximum number of workers
 ---@field entity LuaEntity
+---@field path_network_id integer? Network in which this building is connected to (Can't be connected to multiple buildings)
+---@field worker_priority DistributionPriority
 object_with_worker = {
     assigned_workers = 0
 }
@@ -27,8 +30,8 @@ function object_with_worker:new(entity, max_workers, o)
 
         o.max_workers = max_workers
         o.entity = entity
-    
-        worker_distribution.add_building(o)
+        o.worker_priority = priority_enum.Medium
+        --worker_distribution.add_building(o)
     end
 
     return o
@@ -48,8 +51,20 @@ function object_with_worker:add_workers(amount)
     return added_workers
 end
 
+function object_with_worker:reset_workers()
+    self.path_network_id = nil
+    self.assigned_workers = 0
+    self:on_workers_set()
+end
+
 ---Should be called assigned_workers is changed. Can be overloaded by derived class
 function object_with_worker:on_workers_set()
+end
+
+---Set the priority of this building. Does not update network.
+---@param priority DistributionPriority 
+function object_with_worker:set_priority(priority)
+    self.worker_priority = priority
 end
 
 return object_with_worker

@@ -1,4 +1,5 @@
 local util = require("ba-util")
+local path_network = require("script/path-network")
 
 ---@type HousingDefine[]
 local housing_defines = require("shared/housing-defines")
@@ -11,6 +12,7 @@ local worker_distribution = require("script/worker-distribution")
 ---@field surface_index integer
 ---@field entity LuaEntity
 ---@field define HousingDefine Define for the current housing level
+---@field network_id integer? Path network id
 local housing = {}
 local housing_metatable = {__index = housing}
 
@@ -20,6 +22,46 @@ local script_data = {
     houses = {},
 }
 
+---Returns the first tile node surrounding the housing_data entity
+---@param housing_data HousingData
+---@return PathNode?
+local function get_first_path_node(housing_data)
+    local entity = housing_data.entity
+    local surrounding_box = entity.prototype.collision_box
+    surrounding_box.left_top.x = entity.position.x + surrounding_box.left_top.x - 1
+    surrounding_box.left_top.y = entity.position.y + surrounding_box.left_top.y - 1
+    surrounding_box.right_bottom.x = entity.position.x + surrounding_box.right_bottom.x + 1
+    surrounding_box.right_bottom.y = entity.position.y + surrounding_box.right_bottom.y + 1
+
+    local tiles = entity.surface.find_tiles_filtered {
+        area = surrounding_box,
+        name = "ba-path" -- TODO more than one and dynamically?
+    }
+    local _, tile = next(tiles)
+    if not tile then
+        game.print("Not near tiles")
+        return
+    end
+
+    -- TODO: rounding?
+    local node = path_network.get_node(housing_data.surface_index, tile.position.x, tile.position.y)
+    if not node then
+        util.highlight_position(game.surfaces[housing_data.surface_index], tile.position, nil, true)
+        game.print("No node at " .. tile.position.x .. ", " .. tile.position.y)
+        return
+    end
+    return node
+end
+
+---Add housing to path network without checking anything
+---@param housing_data HousingData
+---@param network_id integer
+local function add_to_network_unsafe(housing_data, network_id)
+    housing_data.network_id = network_id
+    worker_distribution.add_population(network_id, housing_data.define.workers)
+    worker_distribution.recalculate(network_id)
+end
+
 ---Add housing to the script_data
 ---@param housing_data HousingData
 ---@param update_workers boolean? Update the workers. Defaults to true
@@ -27,10 +69,29 @@ local function add_housing(housing_data, update_workers)
     script_data.houses[housing_data.id] = housing_data
     
     if update_workers == nil or update_workers then
-        local surface_index = housing_data.surface_index
-        worker_distribution.add_population(surface_index, housing_data.define.workers)
-        worker_distribution.recalculate(surface_index)
+        local network_id = housing_data.network_id
+
+        if not network_id then
+            local node = get_first_path_node(housing_data)
+            if not node then return end
+
+            network_id = node.id
+            housing_data.network_id = network_id
+        end
+        
+        add_to_network_unsafe(housing_data, network_id)
     end
+end
+
+---@param entity LuaEntity
+---@param network_id integer
+local function add_to_network(entity, network_id)
+    local id = script.register_on_entity_destroyed(entity)
+    local housing_data = script_data.houses[id]
+    if not housing_data then error("No housing data for entity") end
+    if housing_data.network_id then return end
+
+    add_to_network_unsafe(housing_data, network_id)
 end
 
 ---Remove housing from the script_data
@@ -39,10 +100,9 @@ end
 local function remove_housing(housing_data, update_workers)
     script_data.houses[housing_data.id] = nil
 
-    if update_workers == nil or update_workers then
-        local surface_index = housing_data.surface_index
-        worker_distribution.add_population(surface_index, -housing_data.define.workers)
-        worker_distribution.recalculate(surface_index)
+    if (update_workers == nil or update_workers) and housing_data.network_id then
+        worker_distribution.add_population(housing_data.network_id, -housing_data.define.workers)
+        worker_distribution.recalculate(housing_data.network_id)
     end
 end
 
@@ -62,10 +122,10 @@ local function swap_entity(housing_data, new_entity)
     local delta_workers = housing_data.define.workers - prev_workers
     add_housing(housing_data, false)
 
-    local surface_index = housing_data.surface_index
-
-    worker_distribution.add_population(surface_index, delta_workers)
-    worker_distribution.recalculate(surface_index)
+    if housing_data.network_id then
+        worker_distribution.add_population(housing_data.network_id, delta_workers)
+        worker_distribution.recalculate(housing_data.network_id)
+    end
 end
 
 
@@ -165,6 +225,8 @@ local on_tick = function(event)
 end
 
 local lib = {}
+
+lib.add_to_network = add_to_network
 
 lib.events = {
     [defines.events.on_built_entity] = on_built_entity,
