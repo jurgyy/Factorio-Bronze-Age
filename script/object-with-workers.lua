@@ -57,7 +57,7 @@ function object_with_worker:reset_workers()
     self:on_workers_set()
 end
 
----Should be called assigned_workers is changed. Can be overloaded by derived class
+---Should be called when assigned_workers is changed. Can be overloaded by derived class
 function object_with_worker:on_workers_set()
 end
 
