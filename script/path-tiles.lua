@@ -1,5 +1,4 @@
 local util = require("ba-util")
-local collision_util = require("script/collision-util")
 local condense_graph = require("shared/condense-graph")
 
 local road_network = require("script/path-network")
@@ -156,17 +155,6 @@ local on_built_tile = function(event)
     end
 end
 
----@param surface LuaSurface
----@param entity LuaEntity
----@return LuaTile[]
-local get_path_tiles_around_entity = function(surface, entity)
-    local bbox_around = collision_util.get_areas_around(entity, 1)
-    util.highlight_bbox(surface, bbox_around)
-    return surface.find_tiles_filtered {
-        area = bbox_around,
-        name = path_tile_names
-    }
-end
 
 ---Get network id of a connected array of tiles
 ---@param surface LuaSurface
@@ -203,7 +191,7 @@ local function handle_entities_around_removed_tile(surface, tile, network_id, ch
 
         local building = compounds.get_compound(unit_number) or camps.get_camp(unit_number)
         if building and building.path_network_id == network_id then
-            local path_tiles = get_path_tiles_around_entity(surface, entity)
+            local path_tiles = util.get_path_tiles_around_entity(surface, entity)
             if not next(path_tiles) then
                 -- Building not next to other tiles, just remove it
                 worker_distribution.remove_building(building, false)

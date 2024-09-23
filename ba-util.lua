@@ -1,4 +1,5 @@
 local flib_bounding_box = require("__flib__/bounding-box")
+local collision_util = require("script/collision-util")
 
 local util = require("util")
 
@@ -79,6 +80,18 @@ util.get_all_positions_around = function(surface, area)
     table.insert(tiles, {x = abs_right_bottom.x, y = y})
   end
   return tiles
+end
+
+---@param surface LuaSurface
+---@param entity LuaEntity
+---@return LuaTile[]
+util.get_path_tiles_around_entity = function(surface, entity)
+  local bbox_around = collision_util.get_areas_around(entity, 1)
+  util.highlight_bbox(surface, bbox_around)
+  return surface.find_tiles_filtered {
+      area = bbox_around,
+      name = util.path_name
+  }
 end
 
 ---Check clockwise around an area (expanded by 1 tile) for ba-path tiles and return a list of the first tile of all unconnected tiles (without checking further away)
