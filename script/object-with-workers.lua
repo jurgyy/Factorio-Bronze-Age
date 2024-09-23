@@ -1,6 +1,8 @@
 ---@type WorkerDistribution
 local worker_distribution = require("script/worker-distribution")
 local priority_enum = require("script/worker-priority")
+local util = require("ba-util")
+local path_network = require("script/path-network")
 
 ---@class ScriptObjectWithWorkers
 ---@field assigned_workers integer Current amount of workers available
@@ -32,6 +34,15 @@ function object_with_worker:new(entity, max_workers, o)
         o.entity = entity
         o.worker_priority = priority_enum.Medium
         --worker_distribution.add_building(o)
+        local surface = entity.surface
+        local tiles = util.get_path_tiles_around_entity(surface, entity)
+        if tiles and tiles[1] then
+            local position = tiles[1].position
+            local node = path_network.get_node(surface.index, position.x, position.y)
+            if not node then error("Tile not part of a network") end
+            
+            worker_distribution.add_building(o, node.id)
+        end
     end
 
     return o
