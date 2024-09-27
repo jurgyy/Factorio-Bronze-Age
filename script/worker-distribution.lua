@@ -190,6 +190,12 @@ function dist.recalculate(network_id)
 
     local bRatios = {}
     for unit_number, building in pairs(buildings) do
+        -- Debug v
+        local surface = building.entity.surface
+        local x = building.entity.position.x
+        local y = building.entity.position.y
+        surface.create_entity{name = "still-text", position = {x, y}, text = network_id}
+        -- Debug ^
         --local category = b:getCategory()
         local priority = priority_enum.Medium -- priorityMap[category]
         bRatios[unit_number] = math.floor(building.max_workers * priority_ratios[priority])
