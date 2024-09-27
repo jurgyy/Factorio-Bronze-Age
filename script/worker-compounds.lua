@@ -64,6 +64,7 @@ function worker_compounds:new(entity)
 end
 
 function worker_compounds:handle_entity_deletion()
+    self:handle_deletion()
     if self.eei and self.eei.valid then
         self.eei.destroy()
     end
@@ -73,7 +74,6 @@ function worker_compounds:handle_entity_deletion()
     end
 
     script_data.compounds[self.entity.unit_number] = nil
-    self:handle_deletion()
 end
 
 function worker_compounds:on_workers_set()
