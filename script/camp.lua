@@ -55,7 +55,7 @@ local path_queue_rate = 13
 local function area(position, radius)
     return {{position.x - radius, position.y - radius},{position.x + radius, position.y + radius}}
 end
-  
+
 
 ---Get a camp from the script_data given its unit_number
 ---@param unit_number integer
@@ -101,28 +101,28 @@ function camp:new(camp_entity)
     if not script_data.targeted_resources[camp_data.surface_index] then
         script_data.targeted_resources[camp_data.surface_index] = {}
     end
-
+    
     camp:add_box()
-
+    
     add_camp(camp_data)
-
+    
     camp_entity.active = false
-
+    
     return camp_data
 end
 
 ---@param event EventData.on_built_entity|EventData.on_robot_built_entity|EventData.script_raised_revive|EventData.script_raised_built
 local on_built_entity = function(event)
-    local entity = event.entity or event.created_entity
+    local entity = event.entity
     if not (entity and entity.valid) then return end
-  
+    
     if camp_defines.camps[entity.name] == nil then return end
-  
+    
     camp:new(entity)
 end
 
 function camp:add_box()
-
+    
 end
 
 ---Get the dropoff position for workers
@@ -143,10 +143,10 @@ end
 
 local direction_names =
 {
-  [0] = "north",
-  [2] = "east",
-  [4] = "south",
-  [6] = "west"
+    [0] = "north",
+    [2] = "east",
+    [4] = "south",
+    [6] = "west"
 }
 
 
@@ -156,42 +156,42 @@ function camp:spawn_worker()
     local active_count = self:get_active_worker_count()
     local available_count = self.assigned_workers
     if active_count >= available_count then
-      return
+        return
     end
-  
+    
     local worker_name = self.defines.worker_name
-  
+    
     local camp_entity = self.entity
     local spawn_entity_data =
     {
-      name = worker_name,
-      position = self.entity.position,
-      force = camp_entity.force,
-      create_build_effect_smoke = false
+        name = worker_name,
+        position = self.entity.position,
+        force = camp_entity.force,
+        create_build_effect_smoke = false
     }
-  
+    
     local surface = camp_entity.surface
     if not surface.can_place_entity(spawn_entity_data) then return end
-  
+    
     local unit = surface.create_entity(spawn_entity_data)
     if not unit then return end
-  
+    
     unit.orientation = (camp_entity.direction / 8)
     --unit.ai_settings.do_separation = false
-  
+    
     --self:get_drone_inventory().remove({name = names.drone_name, count = 1})
-  
-  
+    
+    
     local worker = camp_worker.new(unit, self)
     self.workers[unit.unit_number] = true
-  
+    
     return worker
 end
 
 --- Call the cancel_command on all workers and then remove the camp's workers table
 function camp:cancel_all_orders()
     if not self.workers then return end
-
+    
     for unit_number, bool in pairs(self.workers) do
         local worker = camp_worker.get_worker(unit_number)
         if worker then
@@ -206,10 +206,10 @@ end
 function camp:get_target_resource_names()
     local recipe = self.entity.get_recipe()
     if not recipe then return end
-
+    
     local define_recipe = self.defines.recipes[recipe.name]
     if not define_recipe then error("No define recipe " .. recipe.name) end
-
+    
     return define_recipe.targets
 end
 
@@ -218,10 +218,10 @@ end
 function camp:get_target_carry_count()
     local recipe = self.entity.get_recipe()
     if not recipe then return end
-
+    
     local target_name = self.defines.recipes[recipe.name]
     if not target_name then return end
-
+    
     return self.defines.recipes[self.current_recipe_name].carry_count
 end
 
@@ -255,7 +255,7 @@ function camp:recipe_changed(new_recipe_name)
     
     self:clear_path_requests()
     self:cancel_all_orders()
-  
+    
     self:find_potential_targets()
 end
 
@@ -263,32 +263,32 @@ end
 function camp:update()
     local camp_entity = self.entity
     if not (camp_entity and camp_entity.valid) then return end
-  
+    
     local recipe_name = self:get_current_recipe_name()
     if recipe_name ~= self.current_recipe_name then
         --TODO get_target_resource_name() gets called twice
         self:recipe_changed(recipe_name)
         return
     end
-  
+    
     if not recipe_name then return end
-  
+    
     if not self:has_mining_targets() then
         --Nothing to mine, nothing to do...
-
+        
         if next(self.workers) then
             --Workers are still mining, so they can be holding the targets.
             return
         end
-
+        
         if not self.mined_any then
             -- Last time we rescanned, and we didn't mine anything, so lets give up.
             return
         end
-
+        
         self:find_potential_targets()
     end
-
+    
     self:try_to_mine_targets()
 end
 
@@ -299,7 +299,7 @@ function camp:get_should_spawn_worker_count(extra)
     local available_count = self.assigned_workers
     local active_count = self:get_active_worker_count()
     if available_count == 0 or available_count == active_count then return 0 end
-
+    
     local current_recipe_name = self:get_current_recipe_name()
     if not current_recipe_name then return 0 end
     
@@ -315,7 +315,7 @@ function camp:get_should_spawn_worker_count(extra)
         local carry_count = self:get_target_carry_count()
         local max_workers = math.floor(remaining_count / carry_count)
         local max_unspawned = math.max(0, max_workers - active_count)
-
+        
         return math.min(available_count - active_count, max_unspawned)
     end
     return 0
@@ -333,7 +333,7 @@ end
 function camp:try_to_mine_targets()
     local should_spawn_count = self:get_should_spawn_worker_count()
     if should_spawn_count <= 0 then return end
-  
+    
     for k = 1, should_spawn_count do
         local entity = self:find_entity_to_mine()
         if not entity then return end
@@ -355,17 +355,18 @@ end
 
 ---Register an on_entity_destroyed event just to get a unique value for an entity
 ---@param entity LuaEntity
----@return integer
+---@return uint64 | defines.target_type
 local unique_index = function(entity)
-    return script.register_on_entity_destroyed(entity)
+    local registration_number, object_id, target_type = script.register_on_object_destroyed(entity)
+    return registration_number
 end
 
 local directions =
 {
-  [defines.direction.north] = {0, -1},
-  [defines.direction.south] = {0, 1},
-  [defines.direction.east] = {1, 0},
-  [defines.direction.west] = {-1, 0},
+    [defines.direction.north] = {0, -1},
+    [defines.direction.south] = {0, 1},
+    [defines.direction.east] = {1, 0},
+    [defines.direction.west] = {-1, 0},
 }
 
 ---Get the camp's mining area bounding box
@@ -374,10 +375,10 @@ function camp:get_mining_area()
     local origin = self.entity.position
     local radius = self.defines.mining_radius
     local offset = self.defines.mining_radius_offset
-
+    
     local direction = directions[self.entity.direction]
     local center_offset = {direction[1] * (radius + offset + 0.5), direction[2] * (radius + offset + 0.5)}
-
+    
     origin.x = origin.x + center_offset[1]
     origin.y = origin.y + center_offset[2]
     return area(origin, radius)
@@ -393,9 +394,9 @@ function camp:sort_by_distance(entities)
     local distance = function(position)
         return ((x - position.x) ^ 2 + (y - position.y) ^ 2)
     end
-        
+    
     local targeted_resources = script_data.targeted_resources[self.surface_index]
-        
+    
     ---@diagnostic disable:missing-fields, undefined-field
     for k, entity in pairs (entities) do
         local index = unique_index(entity)
@@ -423,10 +424,10 @@ end
 function camp:find_potential_targets()
     local current_recipe_name = self.current_recipe_name
     if not current_recipe_name then
-      self.potential = {}
-      self.recent = {}
-      self.mined_any = nil
-      return
+        self.potential = {}
+        self.recent = {}
+        self.mined_any = nil
+        return
     end
     
     
@@ -454,7 +455,7 @@ function camp:find_potential_targets()
         end
     end
     --util.highlight_bbox(self.entity.surface, self:get_mining_area())
-  
+    
     self.potential = self:sort_by_distance(unsorted)
     self.recent = {}
     self.mined_any = nil
@@ -479,9 +480,9 @@ end
 ---@return LuaEntity?
 function camp:find_entity_to_mine()
     local targeted_resources = script_data.targeted_resources[self.surface_index]
-  
+    
     local recent = self.recent
-  
+    
     -- Magic - something to do with already started resources I think
     for entity_index, bool in pairs (recent) do
         local target_data = targeted_resources[entity_index]
@@ -497,33 +498,33 @@ function camp:find_entity_to_mine()
         end
         recent[entity_index] = nil
     end
-  
+    
     -- No resource left
     local entities = self.potential
     if not entities[1] then return end
-  
+    
     local size = #entities
     -- Find the closest valid resource (I think)
     while true do
-      local entity_index = entities[size]
-      if not entity_index then break end
-  
-      local target_data = targeted_resources[entity_index]
-      if target_data.entity.valid then
-        target_data.camps[self.unit_number] = true
+        local entity_index = entities[size]
+        if not entity_index then break end
         
-        -- More magic
-        if target_data.mining < target_data.max_mining then
-          target_data.mining = target_data.mining + 1
-          if target_data.mining >= target_data.max_mining then
-            entities[size] = nil
-          end
-          return target_data.entity
+        local target_data = targeted_resources[entity_index]
+        if target_data.entity.valid then
+            target_data.camps[self.unit_number] = true
+            
+            -- More magic
+            if target_data.mining < target_data.max_mining then
+                target_data.mining = target_data.mining + 1
+                if target_data.mining >= target_data.max_mining then
+                    entities[size] = nil
+                end
+                return target_data.entity
+            end
         end
-      end
-
-      entities[size] = nil
-      size = size - 1
+        
+        entities[size] = nil
+        size = size - 1
     end
 end
 
@@ -534,14 +535,14 @@ function camp:remove_worker(worker, remove_item)
     if remove_item then
         self:get_worker_inventory().remove{name = camp_defines.camps[self.entity_name].worker_name, count = 1}
     end
-  
+    
     local mining_target = worker.mining_target
     if mining_target and mining_target.valid then
         self:add_mining_target(mining_target)
     end
-  
+    
     worker.mining_target = nil
-  
+    
     self.workers[worker.unit_number] = nil
 end
 
@@ -553,13 +554,13 @@ function camp:get_mining_count(resource_entity)
     local type = resource_entity.type
     if type == "resource" then
         local carry_count = self.defines.recipes[self.current_recipe_name].carry_count
-
+        
         return math.min(carry_count, resource_entity.amount) --[[@as integer]]
     elseif type == "tree" then
         -- TODO set to 0?
-
+        
         if not resource_entity.prototype.mineable_properties.minable then error("tree not minable") end
-
+        
         local max
         for _, product in pairs(resource_entity.prototype.mineable_properties.products) do
             if product.type == "item" and product.name == "wood" then
@@ -582,15 +583,15 @@ end
 ---@param resource_entity LuaEntity
 function camp:order_worker(worker, resource_entity)
     if not self.mined_any then
-      self.mined_any = true
+        self.mined_any = true
     end
-  
+    
     local mining_count = self:get_mining_count(resource_entity)
     if not mining_count then
         self:return_worker(worker)
         return
     end
-  
+    
     worker.entity.speed = self:get_worker_speed()
     worker:mine_entity(resource_entity, mining_count)
 end
@@ -602,13 +603,13 @@ function camp:handle_order_request(worker_data)
         self:return_worker(worker_data)
         return
     end
-  
+    
     local should_spawn_count = (self:get_should_spawn_worker_count(true))
     if should_spawn_count <= 0 then
         self:return_worker(worker_data)
         return
     end
-
+    
     self:order_worker(worker_data, worker_data.mining_target)
 end
 
@@ -647,19 +648,19 @@ end
 function camp:handle_path_request_finished(event)
     local entity = self.path_requests[event.id]
     if not (entity and entity.valid) then return end
-  
+    
     if not self.entity.valid then
         self:add_mining_target(entity, true)
         return
     end
-  
+    
     self.path_requests[event.id] = nil
-  
+    
     if event.try_again_later then
         self:attempt_to_mine(entity)
         return
     end
-  
+    
     if not (event.path and self.entity.valid) then
         --we can't reach it, don't spawn any workers.
         self:add_mining_target(entity, true)
@@ -668,20 +669,12 @@ function camp:handle_path_request_finished(event)
     local worker = self:spawn_worker()
     
     if not worker then
-         --For some reason, we can't spawn a worker
+        --For some reason, we can't spawn a worker
         self:add_mining_target(entity)
         return
     end
     self:order_worker(worker, entity)
 end
-
-local direction_name =
-{
-  [0] = "north",
-  [2] = "east",
-  [4] = "south",
-  [6] = "west"
-}
 
 ---Event handler for when a worker deposits a resource
 function camp:on_resource_given()
@@ -705,19 +698,19 @@ function camp:add_mining_target(resource_entity, ignore_self)
     local index = unique_index(resource_entity)
     local target_data = targeted_resources[index]
     target_data.mining = target_data.mining - 1
-  
+    
     if target_data.mining < 0 then
         error("HUHEKR?")
     end
-  
+    
     for camp_index, bool in pairs(target_data.camps) do
         if not ignore_self or camp_index ~= self.unit_number then
             local camp_data = get_camp(camp_index)
             if camp_data then
-            if not camp_data.recent then
-                camp_data.recent = {}
-            end
-            camp_data.recent[index] = true
+                if not camp_data.recent then
+                    camp_data.recent = {}
+                end
+                camp_data.recent[index] = true
             end
         end
     end
@@ -745,7 +738,7 @@ end
 function camp:handle_camp_deletion()
     self:cancel_all_orders()
     self.workers = nil
-
+    
     script_data.camps[self.unit_number] = nil
     self:handle_deletion()
 end
@@ -780,18 +773,18 @@ end
 local on_tick = function(event)
     local do_update = event.tick % 60 == 0
     if do_update then
-      for unit_number, camp_data in pairs (script_data.camps) do
-        if not (camp_data.entity.valid) then
-          camp_data:handle_camp_deletion()
-          script_data[unit_number] = nil
-        else
-          camp_data:update()
+        for unit_number, camp_data in pairs (script_data.camps) do
+            if not (camp_data.entity.valid) then
+                camp_data:handle_camp_deletion()
+                script_data[unit_number] = nil
+            else
+                camp_data:update()
+            end
         end
-      end
     end
-
+    
     if event.tick % path_queue_rate == 0 then
-      process_request_queue()
+        process_request_queue()
     end
 end
 
@@ -801,7 +794,7 @@ end
 ---@return CollisionMask
 local get_box_and_mask = function(prototype_name)
     if not (box and mask) then
-        local prototype = game.entity_prototypes[prototype_name]
+        local prototype = prototypes.entity[prototype_name]
         box = prototype.collision_box
         mask = prototype.collision_mask
     end
@@ -811,13 +804,13 @@ end
 ---Add a request an entity to the camp's request queue
 ---@param resource_entity LuaEntity
 function camp:attempt_to_mine(resource_entity)
-  local request_queue = script_data.request_queue[self.unit_number]
-  if not request_queue then
-    request_queue = {}
-    script_data.request_queue[self.unit_number] = request_queue
-  end
-
-  table.insert(request_queue, resource_entity)
+    local request_queue = script_data.request_queue[self.unit_number]
+    if not request_queue then
+        request_queue = {}
+        script_data.request_queue[self.unit_number] = request_queue
+    end
+    
+    table.insert(request_queue, resource_entity)
 end
 
 ---@type PathfinderFlags
@@ -827,7 +820,7 @@ local flags = {cache = false, low_priority = false}
 ---@param resource_entity LuaEntity
 function camp:request_path(resource_entity)
     if not self.entity then return end
-
+    
     local box, mask = get_box_and_mask(camp_defines.camps[self.entity_name].worker_name)
     --util.highlight_position(self.entity.surface, resource_entity.position, {r=1, g=0, b=0, a=1})
     --util.highlight_position(self.entity.surface, self.entity.position, {r=0, g=1, b=0, a=1})
@@ -841,7 +834,7 @@ function camp:request_path(resource_entity)
         can_open_gates = true,
         pathfind_flags = flags
     }
-  
+    
     script_data.path_requests[path_request_id] = self
     self.path_requests[path_request_id] = resource_entity
 end
@@ -861,15 +854,15 @@ end
 local on_entity_removed = function(event)
     local unit_number = event.unit_number --[[@as integer?]]
     if not unit_number then
-      local entity = event.entity
-      if not (entity and entity.valid) then
-        return
-      end
-      unit_number = entity.unit_number
+        local entity = event.entity
+        if not (entity and entity.valid) then
+            return
+        end
+        unit_number = entity.unit_number
     end
-  
+    
     if not unit_number then return end
-  
+    
     local camp_data = script_data.camps[unit_number]
     if not camp_data then return end
     
@@ -925,15 +918,15 @@ lib.events =
     [defines.events.on_robot_built_entity] = on_built_entity,
     [defines.events.script_raised_revive] = on_built_entity,
     [defines.events.script_raised_built] = on_built_entity,
-
+    
     [defines.events.on_script_path_request_finished] = on_script_path_request_finished,
-
+    
     [defines.events.on_player_mined_entity] = on_entity_removed,
     [defines.events.on_robot_mined_entity] = on_entity_removed,
-
+    
     [defines.events.on_entity_died] = on_entity_removed,
     [defines.events.script_raised_destroy] = on_entity_removed,
-
+    
     [defines.events.on_tick] = on_tick
 }
 
@@ -956,7 +949,7 @@ lib.on_configuration_changed = function()
     if not storage.camps then 
         storage.camps = script_data
     end
-
+    
     if not script_data.big_migration then
         script_data.big_migration = true
         script_data.targeted_resources = {}
@@ -970,7 +963,7 @@ lib.on_configuration_changed = function()
         end
         script_data.request_queue = {}
     end
-  
+    
     for unit_number, camp_data in pairs (script_data.camps) do
         --Idk, things can happen, let the camps rescan if they want.
         if camp_data.entity.valid then
@@ -980,7 +973,7 @@ lib.on_configuration_changed = function()
             camp_data[unit_number] = nil
         end
     end
-  
+    
     -- if not script_data.migrate_drones then
     --   script_data.migrate_drones = true
     --     for unit_number, camp in pairs (script_data.camps) do

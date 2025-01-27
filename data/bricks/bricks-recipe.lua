@@ -9,5 +9,5 @@ return {
         {"unfired-bricks", 1},
     },
     energy_required = 5,
-    result = "bricks"
+    results = {{type = "item", name = "bricks"}}
 }

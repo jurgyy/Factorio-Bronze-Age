@@ -34,7 +34,7 @@ local excluded = {
 local function get_defines()
     if defines then return defines end
     defines = {}
-    for name, prototype in pairs(game.entity_prototypes) do
+    for name, prototype in pairs(prototypes.entity) do
         if excluded[name] then
             goto continue
         end

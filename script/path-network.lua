@@ -723,9 +723,9 @@ local floor = math.floor
 
 
 local get_tiles = function()
-    local mask = game.tile_prototypes["ba-path"].collision_mask
+    local mask = prototypes.tile["ba-path"].collision_mask
     local tiles = {}
-    for name, tile in pairs (game.tile_prototypes) do
+    for name, tile in pairs (prototypes.tile) do
         local tile_mask = tile.collision_mask or {}
         if table_size(tile_mask) == table_size(mask) then
             local good = true

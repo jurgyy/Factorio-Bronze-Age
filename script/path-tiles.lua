@@ -21,7 +21,7 @@ local get_road_tiles = function()
     if road_tiles then return road_tiles end
     error("oops")
     -- road_tiles = {}
-    -- local tile_list_item = game.item_prototypes[road_tile_list_name]
+    -- local tile_list_item = prototypes.item[road_tile_list_name]
     -- for tile_name, prototype in pairs (tile_list_item.tile_filters) do
     --     road_tiles[tile_name] = true
     -- end

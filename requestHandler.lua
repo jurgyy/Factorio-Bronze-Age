@@ -66,7 +66,7 @@ handler.handle_build_item_request = function(request)
         request.ghost.surface_index,
         request.ingredient.name,
         request.ingredient.amount,
-        game.entity_prototypes["ba-worker"],
+        prototypes.entity["ba-worker"],
         request.ghost
     )
     if not pf_collection then

@@ -16,10 +16,10 @@ local item_recipe_cache = {}
 ---@return LuaRecipePrototype|nil recipe The recipe for the item
 local function get_item_recipe(item_name)
     if item_recipe_cache[item_name] then
-        return game.recipe_prototypes[item_recipe_cache[item_name]]
+        return prototypes.recipe[item_recipe_cache[item_name]]
     end
 
-    for _, recipe in pairs(game.recipe_prototypes) do
+    for _, recipe in pairs(prototypes.recipe) do
         for _, product in pairs(recipe.products) do
             if product.name == item_name then
                 item_recipe_cache[item_name] = recipe.name
@@ -91,43 +91,43 @@ end
 ---comment
 ---@param event EventData.on_built_entity
 local function set_ghost_requests(event)
-    -- local around = util.get_all_positions_around(event.created_entity.surface, event.created_entity.bounding_box)
+    -- local around = util.get_all_positions_around(event.entity.surface, event.entity.bounding_box)
     -- for i, pos in ipairs(around) do
-    --     util.highlight_radius(event.created_entity.surface, pos, 0.2, {r = 0, b = 1/#around * i, g = 0, a = 0.5})
+    --     util.highlight_radius(event.entity.surface, pos, 0.2, {r = 0, b = 1/#around * i, g = 0, a = 0.5})
     -- end
     if true then return end
 
-    if event.created_entity.name == "wooden-chest" then
+    if event.entity.name == "wooden-chest" then
         return
     end
 
     local count = 1
     local ghost_entity
     local item
-    if event.created_entity.name == "entity-ghost" and event.created_entity.type == "entity-ghost" then
-        ghost_entity = event.created_entity
-        if event.created_entity.ghost_prototype.items_to_place_this then
-            item = event.created_entity.ghost_prototype.items_to_place_this[1]
+    if event.entity.name == "entity-ghost" and event.entity.type == "entity-ghost" then
+        ghost_entity = event.entity
+        if event.entity.ghost_prototype.items_to_place_this then
+            item = event.entity.ghost_prototype.items_to_place_this[1]
         end
     else
-        local surface = event.created_entity.surface
+        local surface = event.entity.surface
         local ghost_data = {
             name = "entity-ghost",
-            ghost_name = event.created_entity.name,
-            position = event.created_entity.position,
-            direction = event.created_entity.direction,
-            force = event.created_entity.force,
+            ghost_name = event.entity.name,
+            position = event.entity.position,
+            direction = event.entity.direction,
+            force = event.entity.force,
             create_build_effect_smoke = false
         }
         item = event.item
 
-        if not event.created_entity.destroy() then
+        if not event.entity.destroy() then
             error("Unable to destroy original entity")
         end
         
         ghost_entity = surface.create_entity(ghost_data)
         if not ghost_entity then
-            util.print("Unable to create ghost entity " .. game.table_to_json(event.created_entity.position))
+            util.print("Unable to create ghost entity " .. helpers.table_to_json(event.entity.position))
         end
 
         local inventory = game.players[event.player_index].get_inventory(defines.inventory.character_main)
@@ -153,7 +153,7 @@ local function set_ghost_requests(event)
 end
 
 ---comments
----@param event EventData.on_entity_destroyed
+---@param event EventData.on_object_destroyed
 local function entity_destroyed_event(event)
     -- todo will also get called when it's finished
     game.print("Entity destroyed")
@@ -168,10 +168,10 @@ local function entity_destroyed_event(event)
     local construction = storage.constructions[ghost_id]
     if construction then
         for item, count in pairs(construction.current) do
-            game.surfaces[construction.surface_index].spill_item_stack(
-                construction.position,
-                {name = item, count = count}
-            )
+            game.surfaces[construction.surface_index].spill_item_stack{
+                position = construction.position,
+                stack = {name = item, count = count}
+            }
         end
     end
     storage.constructions[ghost_id] = nil
@@ -198,7 +198,14 @@ local function handle_path_request(event)
         util.print("Path " .. event.id .. ": No path found")
         local nxt = path.collection:request_next()
         if not nxt then
-            ba_requests.add_request(ba_requests.request_building_item(path.collection.goal_entity, {name=path.collection.item_name, amount=path.collection.total_amount}))
+            ba_requests.add_request(ba_requests.request_building_item(
+                path.collection.goal_entity,
+                {
+                    type = "item",
+                    name = path.collection.item_name,
+                    amount = path.collection.total_amount
+                }
+            ))
         end
         util.highlight_position(game.surfaces[path.collection.surface_index], path.start, {r=1, b = 0, g = 0, a = 1})
         return
@@ -219,11 +226,17 @@ local function handle_path_request(event)
         remaining = remaining - amount
     end
 
-    -- Not enough paths found: Request next
+    -- Not enough pathsfound: Request next
     if not path.collection:path_found_finished(path) then
         local nxt = path.collection:request_next()
         if not nxt then
-            ba_requests.add_request(ba_requests.request_building_item(path.collection.goal_entity, {name=path.collection.item_name, amount=path.collection.total_amount - path.amount}))
+            ba_requests.add_request(ba_requests.request_building_item(path.collection.goal_entity,
+                {
+                    type = "item",
+                    name = path.collection.item_name,
+                    amount = path.collection.total_amount - path.amount
+                }
+            ))
             -- TODO add more to a request queue
         end
     end

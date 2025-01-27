@@ -3,14 +3,14 @@ return {
         type = "recipe",
         name = "wooden-chest",
         ingredients = {{"wood", 2}},
-        result = "wooden-chest"
+        results = {{type = "item", name = "wooden-chest"}}
     },
     {
         type = "recipe",
         name = "iron-chest",
         enabled = false,
         ingredients = {{"iron-plate", 8}},
-        result = "iron-chest"
+        results = {{type = "item", name = "iron-chest"}}
     },
     {
         type = "recipe",
@@ -22,7 +22,7 @@ return {
             {"wood", 1},
             {"clay-disk", 6}
         },
-        result = "transport-belt",
+        results = {{type = "item", name = "transport-belt"}},
         result_count = 2
     },
     {
@@ -34,7 +34,7 @@ return {
             {"iron-gear-wheel", 5},
             {"transport-belt", 1}
         },
-        result = "fast-transport-belt"
+        results = {{type = "item", name = "fast-transport-belt"}}
     },
     {
         type = "recipe",
@@ -47,7 +47,7 @@ return {
             {"fast-transport-belt", 1},
             {type="fluid", name="lubricant", amount=20}
         },
-        result = "express-transport-belt"
+        results = {{type = "item", name = "express-transport-belt"}}
     },
     {
         type = "recipe",
@@ -60,7 +60,7 @@ return {
           {"transport-belt", 5}
         },
         result_count = 2,
-        result = "underground-belt"
+        results = {{type = "item", name = "underground-belt"}}
     },
     {
         type = "recipe",
@@ -73,7 +73,7 @@ return {
           {"underground-belt", 2}
         },
         result_count = 2,
-        result = "fast-underground-belt"
+        results = {{type = "item", name = "fast-underground-belt"}}
     },
     {
         type = "recipe",
@@ -88,7 +88,7 @@ return {
           {type="fluid", name="lubricant", amount=40}
         },
         result_count = 2,
-        result = "express-underground-belt"
+        results = {{type = "item", name = "express-underground-belt"}}
     },
     {
         type = "recipe",
@@ -101,7 +101,7 @@ return {
           {"iron-plate", 5},
           {"transport-belt", 4}
         },
-        result = "splitter"
+        results = {{type = "item", name = "splitter"}}
     },
     {
         type = "recipe",
@@ -114,7 +114,7 @@ return {
           {"iron-gear-wheel", 10},
           {"electronic-circuit", 10}
         },
-        result = "fast-splitter"
+        results = {{type = "item", name = "fast-splitter"}}
     },
     {
         type = "recipe",
@@ -129,7 +129,7 @@ return {
           {"advanced-circuit", 10},
           {type="fluid", name="lubricant", amount=80}
         },
-        result = "express-splitter"
+        results = {{type = "item", name = "express-splitter"}}
     },
     {
         type = "recipe",
@@ -143,7 +143,7 @@ return {
           {"stone", 1},
           {"wood", 2}
         },
-        result = "inserter"
+        results = {{type = "item", name = "inserter"}}
     },
     {
         type = "recipe",
@@ -155,7 +155,7 @@ return {
           {"iron-plate", 1},
           {"inserter", 1}
         },
-        result = "long-handed-inserter"
+        results = {{type = "item", name = "long-handed-inserter"}}
     },
     {
         type = "recipe",
@@ -167,7 +167,7 @@ return {
           {"iron-plate", 2},
           {"inserter", 1}
         },
-        result = "fast-inserter"
+        results = {{type = "item", name = "fast-inserter"}}
     },
     {
         type = "recipe",
@@ -178,7 +178,7 @@ return {
           {"fast-inserter", 1},
           {"electronic-circuit", 4}
         },
-        result = "filter-inserter"
+        results = {{type = "item", name = "filter-inserter"}}
     },
     {
         type = "recipe",
@@ -191,7 +191,7 @@ return {
           {"advanced-circuit", 1},
           {"fast-inserter", 1}
         },
-        result = "stack-inserter"
+        results = {{type = "item", name = "stack-inserter"}}
     },
     {
         type = "recipe",
@@ -202,7 +202,7 @@ return {
           {"stack-inserter", 1},
           {"electronic-circuit", 5}
         },
-        result = "stack-filter-inserter"
+        results = {{type = "item", name = "stack-filter-inserter"}}
     },
     {
         type = "recipe",
@@ -214,7 +214,7 @@ return {
           {"copper-cable", 3},
           {"iron-plate", 1}
         },
-        result = "small-lamp"
+        results = {{type = "item", name = "small-lamp"}}
     },
     {
         type = "recipe",
@@ -225,7 +225,7 @@ return {
           {"electronic-circuit", 1},
           {"copper-cable", 1}
         },
-        result = "red-wire"
+        results = {{type = "item", name = "red-wire"}}
     },
     {
         type = "recipe",
@@ -236,7 +236,7 @@ return {
           {"electronic-circuit", 1},
           {"copper-cable", 1}
         },
-        result = "green-wire"
+        results = {{type = "item", name = "green-wire"}}
     },
     {
         type = "recipe",
@@ -247,7 +247,7 @@ return {
           {"copper-cable", 5},
           {"electronic-circuit", 5}
         },
-        result = "arithmetic-combinator"
+        results = {{type = "item", name = "arithmetic-combinator"}}
     },
     {
         type = "recipe",
@@ -258,7 +258,7 @@ return {
           {"copper-cable", 5},
           {"electronic-circuit", 5}
         },
-        result = "decider-combinator"
+        results = {{type = "item", name = "decider-combinator"}}
     },
     {
         type = "recipe",
@@ -269,7 +269,7 @@ return {
           {"copper-cable", 5},
           {"electronic-circuit", 2}
         },
-        result = "constant-combinator"
+        results = {{type = "item", name = "constant-combinator"}}
     },
     {
         type = "recipe",
@@ -282,7 +282,7 @@ return {
           {"copper-cable", 5},
           {"electronic-circuit", 2}
         },
-        result = "power-switch"
+        results = {{type = "item", name = "power-switch"}}
     },
     {
         type = "recipe",
@@ -296,6 +296,6 @@ return {
           {"copper-cable", 5},
           {"electronic-circuit", 4}
         },
-        result = "programmable-speaker"
+        results = {{type = "item", name = "programmable-speaker"}}
     }
 }
