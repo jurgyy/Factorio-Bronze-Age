@@ -11,16 +11,16 @@ local camps_data = require("__bronze-age__/shared/camp-defines")
 ---@field trees table<integer, boolean> All pre-cut tree proxy unit numbers
 local script_data =
 {
-  workers = {},
-  big_migration = true,
-  trees = {}
+    workers = {},
+    big_migration = true,
+    trees = {}
 }
 
 ---@enum CampWorkerStates
 local states =
 {
-  mining_entity = 1,
-  return_to_camp = 2
+    mining_entity = 1,
+    return_to_camp = 2
 }
 
 ---@type PathfinderFlags

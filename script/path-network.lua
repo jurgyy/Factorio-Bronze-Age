@@ -2,12 +2,15 @@
 -- https://github.com/Klonan/Transport_Drones
 
 local ba_util = require("ba-util")
+local worker_dstirbution = require("worker-distribution")
 
 ---@class PathItemSupply
 
 ---@class PathNetwork
 ---@field item_supply table<string, PathItemSupply> t<item_name: Supply>
 ---@field depots table<string, table<integer, Depot>> t<category, index: Depot>
+---@field housing table<integer, HousingData> t<unit_number: HousingData>
+---@field worker_distribution WorkerDistribution
 
 ---@class Depot 
 ---@field id integer
@@ -40,7 +43,9 @@ local new_id = function()
   script_data.networks[id] =
   {
     item_supply = {},
-    depots = {}
+    depots = {},
+    housing = {},
+    worker_distribution = worker_dstirbution.new(id)
   }
   --print("New network "..id)
   return id
@@ -638,6 +643,29 @@ path_network.remove_depot = function(depot, category)
     if network.depots[category] then
         network.depots[category][depot.index] = nil
     end
+end
+
+---@param network_id integer
+---@param housing_data HousingData
+path_network.add_housing = function(network_id, housing_data)
+    local network = get_network_by_id(network_id)
+    if not network then error("Error with id " .. network_id .. " does not exist") end
+    if network.housing[housing_data.id] then error("Housing already added") end
+
+    network.housing[housing_data.id] = housing_data
+    network.worker_distribution.recalculate(network_id)
+end
+
+
+path_network.remove_housing = function(network_id, housing_id)
+    local network = get_network_by_id(network_id)
+    if not network then error("Error with id " .. network_id .. " does not exist") end
+    
+    local housing_data = network.housing[housing_id]
+    if not housing_data then error("Housing not in network") end
+
+    network.worker_distribution.remove_building(housing_data.)
+    network.housing[housing_id] = nil
 end
 
 ---Computes squared distance between two points

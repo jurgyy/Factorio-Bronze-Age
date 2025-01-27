@@ -66,21 +66,10 @@ end
 ---@param housing_data HousingData
 ---@param update_workers boolean? Update the workers. Defaults to true
 local function add_housing(housing_data, update_workers)
-    script_data.houses[housing_data.id] = housing_data
-    
-    if update_workers == nil or update_workers then
-        local network_id = housing_data.network_id
+    local node = get_first_path_node(housing_data)
+    if not node then return end
 
-        if not network_id then
-            local node = get_first_path_node(housing_data)
-            if not node then return end
-
-            network_id = node.id
-            housing_data.network_id = network_id
-        end
-        
-        add_to_network_unsafe(housing_data, network_id)
-    end
+    path_network.add_housing(node.id, housing_data)
 end
 
 ---@param entity LuaEntity

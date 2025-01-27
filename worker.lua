@@ -241,15 +241,15 @@ end
 worker.new = function(entity)
     local unit_data =
     {
-      entity = entity,
-      unit_number = entity.unit_number,
-      force_index = entity.force.index,
-      inventory = game.create_inventory(1),
-      step = 0,
-      command = nil
+        entity = entity,
+        unit_number = entity.unit_number,
+        force_index = entity.force.index,
+        inventory = game.create_inventory(1),
+        step = 0,
+        command = nil
     }
     entity.ai_settings.path_resolution_modifier = 0
-  
+
     global.worker_data.n_workers = global.worker_data.n_workers + 1
     global.worker_data.workers[entity.unit_number] = unit_data
     return unit_data
