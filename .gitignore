@@ -1,6 +1,7 @@
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+ideas/*
 
 *.code-workspace
 *.zip
