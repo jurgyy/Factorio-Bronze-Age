@@ -23,18 +23,20 @@ end
 
 local worker_collision_mask =
 {
-  "ground-tile",
-  "water-tile",
-  "resource-layer",
-  "doodad-layer",
-  "floor-layer",
-  "item-layer",
-  "ghost-layer",
-  "object-layer",
-  --"player-layer",
-  --"train-layer",
-  "rail-layer",
-  "transport-belt-layer"
+  layers = {
+    ["ground-tile"] = true,
+    ["water-tile"] = true,
+    ["resource-layer"] = true,
+    ["doodad-layer"] = true,
+    ["floor-layer"] = true,
+    ["item-layer"] = true,
+    ["ghost-layer"] = true,
+    ["object-layer"] = true,
+    --["player-layer"] = true,
+    --["train-layer"] = true,
+    ["rail-layer"] = true,
+    ["transport-belt-layer"] = true
+  }
 }
 
 -- for k = 13, 55 do
@@ -171,9 +173,10 @@ path.minable = {
   mining_time = 0.1,
   result = "ba-item-path"
 }
-path.collision_mask = {"train-layer"}
+path.collision_mask = {layers = {["train"] = true}}
 path.tint = { r = 0.300, g = 0.300, b = 0.200,   a = 0.25 }
 
+---@type data.ItemPrototype
 local path_item = {
     type = "item",
     name = "ba-item-path",
@@ -181,12 +184,11 @@ local path_item = {
     {
       result = "ba-path",
       condition_size = 1,
-      condition = { "water-tile" }
+      condition = { layers = {["water-tile"] = true }}
     },
     icon = "__base__/graphics/icons/checked-green.png",
     tint = {r=0.49, g=0.49, b=0.49, a=0.2},
     icon_size = 64,
-    icon_mipmaps = 4,
     -- pictures =
     -- {
     --     { size = 64, filename = "__canal-excavator-graphics__/graphics/icons/marker.png",   scale = 0.25, mipmap_count = 4 }
@@ -195,15 +197,6 @@ local path_item = {
     order = "c[landfill]-b[canal]",
     stack_size = 50
 }
-
-local pickup_text = table.deepcopy(data.raw["flying-text"]["flying-text"])
-pickup_text.name = "ba-pickup-text"
-pickup_text.speed = 0.025
-pickup_text.time_to_live = 30
-pickup_text.text_alignment = "center"
-local dropoff_text = table.deepcopy(pickup_text)
-dropoff_text.name = "ba-dropoff-text"
-dropoff_text.speed = dropoff_text.speed * -1
 
 
 data:extend{ worker, path, path_item, pickup_text, dropoff_text }

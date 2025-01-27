@@ -9,5 +9,5 @@ return {
         {type = "item", name = "unfired-clay-disk", amount = 1},
     },
     energy_required = 5,
-    results = {{type = "item", name = "clay-disk"}}
+    results = {{type = "item", name = "clay-disk", amount = 1}}
 }

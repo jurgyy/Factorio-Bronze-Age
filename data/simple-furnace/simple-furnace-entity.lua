@@ -55,10 +55,12 @@ return {
     energy_source =
     {
       type = "burner",
-      fuel_category = "wood-burn",
+      fuel_categories = {"wood-burn"},
       effectivity = 1,
       fuel_inventory_size = 1,
-      emissions_per_minute = 2,
+      emissions_per_minute = {
+        ["pollution"] = 2
+      },
       light_flicker =
       {
         color = {0,0,0},

@@ -5,10 +5,10 @@ return {
     enabled = true,
     ingredients =
     {
-      {"charcoal", 5},
-      {"copper-ore", 3},
-      {"clay-idol", 1}
+      {type = "item", name = "charcoal", amount = 5},
+      {type = "item", name = "copper-ore", amount = 3},
+      {type = "item", name = "clay-idol", amount = 1}
     },
     energy_required = 5,
-    result = "hephaestus-blessing"
+    results = {{type = "item", name = "hephaestus-blessing", amount = 1}}
 }

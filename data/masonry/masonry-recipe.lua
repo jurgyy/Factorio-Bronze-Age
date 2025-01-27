@@ -6,10 +6,10 @@ return {
     enabled = false,
     ingredients =
     {
-		{"wood", 10},
-		{"stone", 10},
-		{"bricks", 20}
+		{type = "item", name = "wood", amount = 10},
+		{type = "item", name = "stone", amount = 10},
+		{type = "item", name = "bricks", amount = 20}
     },
     energy_required = 5,
-    result = "masonry"
+    results = {{type = "item", name = "masonry", amount = 1}}
 }

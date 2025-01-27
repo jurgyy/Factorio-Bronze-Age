@@ -5,9 +5,8 @@ return {
     category = "pottery-or-handcrafting",
     enabled = true,
     ingredients = {
-      {"clay", 1}
+      {type = "item", name = "clay", amount = 1}
     },
     energy_required = 1,
-    result = "unfired-clay-disk",
-    result_count = 3
+    results = {{type = "item", name = "unfired-clay-disk", amount = 3}},
 }

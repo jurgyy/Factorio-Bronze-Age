@@ -21,7 +21,7 @@ return {
         volume = 0.5
       }
     },
-    --collision_mask = {}, -- using the default collision_mask
+    --collision_mask = {layers = {}}, -- using the default collision_mask
     corpse = "accumulator-remnants",
     crafting_categories = {"logging"},
     crafting_speed = 1,

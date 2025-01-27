@@ -20,10 +20,9 @@ return {
         --   {"iron-plate", 1},
         --   {"iron-gear-wheel", 1}
             {type = "item", name = "wood", amount = 1},
-            {type = "item", "clay-disk", amount = 6}
+            {type = "item", name = "clay-disk", amount = 6}
         },
-        results = {{type = "item", name = "transport-belt"}},
-        result_count = 2
+        results = {{type = "item", name = "transport-belt", amount = 1}},
     },
     {
         type = "recipe",
@@ -34,7 +33,7 @@ return {
             {type = "item", name = "iron-gear-wheel", amount = 5},
             {type = "item", name = "transport-belt", amount = 1}
         },
-        results = {{type = "item", name = "fast-transport-belt"}}
+        results = {{type = "item", name = "fast-transport-belt", amount = 1}}
     },
     {
         type = "recipe",
@@ -47,7 +46,7 @@ return {
             {type = "item", name = "fast-transport-belt", amount = 1},
             {type = "fluid", name = "lubricant", amount = 20}
         },
-        results = {{type = "item", name = "express-transport-belt"}}
+        results = {{type = "item", name = "express-transport-belt", amount = 1}}
     },
     {
         type = "recipe",
@@ -59,8 +58,7 @@ return {
           {type = "item", name = "iron-plate", amount = 10},
           {type = "item", name = "transport-belt", amount = 5}
         },
-        result_count = 2,
-        results = {{type = "item", name = "underground-belt"}}
+        results = {{type = "item", name = "underground-belt", amount = 2}}
     },
     {
         type = "recipe",
@@ -72,8 +70,7 @@ return {
           {type = "item", name = "iron-gear-wheel", amount = 40},
           {type = "item", name = "underground-belt", amount = 2}
         },
-        result_count = 2,
-        results = {{type = "item", name = "fast-underground-belt"}}
+        results = {{type = "item", name = "fast-underground-belt", amount = 2}}
     },
     {
         type = "recipe",
@@ -87,8 +84,7 @@ return {
           {type = "item", name = "fast-underground-belt", amount = 2},
           {type = "fluid", name ="lubricant", amount = 40}
         },
-        result_count = 2,
-        results = {{type = "item", name = "express-underground-belt"}}
+        results = {{type = "item", name = "express-underground-belt", amount = 2}}
     },
     {
         type = "recipe",
@@ -101,7 +97,7 @@ return {
           {type = "item", name = "iron-plate", amount = 5},
           {type = "item", name = "transport-belt", amount = 4}
         },
-        results = {{type = "item", name = "splitter"}}
+        results = {{type = "item", name = "splitter", amount = 1}}
     },
     {
         type = "recipe",
@@ -114,7 +110,7 @@ return {
           {type = "item", name = "iron-gear-wheel", amount = 10},
           {type = "item", name = "electronic-circuit", amount = 10}
         },
-        results = {{type = "item", name = "fast-splitter"}}
+        results = {{type = "item", name = "fast-splitter", amount = 1}}
     },
     {
         type = "recipe",
@@ -129,7 +125,7 @@ return {
           {type = "item", name = "advanced-circuit", amount = 10},
           {type = "fluid", name = "lubricant", amount = 80}
         },
-        results = {{type = "item", name = "express-splitter"}}
+        results = {{type = "item", name = "express-splitter", amount = 1}}
     },
     {
         type = "recipe",
@@ -143,7 +139,7 @@ return {
           {type = "item", name = "stone", amount = 1},
           {type = "item", name = "wood", amount = 2}
         },
-        results = {{type = "item", name = "inserter"}}
+        results = {{type = "item", name = "inserter", amount = 1}}
     },
     {
         type = "recipe",
@@ -155,7 +151,7 @@ return {
           {type = "item", name = "iron-plate", amount = 1},
           {type = "item", name = "inserter", amount = 1}
         },
-        results = {{type = "item", name = "long-handed-inserter"}}
+        results = {{type = "item", name = "long-handed-inserter", amount = 1}}
     },
     {
         type = "recipe",
@@ -167,7 +163,7 @@ return {
           {type = "item", name = "iron-plate", amount = 2},
           {type = "item", name = "inserter", amount = 1}
         },
-        results = {{type = "item", name = "fast-inserter"}}
+        results = {{type = "item", name = "fast-inserter", amount = 1}}
     },
     {
         type = "recipe",
@@ -178,7 +174,7 @@ return {
           {type = "item", name = "fast-inserter", amount = 1},
           {type = "item", name = "electronic-circuit", amount = 4}
         },
-        results = {{type = "item", name = "filter-inserter"}}
+        results = {{type = "item", name = "filter-inserter", amount = 1}}
     },
     {
         type = "recipe",
@@ -191,7 +187,7 @@ return {
           {type = "item", name = "advanced-circuit", amount = 1},
           {type = "item", name = "fast-inserter", amount = 1}
         },
-        results = {{type = "item", name = "stack-inserter"}}
+        results = {{type = "item", name = "stack-inserter", amount = 1}}
     },
     {
         type = "recipe",
@@ -202,7 +198,7 @@ return {
           {type = "item", name = "stack-inserter", amount = 1},
           {type = "item", name = "electronic-circuit", amount = 5}
         },
-        results = {{type = "item", name = "stack-filter-inserter"}}
+        results = {{type = "item", name = "stack-filter-inserter", amount = 1}}
     },
     {
         type = "recipe",
@@ -214,7 +210,7 @@ return {
           {type = "item", name = "copper-cable", amount = 3},
           {type = "item", name = "iron-plate", amount = 1}
         },
-        results = {{type = "item", name = "small-lamp"}}
+        results = {{type = "item", name = "small-lamp", amount = 1}}
     },
     {
         type = "recipe",
@@ -225,7 +221,7 @@ return {
           {type = "item", name = "electronic-circuit", amount = 1},
           {type = "item", name = "copper-cable", amount = 1}
         },
-        results = {{type = "item", name = "red-wire"}}
+        results = {{type = "item", name = "red-wire", amount = 1}}
     },
     {
         type = "recipe",
@@ -236,7 +232,7 @@ return {
           {type = "item", name = "electronic-circuit", amount = 1},
           {type = "item", name = "copper-cable", amount = 1}
         },
-        results = {{type = "item", name = "green-wire"}}
+        results = {{type = "item", name = "green-wire", amount = 1}}
     },
     {
         type = "recipe",
@@ -247,7 +243,7 @@ return {
           {type = "item", name = "copper-cable", amount = 5},
           {type = "item", name = "electronic-circuit", amount = 5}
         },
-        results = {{type = "item", name = "arithmetic-combinator"}}
+        results = {{type = "item", name = "arithmetic-combinator", amount = 1}}
     },
     {
         type = "recipe",
@@ -258,7 +254,7 @@ return {
           {type = "item", name = "copper-cable", amount = 5},
           {type = "item", name = "electronic-circuit", amount = 5}
         },
-        results = {{type = "item", name = "decider-combinator"}}
+        results = {{type = "item", name = "decider-combinator", amount = 1}}
     },
     {
         type = "recipe",
@@ -269,7 +265,7 @@ return {
           {type = "item", name = "copper-cable", amount = 5},
           {type = "item", name = "electronic-circuit", amount = 2}
         },
-        results = {{type = "item", name = "constant-combinator"}}
+        results = {{type = "item", name = "constant-combinator", amount = 1}}
     },
     {
         type = "recipe",
@@ -282,7 +278,7 @@ return {
           {type = "item", name = "copper-cable", amount = 5},
           {type = "item", name = "electronic-circuit", amount = 2}
         },
-        results = {{type = "item", name = "power-switch"}}
+        results = {{type = "item", name = "power-switch", amount = 1}}
     },
     {
         type = "recipe",
@@ -296,6 +292,6 @@ return {
           {type = "item", name = "copper-cable", amount = 5},
           {type = "item", name = "electronic-circuit", amount = 4}
         },
-        results = {{type = "item", name = "programmable-speaker"}}
+        results = {{type = "item", name = "programmable-speaker", amount = 1}}
     }
 }

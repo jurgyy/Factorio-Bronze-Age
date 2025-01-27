@@ -9,6 +9,5 @@ return {
       {type = "item", name = "wood", amount = 20}
     },
     energy_required = 50,
-    results = {{type = "item", name = "charcoal"}},
-    result_count = 10
+    results = {{type = "item", name = "charcoal", amount = 10}},
 }

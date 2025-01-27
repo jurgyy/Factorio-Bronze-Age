@@ -10,7 +10,7 @@ eei.flags = {
     "not-blueprintable", "hidden", "not-selectable-in-game", "not-upgradable", "not-in-kill-statistics",
     "not-in-made-in"
 }
-eei.collision_mask = {}
+eei.collision_mask = {layers = {}}
 
 eei.active_picture = nil
 eei.radius_visualisation_picture = nil

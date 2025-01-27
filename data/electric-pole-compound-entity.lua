@@ -16,14 +16,14 @@ pole.next_upgrade = nil
 pole.water_reflection = nil
 pole.flags = {
     "not-rotatable", "placeable-neutral", "not-repairable", "not-on-map", "not-deconstructable",
-    "not-blueprintable", "hidden", "not-selectable-in-game", "not-upgradable", "not-in-kill-statistics",
+    "not-blueprintable", "not-selectable-in-game", "not-upgradable", "not-in-kill-statistics",
     "not-in-made-in"
 }
-pole.collision_mask = {}
+pole.hidden = true
+pole.collision_mask = {layers = {}}
 
 for _, layer in pairs(pole.pictures.layers) do
     layer.tint = {r = 0, g = 0, b = 0, a = 0.2}
-    layer.sion.tint = {r = 0, g = 0, b = 0, a = 0.2}
 end
 
 return pole

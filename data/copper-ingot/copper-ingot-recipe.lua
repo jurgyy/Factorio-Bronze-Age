@@ -6,8 +6,8 @@ return {
     enabled = false,
     ingredients =
     {
-      {"copper-ore", 2},
+      {type = "item", name = "copper-ore", amount =  2},
     },
     energy_required = 5,
-    result = "copper-ingot"
+    results = {{type = "item", name = "copper-ingot", amount = 1}}
 }

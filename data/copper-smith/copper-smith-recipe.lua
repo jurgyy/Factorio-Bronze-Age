@@ -11,5 +11,5 @@ return {
       {type = "item", name = "wood", amount = 10}
     },
     energy_required = 5,
-    results = {{type = "item", name = "copper-smith"}}
+    results = {{type = "item", name = "copper-smith", amount = 1}}
 }

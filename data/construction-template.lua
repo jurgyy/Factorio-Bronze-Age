@@ -12,7 +12,7 @@ local function get_construction_prototype(width, height)
         minable = { mining_time = 1 },
         max_health = 350,
         corpse = "steel-chest-remnants",
-        collision_mask = {"layer-55"},
+        collision_mask = {layers = {["layer-55"] = true}},
         dying_explosion = "steel-chest-explosion",
         open_sound = { filename = "__base__/sound/metallic-chest-open.ogg", volume=0.43 },
         close_sound = { filename = "__base__/sound/metallic-chest-close.ogg", volume = 0.43 },

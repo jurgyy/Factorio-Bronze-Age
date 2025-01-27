@@ -118,13 +118,14 @@ worker.execute_step = function(unit_data)
             inventory.remove(items)
 
             -- todo stickers gebruiken?
-            local e = unit_data.entity.surface.create_entity{
-                name = "ba-pickup-text",
-                position = unit_data.entity.position,
-                text = command.amount .. "x [item=" .. command.item .. "]",
-                speed = 0.5,
-                time_to_live = 20
-            }
+            game.print("TODO: Create pickup text")
+            -- local e = unit_data.entity.surface.create_entity{
+            --     name = "ba-pickup-text",
+            --     position = unit_data.entity.position,
+            --     text = command.amount .. "x [item=" .. command.item .. "]",
+            --     speed = 0.5,
+            --     time_to_live = 20
+            -- }
             unit_data.inventory.insert(items)
 
         elseif command.subtype == "dropoff-chest" then
@@ -164,8 +165,9 @@ worker.execute_step = function(unit_data)
                     ba_requests.add_request(ba_requests.request_building_item(
                     ghost,
                     {
+                        type = "item",
                         name = command.item,
-                        count = command.amount
+                        amount = command.amount
                     }))
                 else
                     util.print("Unable to re-add the request")
@@ -178,13 +180,14 @@ worker.execute_step = function(unit_data)
                 end
             else
                 unit_data.inventory.remove{name=command.item, count=command.amount}
-                unit_data.entity.surface.create_entity{
-                    name = "ba-dropoff-text",
-                    position = unit_data.entity.position,
-                    text = command.amount .. "x [item=" .. command.item .. "]",
-                    speed = 10,
-                    time_to_live = 20
-                }
+                game.print("TODO: create dropoff text")
+                -- unit_data.entity.surface.create_entity{
+                --     name = "ba-dropoff-text",
+                --     position = unit_data.entity.position,
+                --     text = command.amount .. "x [item=" .. command.item .. "]",
+                --     speed = 10,
+                --     time_to_live = 20
+                -- }
                 
                 worker.finalize_command(unit_data)
                 return

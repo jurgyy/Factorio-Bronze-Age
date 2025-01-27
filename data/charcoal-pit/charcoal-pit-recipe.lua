@@ -8,5 +8,5 @@ return {
       {type = "item", name = "stone", amount = 15}
     },
     energy_required = 5,
-    results = {{type = "item", name = "charcoal-pit"}}
+    results = {{type = "item", name = "charcoal-pit", amount = 1}}
 }

@@ -6,10 +6,10 @@ return {
     enabled = false,
     ingredients =
     {
-      {"wood", 1},
-      {"copper-ingot", 3},
-      {"charcoal", 2}
+      {type = "item", name = "wood", amount = 1},
+      {type = "item", name = "copper-ingot", amount = 3},
+      {type = "item", name = "charcoal", amount = 2}
     },
     energy_required = 5,
-    result = "copper-tools"
+    results = {{type = "item", name = "copper-tools", amount = 1}}
 }

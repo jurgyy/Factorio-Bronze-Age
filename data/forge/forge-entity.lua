@@ -50,9 +50,11 @@ return {
     energy_source =
     {
       type = "burner",
-      fuel_category = "coal-burn",
+      fuel_categories = {"coal-burn"},
       effectivity = 1,
-      emissions_per_minute = 4,
+      emissions_per_minute = {
+        ["pollution"] = 4
+      },
       fuel_inventory_size = 1,
       light_flicker =
       {

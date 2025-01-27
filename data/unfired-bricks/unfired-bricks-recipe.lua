@@ -6,9 +6,9 @@ return {
     enabled = false,
     ingredients =
     {
-      {"clay", 10},
-      {"stone", 1}
+      {type = "item", name = "clay", amount = 10},
+      {type = "item", name = "stone", amount = 1}
     },
     energy_required = 5,
-    result = "unfired-bricks"
+    results = {{type = "item", name = "unfired-bricks", amount = 1}}
 }

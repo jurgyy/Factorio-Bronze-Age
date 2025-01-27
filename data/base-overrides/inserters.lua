@@ -14,6 +14,4 @@ end
 set_workers_energy("inserter", 1)
 set_workers_energy("long-handed-inserter", 5)
 set_workers_energy("fast-inserter", 10)
-set_workers_energy("filter-inserter", 12)
-set_workers_energy("stack-inserter", 20)
-set_workers_energy("stack-filter-inserter", 20)
+set_workers_energy("bulk-inserter", 20)

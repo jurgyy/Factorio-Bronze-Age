@@ -186,6 +186,7 @@ end
 collisions = {}
 
 for type in pairs(defines.prototypes.entity) do
+  if data.raw[type] then
     for _, prototype in pairs(data.raw[type]) do
         local box = prototype.collision_box
         if not (startswith(prototype.name, "construction-")) and box then
@@ -209,16 +210,17 @@ for type in pairs(defines.prototypes.entity) do
                     multiplier = 4
                 end
                 local results = {}
-                if recipe.result_count and recipe.result_count > 1 then
-                    log("Modifying the result_count for " .. recipe.name .. " from " .. recipe.result_count .. " to 1")
-                    recipe.result_count = 1
-                end
+                -- TODO: What to do with this pre-2.0 code:
+                -- if recipe.result_count and recipe.result_count > 1 then
+                --     log("Modifying the result_count for " .. recipe.name .. " from " .. recipe.result_count .. " to 1")
+                --     recipe.result_count = 1
+                -- end
                 for _, ingredient in ipairs(ingredients) do
                     if ingredient.type ~= "fluid" then
                         table.insert(results, {
-                            type = "item",
-                            name = ingredient[1],
-                            amount = ingredient[2] * multiplier
+                            type = ingredient.type,
+                            name = ingredient.name,
+                            amount = ingredient.amount * multiplier
                         })
                     else
                         log(prototype.name .. " Skipping fluid ingredient")
@@ -234,6 +236,7 @@ for type in pairs(defines.prototypes.entity) do
             end
         end
     end
+  end
 end
 
 for shape, prototypes in pairs(collisions) do
@@ -243,7 +246,7 @@ end
 
 local worker = data.raw["unit"]["mining-drone"]
 local worker_mask = table.deepcopy(worker.collision_mask)
-collision_util.remove_layer(worker_mask, "doodad-layer")
+worker_mask.layers["doodad-layer"] = nil
 
 for name, worker_def in pairs(camp_defines.workers) do
     local camp_worker = table.deepcopy(worker)
@@ -258,10 +261,10 @@ end
 
 for _, tree in pairs(data.raw["tree"]) do
     if worker_mask then
-        for _, layer in pairs(worker_mask) do
+        for layer, _ in pairs(worker_mask.layers) do
             if tree then
                 log("Removing layer " .. layer .. " from collision mask of " .. tree.name)
-                collision_util.remove_layer(tree.collision_mask, layer)
+                tree.collision_mask.layers[layer] = nil
             end
         end
     end
@@ -269,11 +272,11 @@ end
 
 for camp_name, camp in pairs(camp_defines.camps) do
     if worker_mask then
-        for _, layer in pairs(worker_mask) do
+        for layer, _ in pairs(worker_mask.layers) do
             local mining_camp = data.raw["assembling-machine"][camp_name]
             if mining_camp then
                 log("Removing layer " .. layer .. " from collision mask of " .. mining_camp.name)
-                collision_util.remove_layer(mining_camp.collision_mask, layer)
+                mining_camp.collision_mask.layers[layer] = nil
             end
         end
     end
