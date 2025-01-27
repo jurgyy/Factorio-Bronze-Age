@@ -6,7 +6,7 @@ return {
     enabled = false,
     ingredients =
     {
-        {"unfired-bricks", 1},
+        {type = "item", name = "unfired-bricks", amount = 1},
     },
     energy_required = 5,
     results = {{type = "item", name = "bricks"}}

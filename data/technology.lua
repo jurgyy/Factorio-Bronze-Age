@@ -4,7 +4,7 @@ local data_util = require("__bronze-age__/data/data-util")
 data:extend{{
     type = "technology",
     name = "pottery",
-    icon_size = 64, icon_mipmaps = 1,
+    icon_size = 64,
     icon = data_util.tech_icons_root .. "pottery.png",
     effects =
     {
@@ -39,7 +39,7 @@ data:extend{{
 },{
     type = "technology",
     name = "masonry",
-    icon_size = 64, icon_mipmaps = 1,
+    icon_size = 64,
     icon = data_util.tech_icons_root .. "masonry.png",
     effects =
     {
@@ -59,7 +59,7 @@ data:extend{{
 },{
     type = "technology",
     name = "smithing",
-    icon_size = 64, icon_mipmaps = 1,
+    icon_size = 64,
     icon = data_util.tech_icons_root .. "smithing.png",
     effects =
     {
@@ -91,7 +91,7 @@ data:extend{{
 },{
     type = "technology",
     name = "mining",
-    icon_size = 64, icon_mipmaps = 1,
+    icon_size = 64,
     icon = data_util.tech_icons_root .. "mining.png",
     effects =
     {

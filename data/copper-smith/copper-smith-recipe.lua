@@ -6,10 +6,10 @@ return {
     enabled = false,
     ingredients =
     {
-      {"bricks", 10},
-      {"stone", 10},
-      {"wood", 10}
+      {type = "item", name = "bricks", amount = 10},
+      {type = "item", name = "stone", amount = 10},
+      {type = "item", name = "wood", amount = 10}
     },
     energy_required = 5,
-    result = "copper-smith"
+    results = {{type = "item", name = "copper-smith"}}
 }

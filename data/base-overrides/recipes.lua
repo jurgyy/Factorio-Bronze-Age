@@ -2,15 +2,15 @@ return {
     {
         type = "recipe",
         name = "wooden-chest",
-        ingredients = {{"wood", 2}},
-        results = {{type = "item", name = "wooden-chest"}}
+        ingredients = {{type = "item", name = "wood", amount = 2}},
+        results = {{type = "item", name = "wooden-chest", amount = 1}}
     },
     {
         type = "recipe",
         name = "iron-chest",
         enabled = false,
-        ingredients = {{"iron-plate", 8}},
-        results = {{type = "item", name = "iron-chest"}}
+        ingredients = {{type = "item", name = "iron-plate", amount = 8}},
+        results = {{type = "item", name = "iron-chest", amount = 1}}
     },
     {
         type = "recipe",
@@ -19,8 +19,8 @@ return {
         {
         --   {"iron-plate", 1},
         --   {"iron-gear-wheel", 1}
-            {"wood", 1},
-            {"clay-disk", 6}
+            {type = "item", name = "wood", amount = 1},
+            {type = "item", "clay-disk", amount = 6}
         },
         results = {{type = "item", name = "transport-belt"}},
         result_count = 2
@@ -31,8 +31,8 @@ return {
         enabled = false,
         ingredients =
         {
-            {"iron-gear-wheel", 5},
-            {"transport-belt", 1}
+            {type = "item", name = "iron-gear-wheel", amount = 5},
+            {type = "item", name = "transport-belt", amount = 1}
         },
         results = {{type = "item", name = "fast-transport-belt"}}
     },
@@ -43,9 +43,9 @@ return {
         enabled = false,
         ingredients =
         {
-            {"iron-gear-wheel", 10},
-            {"fast-transport-belt", 1},
-            {type="fluid", name="lubricant", amount=20}
+            {type = "item", name = "iron-gear-wheel", amount = 10},
+            {type = "item", name = "fast-transport-belt", amount = 1},
+            {type = "fluid", name = "lubricant", amount = 20}
         },
         results = {{type = "item", name = "express-transport-belt"}}
     },
@@ -56,8 +56,8 @@ return {
         energy_required = 1,
         ingredients =
         {
-          {"iron-plate", 10},
-          {"transport-belt", 5}
+          {type = "item", name = "iron-plate", amount = 10},
+          {type = "item", name = "transport-belt", amount = 5}
         },
         result_count = 2,
         results = {{type = "item", name = "underground-belt"}}
@@ -69,8 +69,8 @@ return {
         enabled = false,
         ingredients =
         {
-          {"iron-gear-wheel", 40},
-          {"underground-belt", 2}
+          {type = "item", name = "iron-gear-wheel", amount = 40},
+          {type = "item", name = "underground-belt", amount = 2}
         },
         result_count = 2,
         results = {{type = "item", name = "fast-underground-belt"}}
@@ -83,9 +83,9 @@ return {
         enabled = false,
         ingredients =
         {
-          {"iron-gear-wheel", 80},
-          {"fast-underground-belt", 2},
-          {type="fluid", name="lubricant", amount=40}
+          {type = "item", name = "iron-gear-wheel", amount = 80},
+          {type = "item", name = "fast-underground-belt", amount = 2},
+          {type = "fluid", name ="lubricant", amount = 40}
         },
         result_count = 2,
         results = {{type = "item", name = "express-underground-belt"}}
@@ -97,9 +97,9 @@ return {
         energy_required = 1,
         ingredients =
         {
-          {"electronic-circuit", 5},
-          {"iron-plate", 5},
-          {"transport-belt", 4}
+          {type = "item", name = "electronic-circuit", amount = 5},
+          {type = "item", name = "iron-plate", amount = 5},
+          {type = "item", name = "transport-belt", amount = 4}
         },
         results = {{type = "item", name = "splitter"}}
     },
@@ -110,9 +110,9 @@ return {
         energy_required = 2,
         ingredients =
         {
-          {"splitter", 1},
-          {"iron-gear-wheel", 10},
-          {"electronic-circuit", 10}
+          {type = "item", name = "splitter", amount = 1},
+          {type = "item", name = "iron-gear-wheel", amount = 10},
+          {type = "item", name = "electronic-circuit", amount = 10}
         },
         results = {{type = "item", name = "fast-splitter"}}
     },
@@ -124,10 +124,10 @@ return {
         energy_required = 2,
         ingredients =
         {
-          {"fast-splitter", 1},
-          {"iron-gear-wheel", 10},
-          {"advanced-circuit", 10},
-          {type="fluid", name="lubricant", amount=80}
+          {type = "item", name = "fast-splitter", amount = 1},
+          {type = "item", name = "iron-gear-wheel", amount = 10},
+          {type = "item", name = "advanced-circuit", amount = 10},
+          {type = "fluid", name = "lubricant", amount = 80}
         },
         results = {{type = "item", name = "express-splitter"}}
     },
@@ -139,9 +139,9 @@ return {
         --   {"electronic-circuit", 1},
         --   {"iron-gear-wheel", 1},
         --   {"iron-plate", 1},
-          {"clay-disk", 3},
-          {"stone", 1},
-          {"wood", 2}
+          {type = "item", name = "clay-disk", amount = 3},
+          {type = "item", name = "stone", amount = 1},
+          {type = "item", name = "wood", amount = 2}
         },
         results = {{type = "item", name = "inserter"}}
     },
@@ -151,9 +151,9 @@ return {
         enabled = false,
         ingredients =
         {
-          {"iron-gear-wheel", 1},
-          {"iron-plate", 1},
-          {"inserter", 1}
+          {type = "item", name = "iron-gear-wheel", amount = 1},
+          {type = "item", name = "iron-plate", amount = 1},
+          {type = "item", name = "inserter", amount = 1}
         },
         results = {{type = "item", name = "long-handed-inserter"}}
     },
@@ -163,9 +163,9 @@ return {
         enabled = false,
         ingredients =
         {
-          {"electronic-circuit", 2},
-          {"iron-plate", 2},
-          {"inserter", 1}
+          {type = "item", name = "electronic-circuit", amount = 2},
+          {type = "item", name = "iron-plate", amount = 2},
+          {type = "item", name = "inserter", amount = 1}
         },
         results = {{type = "item", name = "fast-inserter"}}
     },
@@ -175,8 +175,8 @@ return {
         enabled = false,
         ingredients =
         {
-          {"fast-inserter", 1},
-          {"electronic-circuit", 4}
+          {type = "item", name = "fast-inserter", amount = 1},
+          {type = "item", name = "electronic-circuit", amount = 4}
         },
         results = {{type = "item", name = "filter-inserter"}}
     },
@@ -186,10 +186,10 @@ return {
         enabled = false,
         ingredients =
         {
-          {"iron-gear-wheel", 15},
-          {"electronic-circuit", 15},
-          {"advanced-circuit", 1},
-          {"fast-inserter", 1}
+          {type = "item", name = "iron-gear-wheel", amount = 15},
+          {type = "item", name = "electronic-circuit", amount = 15},
+          {type = "item", name = "advanced-circuit", amount = 1},
+          {type = "item", name = "fast-inserter", amount = 1}
         },
         results = {{type = "item", name = "stack-inserter"}}
     },
@@ -199,8 +199,8 @@ return {
         enabled = false,
         ingredients =
         {
-          {"stack-inserter", 1},
-          {"electronic-circuit", 5}
+          {type = "item", name = "stack-inserter", amount = 1},
+          {type = "item", name = "electronic-circuit", amount = 5}
         },
         results = {{type = "item", name = "stack-filter-inserter"}}
     },
@@ -210,9 +210,9 @@ return {
         enabled = false,
         ingredients =
         {
-          {"electronic-circuit", 1},
-          {"copper-cable", 3},
-          {"iron-plate", 1}
+          {type = "item", name = "electronic-circuit", amount = 1},
+          {type = "item", name = "copper-cable", amount = 3},
+          {type = "item", name = "iron-plate", amount = 1}
         },
         results = {{type = "item", name = "small-lamp"}}
     },
@@ -222,8 +222,8 @@ return {
         enabled = false,
         ingredients =
         {
-          {"electronic-circuit", 1},
-          {"copper-cable", 1}
+          {type = "item", name = "electronic-circuit", amount = 1},
+          {type = "item", name = "copper-cable", amount = 1}
         },
         results = {{type = "item", name = "red-wire"}}
     },
@@ -233,8 +233,8 @@ return {
         enabled = false,
         ingredients =
         {
-          {"electronic-circuit", 1},
-          {"copper-cable", 1}
+          {type = "item", name = "electronic-circuit", amount = 1},
+          {type = "item", name = "copper-cable", amount = 1}
         },
         results = {{type = "item", name = "green-wire"}}
     },
@@ -244,8 +244,8 @@ return {
         enabled = false,
         ingredients =
         {
-          {"copper-cable", 5},
-          {"electronic-circuit", 5}
+          {type = "item", name = "copper-cable", amount = 5},
+          {type = "item", name = "electronic-circuit", amount = 5}
         },
         results = {{type = "item", name = "arithmetic-combinator"}}
     },
@@ -255,8 +255,8 @@ return {
         enabled = false,
         ingredients =
         {
-          {"copper-cable", 5},
-          {"electronic-circuit", 5}
+          {type = "item", name = "copper-cable", amount = 5},
+          {type = "item", name = "electronic-circuit", amount = 5}
         },
         results = {{type = "item", name = "decider-combinator"}}
     },
@@ -266,8 +266,8 @@ return {
         enabled = false,
         ingredients =
         {
-          {"copper-cable", 5},
-          {"electronic-circuit", 2}
+          {type = "item", name = "copper-cable", amount = 5},
+          {type = "item", name = "electronic-circuit", amount = 2}
         },
         results = {{type = "item", name = "constant-combinator"}}
     },
@@ -278,9 +278,9 @@ return {
         energy_required = 2,
         ingredients =
         {
-          {"iron-plate", 5},
-          {"copper-cable", 5},
-          {"electronic-circuit", 2}
+          {type = "item", name = "iron-plate", amount = 5},
+          {type = "item", name = "copper-cable", amount = 5},
+          {type = "item", name = "electronic-circuit", amount = 2}
         },
         results = {{type = "item", name = "power-switch"}}
     },
@@ -291,10 +291,10 @@ return {
         energy_required = 2,
         ingredients =
         {
-          {"iron-plate", 3},
-          {"iron-stick", 4},
-          {"copper-cable", 5},
-          {"electronic-circuit", 4}
+          {type = "item", name = "iron-plate", amount = 3},
+          {type = "item", name = "iron-stick", amount = 4},
+          {type = "item", name = "copper-cable", amount = 5},
+          {type = "item", name = "electronic-circuit", amount = 4}
         },
         results = {{type = "item", name = "programmable-speaker"}}
     }

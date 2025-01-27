@@ -8,6 +8,10 @@ local function get_sticker_line(current, total, item_name)
     return current .. "/" .. total .. " [item=" .. item_name .. "]" 
 end
 
+---@param entity LuaEntity
+---@param text string
+---@param v_offset number
+---@return LuaRenderObject
 local function render_sticker_line(entity, text, v_offset)
     return rendering.draw_text {
         surface = entity.surface,
@@ -25,7 +29,7 @@ local function render_sticker_line(entity, text, v_offset)
 end
 
 --- @class Construction
---- @field renderings integer[] rendering entity id's
+--- @field renderings LuaRenderObject[] Array of render objects
 --- @field ingredients Ingredient ingredients
 --- @field current table<string, integer> delivered items
 --- @field surface_index integer Surface index of the construction
@@ -38,13 +42,15 @@ end
 local function create_new_sticker(ghost_entity, ingredients)
     local offset_per_line = 0.4
     local offset = -(offset_per_line * #ingredients / 2) - offset_per_line
+
+    ---@type LuaRenderObject[]
     renderings = {}
     for _, ingredient in ipairs(ingredients) do
         local text = get_sticker_line(0, ingredient.amount, ingredient.name)
         offset = offset + offset_per_line
-        local id = render_sticker_line(ghost_entity, text, offset)
+        local render_object = render_sticker_line(ghost_entity, text, offset)
 
-        table.insert(renderings, id)
+        table.insert(renderings, render_object)
     end
 
     construction = {
@@ -64,7 +70,7 @@ local function update_sticker(entity)
             local current = construction.current[ingredient.name]
             if current then
                 local text = get_sticker_line(current, ingredient.amount, ingredient.name)
-                rendering.set_text(construction.renderings[i], text)
+                construction.renderings[i].text = text
             end
         end
         return
@@ -82,7 +88,7 @@ ba_construction.new = function(ghost_entity, recipe, count)
         util.print("Recipe has no ingredients")
         return
     end
-    local uid = script.register_on_entity_destroyed(ghost_entity)
+    local uid = script.register_on_object_destroyed(ghost_entity)
     if not storage.destruction_ids then
         storage.destruction_ids = {}
     end

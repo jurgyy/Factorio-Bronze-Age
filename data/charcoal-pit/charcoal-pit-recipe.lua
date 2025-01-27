@@ -5,7 +5,7 @@ return {
     enabled = true,
     ingredients =
     {
-      {"stone", 15}
+      {type = "item", name = "stone", amount = 15}
     },
     energy_required = 5,
     results = {{type = "item", name = "charcoal-pit"}}

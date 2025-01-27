@@ -17,7 +17,7 @@ end
 local empty_rotated_animation = function()
     return
     {
-      filename = "__base__/graphics/entity/ship-wreck/small-ship-wreck-a.png",
+      filename = "__base__/graphics/icons/ship-wreck/small-ship-wreck.png",
       width = 1,
       height= 1,
       direction_count = 1,
@@ -128,13 +128,13 @@ local make_resource_attack_proxy = function(resource, visual_type)
       order = "zzzzzz",
       max_health = shared.mining_damage * 1000000,
       collision_box = {{-0.1, -0.1}, {0.1, 0.1}},
-      collision_mask = {"colliding-with-tiles-only"},
+      collision_mask = {colliding_with_tiles_only = true, layers = {}},
       selection_box = nil,
       run_animation = animation,--empty_rotated_animation(),
       attack_parameters = empty_attack_parameters(),
       movement_speed = 0,
       distance_per_frame = 0,
-      pollution_to_join_attack = 0,
+      --pollution_to_join_attack = 0,
       distraction_cooldown = 0,
       vision_distance = 0
     }
@@ -199,6 +199,7 @@ for type in pairs(defines.prototypes.entity) do
         end
 
         if prototype.minable then
+            ---@diagnostic disable-next-line: cast-type-mismatch
             ---@cast prototype data.EntityPrototype|data.TilePrototype
             local recipe = data.raw.recipe[prototype.minable.result]
             if recipe and (recipe.ingredients or recipe.normal) then
@@ -287,7 +288,6 @@ for camp_name, camp in pairs(camp_defines.camps) do
             icon = resource_item.icon,
             icon_size = resource_item.icon_size,
             icons = resource_item.icons,
-            icon_mipmaps = resource_item.icon_mipmaps,
             ingredients = {
                 {type = "item", name = camp.worker_name, amount = 1}
             },

@@ -6,7 +6,7 @@ return {
     enabled = true,
     ingredients =
     {
-      {"wood", 20}
+      {type = "item", name = "wood", amount = 20}
     },
     energy_required = 50,
     results = {{type = "item", name = "charcoal"}},
