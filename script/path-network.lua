@@ -664,7 +664,8 @@ path_network.remove_housing = function(network_id, housing_id)
     local housing_data = network.housing[housing_id]
     if not housing_data then error("Housing not in network") end
 
-    network.worker_distribution.remove_building(housing_data.)
+    -- TODO: pre 2.0 code but without args:
+    --network.worker_distribution.remove_building()
     network.housing[housing_id] = nil
 end
 
@@ -723,10 +724,10 @@ local floor = math.floor
 
 
 local get_tiles = function()
-    local mask = prototypes.tile["ba-path"].collision_mask
+    local mask = prototypes.tile["ba-path"].collision_mask.layers
     local tiles = {}
     for name, tile in pairs (prototypes.tile) do
-        local tile_mask = tile.collision_mask or {}
+        local tile_mask = tile.collision_mask.layers or {}
         if table_size(tile_mask) == table_size(mask) then
             local good = true
             for layer, bool in pairs (mask) do

@@ -38,11 +38,11 @@ end
 function worker_compounds:new(entity)
     local entity_define = get_entities_with_workers_defines()[entity.name]
     if not entity_define then return end
-
+    
     if entity_define.max_workers > 100 then
         game.print("WARNING: large number of workers detected (".. entity_define.max_workers .."). Possibly not balanced for this mod")
     end
-
+    
     local compounds_data = object_with_workers.new(self, entity, entity_define.max_workers, {
         eei = spawn_compound(entity, "compound-eei"),
         pole = spawn_compound(entity, "electric-pole-compound")
@@ -52,14 +52,14 @@ function worker_compounds:new(entity)
     --[[@cast compounds_data WorkerCompoundsData]]
     
     script_data.compounds[entity.unit_number] = compounds_data
-
+    
     -- Eei's can only provide power per tick equal to their buffer size.
     -- To minimize the buffer size set it to the maximum power draw needed: max_workers / 60
     -- But divide by 59 to give it a little bit of extra juice to handle short spikes of extra power draw
     -- Which happens for example during pickup and dropoff of inserters
     compounds_data.eei.electric_buffer_size = compounds_data.max_workers / 59
     compounds_data.eei.power_production = 0
-
+    
     return compounds_data
 end
 
@@ -68,11 +68,11 @@ function worker_compounds:handle_entity_deletion()
     if self.eei and self.eei.valid then
         self.eei.destroy()
     end
-
+    
     if self.pole and self.pole.valid then
         self.pole.destroy()
     end
-
+    
     script_data.compounds[self.entity.unit_number] = nil
 end
 
@@ -84,9 +84,9 @@ end
 
 ---@param event EventData.on_built_entity|EventData.on_robot_built_entity|EventData.script_raised_revive|EventData.script_raised_built
 local on_built_entity = function(event)
-    local entity = event.entity or event.created_entity
+    local entity = event.entity or event.entity
     if not (entity and entity.valid) then return end
-  
+    
     worker_compounds:new(entity)
 end
 
@@ -95,15 +95,15 @@ end
 local on_entity_removed = function(event)
     local unit_number = event.unit_number --[[@as integer?]]
     if not unit_number then
-      local entity = event.entity
-      if not (entity and entity.valid) then
-        return
-      end
-      unit_number = entity.unit_number
+        local entity = event.entity
+        if not (entity and entity.valid) then
+            return
+        end
+        unit_number = entity.unit_number
     end
-  
+    
     if not unit_number then return end
-  
+    
     local eei_data = script_data.compounds[unit_number]
     if not eei_data then return end
     
@@ -128,13 +128,13 @@ lib.events =
     [defines.events.on_robot_built_entity] = on_built_entity,
     [defines.events.script_raised_revive] = on_built_entity,
     [defines.events.script_raised_built] = on_built_entity,
-
+    
     [defines.events.on_player_mined_entity] = on_entity_removed,
     [defines.events.on_robot_mined_entity] = on_entity_removed,
-
+    
     [defines.events.on_entity_died] = on_entity_removed,
     [defines.events.script_raised_destroy] = on_entity_removed,
-
+    
     --[defines.events.on_tick] = on_tick
 }
 

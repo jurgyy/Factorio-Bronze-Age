@@ -256,7 +256,7 @@ handler.add_lib(require("script/gui"))
 
 -- script.on_event(defines.events.on_built_entity, set_ghost_requests)
 
--- script.on_event(defines.events.on_entity_destroyed, entity_destroyed_event)
+-- script.on_event(defines.events.on_object_destroyed, entity_destroyed_event)
 
 -- script.on_event(defines.events.on_ai_command_completed, ba_worker.on_ai_command_completed)
 -- script.on_event(defines.events.on_script_path_request_finished, handle_path_request)

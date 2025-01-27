@@ -7,7 +7,7 @@ local function calculate_inserter_workers(prototype)
         return
     end
 
-    return math.floor(prototype.max_energy_usage * 60 + 0.5)
+    return math.floor(prototype.get_max_energy_usage() * 60 + 0.5)
 end
 
 ---@param prototype LuaEntityPrototype Non-inserter prototype 

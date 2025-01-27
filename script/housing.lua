@@ -123,7 +123,7 @@ end
 function housing.new(housing_entity)
     ---@type HousingData
     local housing_data = {
-        id = script.register_on_entity_destroyed(housing_entity),
+        id = script.on_object_destroyed(housing_entity),
         surface_index = housing_entity.surface_index,
         entity = housing_entity,
         define = housing_defines[housing_entity.name]
@@ -179,13 +179,13 @@ end
 
 ---@param event EventData.on_built_entity|EventData.on_robot_built_entity|EventData.script_raised_revive|EventData.script_raised_built
 local function on_built_entity(event)
-    local entity = event.entity or event.created_entity
+    local entity = event.entity or event.entity
     if not (entity and entity.valid) then return end
     if not housing_defines[entity.name] then return end
     housing.new(entity)
 end
 
----@param event EventData.on_entity_destroyed --EventData.on_player_mined_entity|EventData.on_robot_mined_entity|EventData.on_entity_died|EventData.script_raised_destroy
+---@param event EventData.on_object_destroyed --EventData.on_player_mined_entity|EventData.on_robot_mined_entity|EventData.on_entity_died|EventData.script_raised_destroy
 local on_entity_removed = function(event)
     local unit_number = event.registration_number --[[@as integer?]]
     if not unit_number then
@@ -223,7 +223,7 @@ lib.events = {
     [defines.events.script_raised_revive] = on_built_entity,
     [defines.events.script_raised_built] = on_built_entity,
 
-    [defines.events.on_entity_destroyed] = on_entity_removed,
+    [defines.events.on_object_destroyed] = on_entity_removed,
 
     --[defines.events.on_tick] = on_tick
 }
