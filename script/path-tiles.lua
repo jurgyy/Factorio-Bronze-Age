@@ -328,7 +328,8 @@ lib.add_commands = function()
             local surface = game.surfaces[surface_id]
             for x, x_map in pairs(surface_map) do
                 for y, node in pairs(x_map) do
-                    surface.create_entity{name = "still-text", position = {x + 0.33, y + 0.33}, text = node.id}
+                    game.print("TODO [commands.add_command]: Create still text")
+                    -- surface.create_entity{name = "still-text", position = {x + 0.33, y + 0.33}, text = node.id}
                 end
             end
         end

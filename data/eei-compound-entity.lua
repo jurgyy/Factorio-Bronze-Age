@@ -7,9 +7,10 @@ eei.allow_copy_paste = false
 eei.selectable_in_game  = false
 eei.flags = {
     "not-rotatable", "placeable-neutral", "not-repairable", "not-on-map", "not-deconstructable",
-    "not-blueprintable", "hidden", "not-selectable-in-game", "not-upgradable", "not-in-kill-statistics",
+    "not-blueprintable", "not-selectable-in-game", "not-upgradable", "not-in-kill-statistics",
     "not-in-made-in"
 }
+eei.hidden = true
 eei.collision_mask = {layers = {}}
 
 eei.active_picture = nil

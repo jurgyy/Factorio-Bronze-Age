@@ -24,18 +24,18 @@ end
 local worker_collision_mask =
 {
   layers = {
-    ["ground-tile"] = true,
-    ["water-tile"] = true,
-    ["resource-layer"] = true,
-    ["doodad-layer"] = true,
-    ["floor-layer"] = true,
-    ["item-layer"] = true,
-    ["ghost-layer"] = true,
-    ["object-layer"] = true,
-    --["player-layer"] = true,
-    --["train-layer"] = true,
-    ["rail-layer"] = true,
-    ["transport-belt-layer"] = true
+    ["ground_tile"] = true,
+    ["water_tile"] = true,
+    ["resource"] = true,
+    ["doodad"] = true,
+    ["floor"] = true,
+    ["item"] = true,
+    ["ghost"] = true,
+    ["object"] = true,
+    --["player"] = true,
+    --["train"] = true,
+    ["rail"] = true,
+    ["transport_belt"] = true
   }
 }
 
@@ -45,7 +45,7 @@ local worker_collision_mask =
 
 local bot_name = "ba-worker"
 local bot_name_2 = bot_name
-local worker_flags = {"placeable-off-grid", "hidden", "not-in-kill-statistics"}
+local worker_flags = {"placeable-off-grid", "not-in-kill-statistics"}
 
 local random_mining_speed = 1.5 * 1 + ((math.random() - 0.5) / 4)
 local random_height = gaussian(90, 10) / 100
@@ -64,6 +64,7 @@ local worker = {
       }
     },
     flags = worker_flags,
+    hidden = true,
     map_color = {200 ^ 0.5, 200 ^ 0.5, 200 ^ 0.5, 0.5},
     enemy_map_color = {r = 1},
     max_health = 150,
@@ -125,7 +126,7 @@ local worker = {
     affected_by_tiles = true,
     movement_speed = 0.25 * random_height,
     distance_per_frame = 0.25 / random_height,
-    pollution_to_join_attack = 1000000,
+    -- pollution_to_join_attack = 1000000,
     --corpse = bot_name.."-corpse",
     run_animation = base.animations[1].running,
     rotation_speed = 0.05 / random_height,
@@ -184,7 +185,7 @@ local path_item = {
     {
       result = "ba-path",
       condition_size = 1,
-      condition = { layers = {["water-tile"] = true }}
+      condition = { layers = {["water_tile"] = true }}
     },
     icon = "__base__/graphics/icons/checked-green.png",
     tint = {r=0.49, g=0.49, b=0.49, a=0.2},

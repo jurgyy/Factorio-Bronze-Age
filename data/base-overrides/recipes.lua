@@ -167,18 +167,7 @@ return {
     },
     {
         type = "recipe",
-        name = "filter-inserter",
-        enabled = false,
-        ingredients =
-        {
-          {type = "item", name = "fast-inserter", amount = 1},
-          {type = "item", name = "electronic-circuit", amount = 4}
-        },
-        results = {{type = "item", name = "filter-inserter", amount = 1}}
-    },
-    {
-        type = "recipe",
-        name = "stack-inserter",
+        name = "bulk-inserter",
         enabled = false,
         ingredients =
         {
@@ -187,18 +176,7 @@ return {
           {type = "item", name = "advanced-circuit", amount = 1},
           {type = "item", name = "fast-inserter", amount = 1}
         },
-        results = {{type = "item", name = "stack-inserter", amount = 1}}
-    },
-    {
-        type = "recipe",
-        name = "stack-filter-inserter",
-        enabled = false,
-        ingredients =
-        {
-          {type = "item", name = "stack-inserter", amount = 1},
-          {type = "item", name = "electronic-circuit", amount = 5}
-        },
-        results = {{type = "item", name = "stack-filter-inserter", amount = 1}}
+        results = {{type = "item", name = "bulk-inserter", amount = 1}}
     },
     {
         type = "recipe",

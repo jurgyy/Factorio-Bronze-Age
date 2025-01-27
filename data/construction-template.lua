@@ -3,6 +3,8 @@ local data_util = require("__bronze-age__/data/data-util")
 local hit_effects = require ("__base__.prototypes.entity.hit-effects")
 local sounds = require("__base__/prototypes/entity/sounds")
 
+local construction_layer = require(data_util.data_root .. "construction-collision-layer")
+
 local function get_construction_prototype(width, height)
     return {{
         type = "container",
@@ -12,7 +14,7 @@ local function get_construction_prototype(width, height)
         minable = { mining_time = 1 },
         max_health = 350,
         corpse = "steel-chest-remnants",
-        collision_mask = {layers = {["layer-55"] = true}},
+        collision_mask = {layers = {[construction_layer.name] = true}},
         dying_explosion = "steel-chest-explosion",
         open_sound = { filename = "__base__/sound/metallic-chest-open.ogg", volume=0.43 },
         close_sound = { filename = "__base__/sound/metallic-chest-close.ogg", volume = 0.43 },

@@ -194,7 +194,8 @@ function dist.recalculate(network_id)
         local surface = building.entity.surface
         local x = building.entity.position.x
         local y = building.entity.position.y
-        surface.create_entity{name = "still-text", position = {x, y}, text = network_id}
+        game.print("TOOD [dist.recalculate]: create still text here")
+        -- surface.create_entity{name = "still-text", position = {x, y}, text = network_id}
         -- Debug ^
         --local category = b:getCategory()
         local priority = priority_enum.Medium -- priorityMap[category]

@@ -40,6 +40,7 @@ require(data_util.data_root .. "fuel-categories")
 data:extend{require(data_util.data_root .. "fallen-tree-resource")}
 data:extend{require(data_util.data_root .. "eei-compound-entity")}
 data:extend{require(data_util.data_root .. "electric-pole-compound-entity")}
+data:extend{require(data_util.data_root .. "construction-collision-layer")}
 
 data.raw["item"]["wood"].fuel_category = "wood-burn"
 
@@ -62,11 +63,3 @@ for _, camp in pairs(camp_defines.camps) do
         end
     end
 end
-
-data:extend{{
-    type = "flying-text",
-    name = "still-text",
-    flags = {"not-on-map", "placeable-off-grid"},
-    time_to_live = 300,
-    speed = 0
-}}

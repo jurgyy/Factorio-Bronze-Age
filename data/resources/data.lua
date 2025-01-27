@@ -100,6 +100,11 @@ for _, resource_name in pairs(removed_resources) do
     data.raw["map-gen-presets"]["default"]["rail-world"].basic_settings.autoplace_controls[resource_name] = nil
     data.raw["map-gen-presets"]["default"]["ribbon-world"].basic_settings.autoplace_controls[resource_name] = nil
     data.raw["map-gen-presets"]["default"]["rich-resources"].basic_settings.autoplace_controls[resource_name] = nil
+
+    for _, planet in pairs(data.raw.planet) do
+        planet.map_gen_settings.autoplace_controls[resource_name] = nil
+        planet.map_gen_settings.autoplace_settings.entity.settings[resource_name] = nil
+    end
 end
 
 local marble = require(root .. "marble-resource")
