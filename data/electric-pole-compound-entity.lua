@@ -23,7 +23,7 @@ pole.collision_mask = {}
 
 for _, layer in pairs(pole.pictures.layers) do
     layer.tint = {r = 0, g = 0, b = 0, a = 0.2}
-    layer.hr_version.tint = {r = 0, g = 0, b = 0, a = 0.2}
+    layer.sion.tint = {r = 0, g = 0, b = 0, a = 0.2}
 end
 
 return pole

@@ -65,11 +65,11 @@ requests.request_item_delivery = function(path, amount)
 end
 
 requests.add_request = function(request)
-    Queue.push_back(global.request_queue, request)
+    Queue.push_back(storage.request_queue, request)
 end
 
 requests.get_request = function()
-    local request = Queue.pop_front(global.request_queue)
+    local request = Queue.pop_front(storage.request_queue)
     if not request then
         return
     end
@@ -78,15 +78,15 @@ end
 
 requests.cancel_build_requests = function(ghost_id)
     local remove_index = {}
-    for idx in Queue.iter(global.request_queue) do
-        if global.request_queue[idx].ghost_id == ghost_id then
+    for idx in Queue.iter(storage.request_queue) do
+        if storage.request_queue[idx].ghost_id == ghost_id then
             -- index is adjusted for when elements are removed before it
             table.insert(remove_index, idx - #remove_index)
         end
     end
 
     for _, index in pairs(remove_index) do
-        Queue.remove_at(global.request_queue, index)
+        Queue.remove_at(storage.request_queue, index)
     end
 end
 

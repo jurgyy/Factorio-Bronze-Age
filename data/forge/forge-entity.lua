@@ -104,23 +104,12 @@ return {
           filename = "__base__/graphics/entity/steel-furnace/steel-furnace-fire.png",
           priority = "high",
           line_length = 8,
-          width = 29,
-          height = 40,
+          width = 57,
+          height = 81,
           frame_count = 48,
           direction_count = 1,
-          shift = util.by_pixel(-0.5, 6),
-          hr_version =
-          {
-            filename = "__base__/graphics/entity/steel-furnace/hr-steel-furnace-fire.png",
-            priority = "high",
-            line_length = 8,
-            width = 57,
-            height = 81,
-            frame_count = 48,
-            direction_count = 1,
-            shift = util.by_pixel(-0.75, 5.75),
-            scale = 0.5
-          }
+          shift = util.by_pixel(-0.75, 5.75),
+          scale = 0.5
         },
       },
       {
@@ -147,25 +136,13 @@ return {
           filename = "__base__/graphics/entity/steel-furnace/steel-furnace-working.png",
           priority = "high",
           line_length = 1,
-          width = 64,
-          height = 74,
+          width = 128,
+          height = 150,
           frame_count = 1,
           direction_count = 1,
-          shift = util.by_pixel(0, -4),
+          shift = util.by_pixel(0, -5),
           blend_mode = "additive",
-          hr_version =
-          {
-            filename = "__base__/graphics/entity/steel-furnace/hr-steel-furnace-working.png",
-            priority = "high",
-            line_length = 1,
-            width = 128,
-            height = 150,
-            frame_count = 1,
-            direction_count = 1,
-            shift = util.by_pixel(0, -5),
-            blend_mode = "additive",
-            scale = 0.5,
-          }
+          scale = 0.5,
         }
       },
       {
@@ -179,26 +156,13 @@ return {
           priority = "high",
           line_length = 1,
           draw_as_sprite = false,
-          width = 78,
-          height = 64,
+          width = 152,
+          height = 126,
           frame_count = 1,
           direction_count = 1,
-          shift = util.by_pixel(0, 48),
+          shift = util.by_pixel(1, 48),
           blend_mode = "additive",
-          hr_version =
-          {
-            filename = "__base__/graphics/entity/steel-furnace/hr-steel-furnace-ground-light.png",
-            priority = "high",
-            line_length = 1,
-            draw_as_sprite = false,
-            width = 152,
-            height = 126,
-            frame_count = 1,
-            direction_count = 1,
-            shift = util.by_pixel(1, 48),
-            blend_mode = "additive",
-            scale = 0.5,
-          }
+          scale = 0.5,
         },
       },
     },

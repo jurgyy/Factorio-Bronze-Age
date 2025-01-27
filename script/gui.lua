@@ -161,7 +161,7 @@ local function on_gui_opened(event)
     open_gui_entity[event.player_index] = entity
 
     local sidebar = create_worker_sidebar(player.gui.relative, entity)
-    global.gui_sidebar[player.index] = sidebar.root
+    storage.gui_sidebar[player.index] = sidebar.root
 
     sidebar.worker_amount.caption = tostring(worker_object.assigned_workers) .. "/" .. tostring(worker_object.max_workers)
     local network_id = worker_object.path_network_id
@@ -199,7 +199,7 @@ local function on_gui_closed(event)
 
     if not player then return end
     
-    local sidebar = global.gui_sidebar[player.index]
+    local sidebar = storage.gui_sidebar[player.index]
     if not sidebar then return end
 
     sidebar.destroy()
@@ -226,7 +226,7 @@ end
 gui = {}
 
 gui.on_init = function()
-    global.gui_sidebar = {}
+    storage.gui_sidebar = {}
 end
 
 gui.on_load = function()
@@ -234,7 +234,7 @@ end
 
 gui.on_configuration_changed = function()
     game.print("config changed")
-    global.gui_sidebar = {}
+    storage.gui_sidebar = {}
 end
 
 gui.events = {

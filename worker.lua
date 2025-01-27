@@ -28,7 +28,7 @@ local worker = {}
 --- @param args WorkerNextStepArgs The arguments table containing either `unit_data` or `unit_number`.
 worker.next_step = function(args)
     --if true then return end
-    local unit_data = args.unit_data or global.worker_data.workers[args.unit_number]
+    local unit_data = args.unit_data or storage.worker_data.workers[args.unit_number]
     if not unit_data then
         util.print("Cannot find worker " .. args.unit_number)
         return
@@ -204,7 +204,7 @@ worker.cancel_commands = function()
 end
 
 worker.finalize_command = function(unit_data)
-    worker_inventory = global.worker_data.workers[unit_data.unit_number].inventory --[[@as LuaInventory|nil]]
+    worker_inventory = storage.worker_data.workers[unit_data.unit_number].inventory --[[@as LuaInventory|nil]]
     if worker_inventory and worker_inventory.valid then
         if return_items(unit_data) then
             return
@@ -215,8 +215,8 @@ worker.finalize_command = function(unit_data)
         end
         worker_inventory.destroy()
     end
-    global.worker_data.n_workers = global.worker_data.n_workers - 1
-    global.worker_data.workers[unit_data.unit_number] = nil
+    storage.worker_data.n_workers = storage.worker_data.n_workers - 1
+    storage.worker_data.workers[unit_data.unit_number] = nil
     
     if unit_data.entity and unit_data.entity.valid then
         unit_data.entity.destroy()
@@ -228,7 +228,7 @@ worker.finalize_command = function(unit_data)
 end
 
 worker.can_spawn = function()
-    if global.worker_data.n_workers >= global.worker_data.max_workers then
+    if storage.worker_data.n_workers >= storage.worker_data.max_workers then
         util.print("Maximum number of workers reached")
         return false
     end
@@ -250,8 +250,8 @@ worker.new = function(entity)
     }
     entity.ai_settings.path_resolution_modifier = 0
 
-    global.worker_data.n_workers = global.worker_data.n_workers + 1
-    global.worker_data.workers[entity.unit_number] = unit_data
+    storage.worker_data.n_workers = storage.worker_data.n_workers + 1
+    storage.worker_data.workers[entity.unit_number] = unit_data
     return unit_data
 end
 
@@ -296,7 +296,7 @@ worker.on_ai_command_completed = function(event)
     end
 
     util.print("Command not succeeded")
-    local unit_data = global.worker_data.workers[event.unit_number]
+    local unit_data = storage.worker_data.workers[event.unit_number]
     if unit_data then
         if unit_data.request then
             unit_data.request.steps_completed = unit_data.step - 1

@@ -939,11 +939,11 @@ lib.events =
 
 
 lib.on_init = function()
-    global.camps = global.camps or script_data
+    storage.camps = storage.camps or script_data
 end
 
 lib.on_load = function()
-    script_data = global.camps or script_data
+    script_data = storage.camps or script_data
     for unit_number, camp_data in pairs (script_data.camps) do
         setmetatable(camp_data, camp_metatable)
     end
@@ -953,8 +953,8 @@ lib.on_load = function()
 end
 
 lib.on_configuration_changed = function()
-    if not global.camps then 
-        global.camps = script_data
+    if not storage.camps then 
+        storage.camps = script_data
     end
 
     if not script_data.big_migration then

@@ -116,7 +116,6 @@ local make_resource_attack_proxy = function(resource, visual_type)
     -- local color = {r=0.3, g=0.1, b=0.1, a=0.1}
     -- for _, layer in pairs(animation.layers) do
     --   layer.tint = color
-    --   layer.hr_version.tint = color
     -- end
 
     local attack_proxy =

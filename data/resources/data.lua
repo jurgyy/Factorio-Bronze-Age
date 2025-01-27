@@ -56,20 +56,11 @@ local function resource(resource_parameters, autoplace_parameters, initizalize)
             {
                 filename = "__base__/graphics/entity/iron-ore/iron-ore.png",
                 priority = "extra-high",
-                size = 64,
+                size = 128,
                 frame_count = 8,
                 variation_count = 8,
+                scale = 0.5,
                 tint = resource_parameters.tint,
-                hr_version =
-                {
-                    filename = "__base__/graphics/entity/iron-ore/hr-iron-ore.png",
-                    priority = "extra-high",
-                    size = 128,
-                    frame_count = 8,
-                    variation_count = 8,
-                    scale = 0.5,
-                    tint = resource_parameters.tint,
-                }
             }
         },
         map_color = resource_parameters.map_color,

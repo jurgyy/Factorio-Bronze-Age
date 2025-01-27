@@ -84,43 +84,23 @@ return {
         {
           filename = "__base__/graphics/entity/stone-furnace/stone-furnace.png",
           priority = "extra-high",
-          width = 81,
-          height = 64,
+          width = 151,
+          height = 146,
           frame_count = 1,
-          shift = util.by_pixel(14.5, 2),
+          shift = util.by_pixel(-0.25, 6),
           tint = {0.4, 0.4, 0.2, 1},
-          hr_version =
-          {
-            filename = "__base__/graphics/entity/stone-furnace/hr-stone-furnace.png",
-            priority = "extra-high",
-            width = 151,
-            height = 146,
-            frame_count = 1,
-            shift = util.by_pixel(-0.25, 6),
-            tint = {0.4, 0.4, 0.2, 1},
-            scale = 0.5
-          }
+          scale = 0.5
         },
         {
           filename = "__base__/graphics/entity/stone-furnace/stone-furnace-shadow.png",
           priority = "extra-high",
-          width = 81,
-          height = 64,
+          width = 164,
+          height = 74,
           frame_count = 1,
           draw_as_shadow = true,
-          shift = util.by_pixel(14.5, 2),
-          hr_version =
-          {
-            filename = "__base__/graphics/entity/stone-furnace/hr-stone-furnace-shadow.png",
-            priority = "extra-high",
-            width = 164,
-            height = 74,
-            frame_count = 1,
-            draw_as_shadow = true,
-            force_hr_shadow = true,
-            shift = util.by_pixel(14.5, 13),
-            scale = 0.5
-          }
+          force_hr_shadow = true,
+          shift = util.by_pixel(14.5, 13),
+          scale = 0.5
         }
       }
     },
@@ -138,43 +118,22 @@ return {
               filename = "__base__/graphics/entity/stone-furnace/stone-furnace-fire.png",
               priority = "extra-high",
               line_length = 8,
-              width = 20,
-              height = 49,
+              width = 41,
+              height = 100,
               frame_count = 48,
               axially_symmetrical = false,
               direction_count = 1,
-              shift = util.by_pixel(-0.5, 5.5),
-              hr_version =
-              {
-                filename = "__base__/graphics/entity/stone-furnace/hr-stone-furnace-fire.png",
-                priority = "extra-high",
-                line_length = 8,
-                width = 41,
-                height = 100,
-                frame_count = 48,
-                axially_symmetrical = false,
-                direction_count = 1,
-                shift = util.by_pixel(-0.75, 5.5),
-                scale = 0.5
-              }
+              shift = util.by_pixel(-0.75, 5.5),
+              scale = 0.5
             },
             {
               filename = "__base__/graphics/entity/stone-furnace/stone-furnace-light.png",
               blend_mode = "additive",
-              width = 54,
-              height = 74,
+              width = 106,
+              height = 144,
               repeat_count = 48,
-              shift = util.by_pixel(0, 4),
-              hr_version =
-              {
-                filename = "__base__/graphics/entity/stone-furnace/hr-stone-furnace-light.png",
-                blend_mode = "additive",
-                width = 106,
-                height = 144,
-                repeat_count = 48,
-                shift = util.by_pixel(0, 5),
-                scale = 0.5,
-              }
+              shift = util.by_pixel(0, 5),
+              scale = 0.5,
             },
           }
         }
@@ -189,21 +148,11 @@ return {
           filename = "__base__/graphics/entity/stone-furnace/stone-furnace-ground-light.png",
           blend_mode = "additive",
           draw_as_sprite = false,
-          width = 56,
-          height = 56,
+          width = 116,
+          height = 110,
           repeat_count = 48,
-          shift = util.by_pixel(0, 44),
-          hr_version =
-          {
-            filename = "__base__/graphics/entity/stone-furnace/hr-stone-furnace-ground-light.png",
-            blend_mode = "additive",
-            draw_as_sprite = false,
-            width = 116,
-            height = 110,
-            repeat_count = 48,
-            shift = util.by_pixel(-1, 44),
-            scale = 0.5,
-          }
+          shift = util.by_pixel(-1, 44),
+          scale = 0.5,
         },
       },
     },

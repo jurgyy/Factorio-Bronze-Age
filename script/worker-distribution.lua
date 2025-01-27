@@ -266,11 +266,11 @@ dist.events = {
 }
 
 dist.on_init = function()
-    global.worker_distribution = global.worker_distribution or script_data
+    storage.worker_distribution = storage.worker_distribution or script_data
 end
 
 dist.on_load = function()
-    script_data = global.worker_distribution or script_data
+    script_data = storage.worker_distribution or script_data
     for network_id, worker_distribution_data in pairs(script_data.distributions) do
         setmetatable(worker_distribution_data, dist_metatable)
     end
@@ -278,12 +278,12 @@ end
 
 dist.on_configuration_changed = function()
     game.print("worker_distribution config changed")
-    if not global.worker_distribution then
-        global.worker_distribution = script_data
+    if not storage.worker_distribution then
+        storage.worker_distribution = script_data
     end
 
-    if not global.worker_distribution_targets then
-        global.worker_distribution_targets = {}
+    if not storage.worker_distribution_targets then
+        storage.worker_distribution_targets = {}
     end
 end
 

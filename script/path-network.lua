@@ -819,17 +819,17 @@ path_network.check_clear_lonely_node = function(surface, x, y)
 end
 
 path_network.on_init = function()
-    global.road_network = global.road_network or script_data
+    storage.road_network = storage.road_network or script_data
 end
 
 path_network.on_load = function()
-    script_data = global.road_network or script_data
+    script_data = storage.road_network or script_data
 end
 
 path_network.on_configuration_changed = function()
     game.print("config changed")
     reset()
-    global.road_network = script_data -- TODO Line can be removed, is just for adding the global when it doesn't exist
+    storage.road_network = script_data -- TODO Line can be removed, is just for adding the global when it doesn't exist
 end
 
 path_network.get_network_by_id = get_network_by_id

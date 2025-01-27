@@ -26,24 +26,14 @@ local function resource(resource_parameters)
       {
         sheet =
         {
-          filename = "__bronze-age__/graphics/fallen-tree-resource/dead-dry-hairy-tree-00.png",
+          filename = "__bronze-age__/graphics/fallen-tree-resource/hr-dead-dry-hairy-tree-00.png",
           priority = "extra-high",
-          --size = 64,
-          width = 195,
-          height = 95,
+          --size = 128,
+          width = 388,
+          height = 189,
           frame_count = 1,
           variation_count = 1,
-          hr_version =
-          {
-            filename = "__bronze-age__/graphics/fallen-tree-resource/hr-dead-dry-hairy-tree-00.png",
-            priority = "extra-high",
-            --size = 128,
-            width = 388,
-            height = 189,
-            frame_count = 1,
-            variation_count = 1,
-            scale = 0.5
-          }
+          scale = 0.5
         }
       },
       map_color = resource_parameters.map_color,

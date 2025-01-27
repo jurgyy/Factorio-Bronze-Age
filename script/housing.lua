@@ -229,11 +229,11 @@ lib.events = {
 }
 
 lib.on_init = function()
-    global.housing = global.housing or script_data
+    storage.housing = storage.housing or script_data
 end
 
 lib.on_load = function()
-    script_data = global.housing or script_data
+    script_data = storage.housing or script_data
     for unit_number, housing_data in pairs(script_data.houses) do
         setmetatable(housing_data, housing_metatable)
     end
@@ -241,8 +241,8 @@ end
 
 lib.on_configuration_changed = function()
     game.print("housing config changed")
-    if not global.housing then
-        global.housing = script_data
+    if not storage.housing then
+        storage.housing = script_data
     end
 end
 

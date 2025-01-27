@@ -39,7 +39,6 @@ eei.energy_source = {
 
 for _, layer in pairs(eei.picture.layers) do
     layer.tint = {r = 0, g = 0, b = 0, a = 0.2}
-    layer.hr_version.tint = {r = 0, g = 0, b = 0, a = 0.2}
 end
 
 return eei

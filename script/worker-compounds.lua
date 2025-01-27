@@ -140,11 +140,11 @@ lib.events =
 
 
 lib.on_init = function()
-    global.worker_compounds = global.worker_compounds or script_data
+    storage.worker_compounds = storage.worker_compounds or script_data
 end
 
 lib.on_load = function()
-    script_data = global.worker_compounds or script_data
+    script_data = storage.worker_compounds or script_data
     if script_data.compounds then
         for unit_number, worker_eei in pairs (script_data.compounds) do
             setmetatable(worker_eei, metatable)
@@ -153,8 +153,8 @@ lib.on_load = function()
 end
 
 lib.on_configuration_changed = function()
-    if not global.worker_compounds then
-        global.worker_compounds = script_data
+    if not storage.worker_compounds then
+        storage.worker_compounds = script_data
     end
 end
 

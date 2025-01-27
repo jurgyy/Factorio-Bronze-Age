@@ -50,7 +50,7 @@ function pathfinding_collection.new(surface_index, item_name, total_amount, unit
     return self
 end
 
----Requests the collection's surface for a path and stores the request's uid in global.pathfinding_requests.
+---Requests the collection's surface for a path and stores the request's uid in storage.pathfinding_requests.
 ---Only intended to call from outside the class if a request has failed with try_again_later
 ---@param path Path Path to request
 ---@return integer Uid for the 
@@ -62,7 +62,7 @@ function pathfinding_collection:request_path(path)
         goal = path.goal,
         force = game.players[1].force -- TODO
     }
-    global.pathfinding_requests[uid] = path
+    storage.pathfinding_requests[uid] = path
     return uid
 end
 
@@ -83,7 +83,7 @@ end
 function pathfinding_collection:add_paths_from_entity(from_entity, amount)
     local from_positions = util.get_path_sets_around(from_entity.surface, from_entity.bounding_box)
 
-    local ds = global.tiles_disjoint_sets[self.surface_index]
+    local ds = storage.tiles_disjoint_sets[self.surface_index]
 
     for _, from in ipairs(from_positions) do
         for _, to in ipairs(self.goal_positions) do

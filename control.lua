@@ -32,32 +32,32 @@ end
 
 local function initialize_globals()
     game.print("Initializing")
-    global.request_queue = global.request_queue or Queue.new()
+    storage.request_queue = storage.request_queue or Queue.new()
     
     --[[@type table<integer, Construction>]]
-    global.constructions = global.constructions or {}
+    storage.constructions = storage.constructions or {}
     
-    global.destruction_ids = global.destruction_ids or {}
+    storage.destruction_ids = storage.destruction_ids or {}
     
     --[[@type WorkerData]]
-    global.worker_data = global.worker_data or {
+    storage.worker_data = storage.worker_data or {
         n_workers = 0,
         max_workers = 2,
         workers = {}
     }
     --[[@type PathfindingRequests]]
-    global.pathfinding_requests = global.pathfinding_requests or {}
+    storage.pathfinding_requests = storage.pathfinding_requests or {}
     --[[@type table<integer, DisjointSet>]]
-    global.tiles_disjoint_sets = global.tiles_disjoint_set or {}
+    storage.tiles_disjoint_sets = storage.tiles_disjoint_set or {}
 
     --[[@type CampScriptData?]]
-    global.camps = global.camps or {}
+    storage.camps = storage.camps or {}
     
     --[[@type CampWorkerScriptData?]]
-    global.camp_workers = global.camp_workers or {}
+    storage.camp_workers = storage.camp_workers or {}
 
     --[[@type HousingScriptData?]]
-    global.housing = global.housing or {}
+    storage.housing = storage.housing or {}
 end
 
 script.on_init(function()
@@ -71,9 +71,9 @@ end)
 
 
 local function pol_work()
-    if global.request_queue == nil then
+    if storage.request_queue == nil then
         -- todo can be removed
-        global.request_queue = Queue.new()
+        storage.request_queue = Queue.new()
     end
 
     if not ba_worker.can_spawn() then
@@ -157,15 +157,15 @@ end
 local function entity_destroyed_event(event)
     -- todo will also get called when it's finished
     game.print("Entity destroyed")
-    ghost_id = global.destruction_ids[event.registration_number]
+    ghost_id = storage.destruction_ids[event.registration_number]
     if not ghost_id then
         --error("ghost_id not found")
         return
     end
     ba_requests.cancel_build_requests(ghost_id)
-    global.destruction_ids[event.registration_number] = nil
+    storage.destruction_ids[event.registration_number] = nil
 
-    local construction = global.constructions[ghost_id]
+    local construction = storage.constructions[ghost_id]
     if construction then
         for item, count in pairs(construction.current) do
             game.surfaces[construction.surface_index].spill_item_stack(
@@ -174,19 +174,19 @@ local function entity_destroyed_event(event)
             )
         end
     end
-    global.constructions[ghost_id] = nil
+    storage.constructions[ghost_id] = nil
 end
 
 ---comments
 ---@param event EventData.on_script_path_request_finished
 local function handle_path_request(event)
-    local path = global.pathfinding_requests[event.id]
+    local path = storage.pathfinding_requests[event.id]
     if not path then
         util.print("Path " .. event.id .. " request not found")
         return
     end
     
-    global.pathfinding_requests[event.id] = nil
+    storage.pathfinding_requests[event.id] = nil
     if event.try_again_later then
         util.print("Path " .. event.id .. ": try again later")
         path.collection:request_path(path)

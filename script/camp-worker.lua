@@ -671,20 +671,20 @@ camp_worker.events =
 }
 
 camp_worker.on_load = function()
-    script_data = global.camp_workers or script_data
+    script_data = storage.camp_workers or script_data
     for unit_number, worker_data in pairs (script_data.workers) do
       setmetatable(worker_data, camp_worker.metatable)
     end
 end
 
 camp_worker.on_init = function()
-    global.camp_workers = global.camp_workers or script_data
+    storage.camp_workers = storage.camp_workers or script_data
     game.map_settings.path_finder.use_path_cache = false
 end
 
 camp_worker.on_configuration_changed = function()
-    if not global.camp_workers then
-        global.camp_workers = script_data
+    if not storage.camp_workers then
+        storage.camp_workers = script_data
     end
     if not script_data.big_migration then
         script_data.big_migration = true

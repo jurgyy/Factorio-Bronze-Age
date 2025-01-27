@@ -54,11 +54,11 @@ local function create_new_sticker(ghost_entity, ingredients)
         surface_index = ghost_entity.surface_index,
         position = ghost_entity.position
     } --[[@as Construction]]
-    global.constructions[ghost_entity.unit_number] = construction
+    storage.constructions[ghost_entity.unit_number] = construction
 end
 
 local function update_sticker(entity)
-    local construction = global.constructions[entity.unit_number]
+    local construction = storage.constructions[entity.unit_number]
     if construction and construction.renderings then
         for i, ingredient in ipairs(construction.ingredients) do
             local current = construction.current[ingredient.name]
@@ -83,10 +83,10 @@ ba_construction.new = function(ghost_entity, recipe, count)
         return
     end
     local uid = script.register_on_entity_destroyed(ghost_entity)
-    if not global.destruction_ids then
-        global.destruction_ids = {}
+    if not storage.destruction_ids then
+        storage.destruction_ids = {}
     end
-    global.destruction_ids[uid] = ghost_entity.unit_number
+    storage.destruction_ids[uid] = ghost_entity.unit_number
 
     for _, ingredient in ipairs(ingredients) do
         ingredient.amount = ingredient.amount * count
@@ -108,7 +108,7 @@ local function is_completed(construction)
 end
 
 ba_construction.is_completed = function(ghost_id)
-    local construction = global.constructions[ghost_id]
+    local construction = storage.constructions[ghost_id]
     if not construction then
         util.print("command.ghost_id not in constructions table")
         return nil
@@ -120,7 +120,7 @@ ba_construction.cancel = function(ghost_id)
     util.print("Canceling")
     requests.cancel_build_requests(ghost_id)
 
-    global.constructions[ghost_id] = nil
+    storage.constructions[ghost_id] = nil
 end
 
 ---Find to find a ghost entity
@@ -150,7 +150,7 @@ end
 ---@param item_stack SimpleItemStack Item stack of the delivered items
 ---@return boolean delivered
 ba_construction.deliver_item = function(ghost_id, surface, position, item_stack)
-    local construction = global.constructions[ghost_id]
+    local construction = storage.constructions[ghost_id]
     if not construction then
         util.print("command.ghost_id not in constructions table")
         return false
@@ -206,7 +206,7 @@ ba_construction.deliver_item = function(ghost_id, surface, position, item_stack)
         if construction.construction_entity then
             construction.construction_entity.destroy()
         end
-        global.constructions[ghost_id] = nil
+        storage.constructions[ghost_id] = nil
         ghost.revive()
     else
         update_sticker(ghost)
