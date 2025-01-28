@@ -17,7 +17,7 @@ end
 local empty_rotated_animation = function()
     return
     {
-      filename = "__base__/graphics/icons/ship-wreck/small-ship-wreck.png",
+      filename = "__base__/graphics/icons/water-wube.png",
       width = 1,
       height= 1,
       direction_count = 1,
@@ -122,7 +122,7 @@ local make_resource_attack_proxy = function(resource, visual_type)
     {
       type = "unit",
       name = shared_util.get_proxy_name(resource),
-      icon = "__base__/graphics/icons/ship-wreck/small-ship-wreck.png",
+      icon = "__base__/graphics/icons/water-wube.png",
       icon_size = 32,
       flags = {"placeable-neutral", "placeable-off-grid", "not-on-map", "not-in-kill-statistics", "not-repairable"},
       order = "zzzzzz",
