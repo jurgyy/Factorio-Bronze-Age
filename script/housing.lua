@@ -75,7 +75,7 @@ end
 ---@param entity LuaEntity
 ---@param network_id integer
 local function add_to_network(entity, network_id)
-    local id = script.register_on_entity_destroyed(entity)
+    local id = script.register_on_object_destroyed(entity)
     local housing_data = script_data.houses[id]
     if not housing_data then error("No housing data for entity") end
     if housing_data.network_id then return end
@@ -122,8 +122,9 @@ end
 ---@return HousingData
 function housing.new(housing_entity)
     ---@type HousingData
+    ---@diagnostic disable-next-line: missing-fields
     local housing_data = {
-        id = script.on_object_destroyed(housing_entity),
+        id = script.register_on_object_destroyed(housing_entity),
         surface_index = housing_entity.surface_index,
         entity = housing_entity,
         define = housing_defines[housing_entity.name]

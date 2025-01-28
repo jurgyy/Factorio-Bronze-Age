@@ -60,14 +60,14 @@ local function create_worker_sidebar(parent, entity)
             children = {
                 {
                     type="flow", direction="horizontal", style="ba_sidebar_row", children = {
-                        {type="label", caption="Workers:", style="heading_3_label"},
+                        {type="label", caption="Workers:", style="heading_2_label"},
                         {type="empty-widget", style="flib_horizontal_pusher"},
                         {type="label", style="label", caption="-", name=sidebar_amount_label_name}
                     }
                 },
                 {
                     type="flow", direction="horizontal", style="ba_sidebar_row", children = {
-                        {type="label", caption="Building Priority:", style="heading_3_label"}
+                        {type="label", caption="Building Priority:", style="heading_2_label"}
                     }
                 },
                 {
@@ -80,28 +80,28 @@ local function create_worker_sidebar(parent, entity)
                 {type="empty-widget", style="flib_vertical_pusher"},
                 {
                     type="flow", direction="horizontal", style="ba_sidebar_row", children = {
-                        {type="label", caption="Total Workers:", style="heading_3_label"},
+                        {type="label", caption="Total Workers:", style="heading_2_label"},
                         {type="empty-widget", style="flib_horizontal_pusher"},
                         {type="label", style="label", caption="-", name=sidebar_total_label_name}
                     }
                 },
                 {
                     type="flow", direction="horizontal", style="ba_sidebar_row", children = {
-                        {type="label", caption="Total Required:", style="heading_3_label"},
+                        {type="label", caption="Total Required:", style="heading_2_label"},
                         {type="empty-widget", style="flib_horizontal_pusher"},
                         {type="label", style="label", caption="-", name=sidebar_total_required_label_name}
                     }
                 },
                 {
                     type="flow", direction="horizontal", style="ba_sidebar_row", children = {
-                        {type="label", caption="Unemployed:", style="heading_3_label", name=sidebar_employed_key_label_name},
+                        {type="label", caption="Unemployed:", style="heading_2_label", name=sidebar_employed_key_label_name},
                         {type="empty-widget", style="flib_horizontal_pusher"},
                         {type="label", style="label", caption="-", name=sidebar_employed_label_name}
                     }
                 },
                 {
                     type="flow", direction="horizontal", style="ba_sidebar_row", children = {
-                        {type="label", caption="Path Network:", style="heading_3_label"},
+                        {type="label", caption="Path Network:", style="heading_2_label"},
                         {type="empty-widget", style="flib_horizontal_pusher"},
                         {type="label", style="label", caption="-", name=network_id_label_name}
                     }
